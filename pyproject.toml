@@ -1,0 +1,45 @@
+[project]
+name = "conette"
+authors = [
+    {name = "Etienne Labbé (Labbeti)", email = "labbeti.pub@gmail.com"},
+]
+description = "CoNeTTE model for Audio Captioning."
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["audio", "deep-learning", "pytorch", "captioning", "audio-captioning"]
+license = {file = "LICENSE"}
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+maintainers = [
+    {name = "Etienne Labbé (Labbeti)", email = "labbeti.pub@gmail.com"},
+]
+dynamic = ["version"]
+
+dependencies = [
+    "https://github.com/Labbeti/AAC.git",
+]
+
+[project.urls]
+Repository = "https://github.com/Labbeti/conette-audio-captioning.git"
+Changelog = "https://github.com/Labbeti/conette-audio-captioning/blob/main/CHANGELOG.md"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "flake8",
+    "black",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]  # list of folders that contain the packages (["."] by default)
+include = ["conette*"]  # package names should match these glob patterns (["*"] by default)
+
+[tool.setuptools.dynamic]
+version = {attr = "conette.__version__"}
