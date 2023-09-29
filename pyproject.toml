@@ -23,7 +23,7 @@ maintainers = [
 dynamic = ["version"]
 
 dependencies = [
-    "https://github.com/Labbeti/AAC.git",
+    "AAC @ git+https://github.com/Labbeti/AAC.git#egg=dev",
 ]
 
 [project.urls]
