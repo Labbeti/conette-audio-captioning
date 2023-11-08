@@ -42,7 +42,7 @@ class ConvNeXtBlock(nn.Module):
         )  # pointwise/1x1 convs, implemented with linear layers
         self.act = nn.GELU()
         self.pwconv2 = nn.Linear(4 * dim, dim)
-        self.gamma = (
+        self.scale_layer = (
             Parameter(layer_scale_init_value * torch.ones((dim)), requires_grad=True)
             if layer_scale_init_value > 0
             else None
@@ -57,8 +57,8 @@ class ConvNeXtBlock(nn.Module):
         x = self.pwconv1(x)
         x = self.act(x)
         x = self.pwconv2(x)
-        if self.gamma is not None:
-            x = self.gamma * x
+        if self.scale_layer is not None:
+            x = self.scale_layer * x
         x = x.permute(0, 3, 1, 2)  # (N, H, W, C) -> (N, C, H, W)
 
         x = input_ + self.drop_path(x)
@@ -234,12 +234,19 @@ class ConvNeXt(nn.Module):
         mixup_lambda: Optional[Tensor] = None,
     ) -> dict[str, Tensor]:
         if self.waveform_input:
+            if input_.ndim != 2:
+                raise ValueError(
+                    f"Invalid argument shape {input_.shape=}. (expected 2 dims with {self.waveform_input=})"
+                )
             input_time_dim = -1
-            x = self.spectrogram_extractor(
-                input_
-            )  # (batch_size, 1, time_steps, freq_bins)
-            x = self.logmel_extractor(x)  # (batch_size, 1, time_steps, mel_bins)
+            x = self.spectrogram_extractor(input_)
+            # (batch_size, 1, time_steps, freq_bins)
+            x = self.logmel_extractor(x)
         else:
+            if input_.ndim != 4:
+                raise ValueError(
+                    f"Invalid argument shape {input_.shape=}. (expected 4 dims with {self.waveform_input=})"
+                )
             x = input_
             input_time_dim = -2
 
