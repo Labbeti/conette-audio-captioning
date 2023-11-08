@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from conette.huggingface import conette
+from conette.nn.huggingface import conette
 
 
 __all__ = [
