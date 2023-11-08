@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 import logging
+import os
 import subprocess
 import sys
 
@@ -42,7 +42,7 @@ def _is_iter_tensor(x: Any) -> TypeGuard[Iterable[Tensor]]:
 
 
 class CoNeTTEPreprocessor(nn.Module):
-    def __init__(self) -> None:
+    def __init__(self, verbose: int = 0) -> None:
         encoder = convnext_tiny(
             pretrained=False,
             strict=False,
@@ -56,6 +56,7 @@ class CoNeTTEPreprocessor(nn.Module):
         )
         super().__init__()
         self.encoder = encoder
+        self.verbose = verbose
 
     @property
     def device(self) -> torch.device:
@@ -111,8 +112,15 @@ class CoNeTTEPreprocessor(nn.Module):
 
         else:
             if isinstance(x, Tensor):
-                if x.ndim == 2:
+                # expected (n_time,), (n_channel, n_time) or (bsize, n_channels, n_time)
+                if x.ndim == 1:
+                    x = x.unsqueeze(dim=0).unsqueeze(dim=1)
+                elif x.ndim == 2:
                     x = x.unsqueeze(dim=0)
+                elif x.ndim == 3:
+                    pass
+                else:
+                    raise ValueError(f"Invalid argument shape {x.shape=}.")
             else:
                 x = list(x)  # type: ignore
 
@@ -123,10 +131,13 @@ class CoNeTTEPreprocessor(nn.Module):
             else:
                 sr = list(sr)
 
-        assert _is_list_tensor(x)
+        assert _is_list_tensor(x) or isinstance(x, Tensor), f"{type(x)=}"
 
         if len(sr) == 1 and len(x) != len(sr):
             sr = sr * len(x)
+
+        if self.verbose >= 2:
+            pylog.debug(f"Found {sr=}.")
 
         assert len(x) == len(sr) and len(x) > 0
         assert _is_iter_tensor(x) or isinstance(x, Tensor)
@@ -140,16 +151,17 @@ class CoNeTTEPreprocessor(nn.Module):
         # RESAMPLE + MEAN
         if any(sri != self.target_sr for sri in sr):
             if x_shapes is not None:
-                raise ValueError
+                raise ValueError(f"Invalid argument {x_shapes=}.")
 
             if all_eq(sr) and isinstance(x, Tensor):
                 x = resample(x, sr[0], self.target_sr)
-                x = x.mean(dim=1)
             else:
-                x = [
-                    resample(xi, sri, self.target_sr).mean(dim=0)
-                    for xi, sri in zip(x, sr)
-                ]
+                x = [resample(xi, sri, self.target_sr) for xi, sri in zip(x, sr)]
+
+        if isinstance(x, Tensor):
+            x = x.mean(dim=1)
+        else:
+            x = [xi.mean(dim=0) for xi in x]
 
         # SHAPES + STACK
         if x_shapes is None:
@@ -173,9 +185,9 @@ class CoNeTTEConfig(PretrainedConfig):
             "wavcaps_freesound",
             "wavcaps_soundbible",
         ),
-        gen_test_cands: str = "generate_expt",
+        gen_test_cands: str = "generate",
         label_smoothing: float = 0.2,
-        gen_val_cands: str = "generate_expt",
+        gen_val_cands: str = "generate",
         mixup_alpha: float = 0.4,
         proj_name: str = "lin768",
         min_pred_size: int = 3,
@@ -198,8 +210,10 @@ class CoNeTTEConfig(PretrainedConfig):
         sched_interval: str = "epoch",
         sched_freq: int = 1,
         verbose: int = 0,
+        tokenizer_state: Optional[dict[str, Any]] = None,
         **kwargs,
     ) -> None:
+        betas = list(betas)  # type: ignore
         super().__init__()
         self.task_mode = task_mode
         self.task_names = task_names
@@ -228,166 +242,10 @@ class CoNeTTEConfig(PretrainedConfig):
         self.sched_interval = sched_interval
         self.sched_freq = sched_freq
         self.verbose = verbose
+        self.tokenizer_state = tokenizer_state
 
 
 class CoNeTTEModel(PreTrainedModel):
-    _keys_to_ignore_on_load_missing = [
-        "preprocessor.encoder.stages.1.1.gamma",
-        "preprocessor.encoder.stages.2.1.gamma",
-        "preprocessor.encoder.stages.3.1.gamma",
-        "preprocessor.encoder.stages.2.7.gamma",
-        "preprocessor.encoder.stages.0.2.gamma",
-        "preprocessor.encoder.stages.2.0.gamma",
-        "preprocessor.encoder.stages.0.1.gamma",
-        "preprocessor.encoder.stages.1.0.gamma",
-        "preprocessor.encoder.stages.3.0.gamma",
-        "preprocessor.encoder.stages.2.5.gamma",
-        "preprocessor.encoder.stages.2.8.gamma",
-        "preprocessor.encoder.stages.3.2.gamma",
-        "preprocessor.encoder.stages.1.2.gamma",
-        "preprocessor.encoder.stages.2.3.gamma",
-        "preprocessor.encoder.stages.0.0.gamma",
-        "preprocessor.encoder.stages.2.6.gamma",
-        "preprocessor.encoder.stages.2.4.gamma",
-        "preprocessor.encoder.stages.2.2.gamma",
-    ]
-    _keys_to_ignore_on_load_unexpected = [
-        "model.projection.2.weight",
-        "model.decoder.layers.2.linear2.weight",
-        "model.decoder.layers.3.norm1.weight",
-        "model.decoder.layers.3.multihead_attn.in_proj_weight",
-        "model.decoder.layers.3.self_attn.out_proj.weight",
-        "model.decoder.layers.1.self_attn.out_proj.weight",
-        "preprocessor.encoder.stages.2.0.weight",
-        "model.decoder.layers.4.multihead_attn.in_proj_weight",
-        "model.decoder.layers.4.norm3.weight",
-        "model.decoder.layers.2.linear2.bias",
-        "model.decoder.layers.1.linear1.bias",
-        "preprocessor.encoder.stages.2.8.weight",
-        "model.decoder.layers.2.norm1.bias",
-        "model.decoder.layers.3.linear2.weight",
-        "model.decoder.layers.3.multihead_attn.out_proj.weight",
-        "model.decoder.layers.4.self_attn.in_proj_bias",
-        "model.decoder.layers.1.multihead_attn.out_proj.bias",
-        "model.decoder.layers.5.self_attn.out_proj.weight",
-        "model.decoder.layers.0.multihead_attn.in_proj_weight",
-        "model.decoder.layers.4.self_attn.out_proj.weight",
-        "model.decoder.layers.4.linear2.bias",
-        "model.decoder.layers.2.linear1.bias",
-        "model.decoder.emb_layer.weight",
-        "preprocessor.encoder.stages.1.0.weight",
-        "preprocessor.encoder.stages.2.5.weight",
-        "model.decoder.layers.5.norm1.weight",
-        "model.decoder.layers.4.norm2.weight",
-        "model.decoder.layers.1.multihead_attn.in_proj_bias",
-        "model.decoder.layers.2.self_attn.in_proj_weight",
-        "model.decoder.layers.2.self_attn.in_proj_bias",
-        "model.decoder.layers.0.multihead_attn.in_proj_bias",
-        "preprocessor.encoder.stages.2.6.weight",
-        "model.decoder.layers.4.multihead_attn.in_proj_bias",
-        "model.decoder.layers.2.self_attn.out_proj.weight",
-        "preprocessor.encoder.stages.0.2.weight",
-        "model.decoder.pos_encoding.pos_embedding",
-        "model.decoder.layers.4.norm1.weight",
-        "model.decoder.layers.5.linear1.weight",
-        "model.decoder.layers.1.norm3.bias",
-        "model.decoder.layers.2.linear1.weight",
-        "model.decoder.layers.1.norm1.weight",
-        "model.decoder.layers.0.linear2.weight",
-        "model.decoder.layers.3.self_attn.in_proj_weight",
-        "model.decoder.layers.5.multihead_attn.in_proj_weight",
-        "preprocessor.encoder.stages.2.2.weight",
-        "model.decoder.layers.2.multihead_attn.in_proj_bias",
-        "model.decoder.classifier.bias",
-        "preprocessor.encoder.stages.0.1.weight",
-        "model.decoder.layers.4.self_attn.out_proj.bias",
-        "model.decoder.layers.5.norm3.weight",
-        "model.decoder.layers.4.norm2.bias",
-        "model.decoder.layers.5.norm2.weight",
-        "model.decoder.layers.0.multihead_attn.out_proj.weight",
-        "model.decoder.layers.3.norm2.weight",
-        "model.decoder.layers.5.self_attn.out_proj.bias",
-        "model.decoder.layers.0.self_attn.out_proj.weight",
-        "model.decoder.layers.3.linear1.bias",
-        "model.decoder.layers.0.norm2.weight",
-        "model.decoder.classifier.weight",
-        "model.task_id_to_token_id",
-        "model.decoder.layers.4.linear2.weight",
-        "model.decoder.layers.1.norm2.weight",
-        "model.decoder.layers.1.self_attn.in_proj_weight",
-        "preprocessor.encoder.stages.2.1.weight",
-        "model.decoder.layers.0.norm1.bias",
-        "model.decoder.layers.5.linear2.weight",
-        "preprocessor.encoder.stages.0.0.weight",
-        "model.decoder.layers.5.multihead_attn.in_proj_bias",
-        "model.decoder.layers.1.linear2.bias",
-        "model.decoder.layers.3.norm1.bias",
-        "model.decoder.layers.0.norm1.weight",
-        "model.decoder.layers.2.norm3.bias",
-        "model.projection.2.bias",
-        "model.decoder.layers.2.multihead_attn.in_proj_weight",
-        "preprocessor.encoder.stages.2.7.weight",
-        "model.decoder.layers.1.multihead_attn.out_proj.weight",
-        "model.decoder.layers.3.linear2.bias",
-        "model.decoder.layers.5.norm3.bias",
-        "model.decoder.layers.5.multihead_attn.out_proj.bias",
-        "preprocessor.encoder.stages.1.2.weight",
-        "model.decoder.layers.1.linear2.weight",
-        "model.decoder.layers.5.norm1.bias",
-        "model.decoder.layers.4.self_attn.in_proj_weight",
-        "model.decoder.layers.3.self_attn.out_proj.bias",
-        "model.decoder.layers.3.linear1.weight",
-        "model.decoder.layers.4.multihead_attn.out_proj.bias",
-        "preprocessor.encoder.stages.2.4.weight",
-        "model.decoder.layers.0.self_attn.out_proj.bias",
-        "preprocessor.encoder.stages.3.0.weight",
-        "model.decoder.layers.4.norm1.bias",
-        "model.decoder.layers.0.self_attn.in_proj_weight",
-        "model.decoder.layers.2.norm2.weight",
-        "model.decoder.layers.1.self_attn.in_proj_bias",
-        "model.decoder.layers.1.norm3.weight",
-        "model.decoder.layers.0.multihead_attn.out_proj.bias",
-        "model.decoder.layers.5.self_attn.in_proj_bias",
-        "preprocessor.encoder.stages.3.2.weight",
-        "model.decoder.layers.2.multihead_attn.out_proj.weight",
-        "model.decoder.layers.0.norm2.bias",
-        "model.decoder.layers.0.linear1.weight",
-        "preprocessor.encoder.stages.2.3.weight",
-        "model.decoder.layers.3.norm3.bias",
-        "model.decoder.layers.5.norm2.bias",
-        "model.decoder.layers.5.linear1.bias",
-        "model.decoder.layers.3.norm2.bias",
-        "model.decoder.layers.4.norm3.bias",
-        "model.decoder.layers.3.multihead_attn.in_proj_bias",
-        "model.decoder.layers.2.norm3.weight",
-        "model.decoder.layers.4.multihead_attn.out_proj.weight",
-        "model.decoder.layers.2.norm1.weight",
-        "model.decoder.layers.1.norm2.bias",
-        "model.decoder.layers.2.self_attn.out_proj.bias",
-        "model.decoder.layers.2.multihead_attn.out_proj.bias",
-        "model.decoder.layers.1.linear1.weight",
-        "model.decoder.layers.5.linear2.bias",
-        "model.decoder.layers.0.norm3.bias",
-        "model.decoder.layers.5.self_attn.in_proj_weight",
-        "model.decoder.layers.1.self_attn.out_proj.bias",
-        "model.decoder.layers.1.norm1.bias",
-        "model.decoder.layers.0.norm3.weight",
-        "preprocessor.encoder.stages.3.1.weight",
-        "model.decoder.layers.0.self_attn.in_proj_bias",
-        "model.decoder.layers.0.linear2.bias",
-        "model.decoder.layers.2.norm2.bias",
-        "preprocessor.encoder.stages.1.1.weight",
-        "model.decoder.layers.1.multihead_attn.in_proj_weight",
-        "model.decoder.layers.3.norm3.weight",
-        "model.decoder.layers.3.multihead_attn.out_proj.bias",
-        "model.forbid_rep_mask",
-        "model.decoder.layers.3.self_attn.in_proj_bias",
-        "model.decoder.layers.5.multihead_attn.out_proj.weight",
-        "model.decoder.layers.0.linear1.bias",
-        "model.decoder.layers.4.linear1.bias",
-        "model.decoder.layers.4.linear1.weight",
-    ]
-
     def __init__(
         self,
         config: CoNeTTEConfig,
@@ -396,8 +254,12 @@ class CoNeTTEModel(PreTrainedModel):
     ) -> None:
         setup()
 
-        tokenizer = AACTokenizer()
-        preprocessor = CoNeTTEPreprocessor()
+        if config.tokenizer_state is None:
+            tokenizer = AACTokenizer()
+        else:
+            tokenizer = AACTokenizer.from_txt_state(config.tokenizer_state)
+
+        preprocessor = CoNeTTEPreprocessor(verbose=config.verbose)
         model = CoNeTTEPLM(
             task_mode=config.task_mode,
             task_names=config.task_names,
@@ -495,18 +357,24 @@ class CoNeTTEModel(PreTrainedModel):
                 )
 
     def state_dict(self) -> dict[str, Tensor]:
-        state_dict = super().state_dict()
-        tensor_state_dict = {
-            k: v for k, v in state_dict.items() if isinstance(v, Tensor)
+        states = super().state_dict()
+        tensor_states = {k: v for k, v in states.items() if isinstance(v, Tensor)}
+        non_tensor_states = {
+            k: v for k, v in states.items() if not isinstance(v, Tensor)
         }
-        extra_state = {k: v for k, v in state_dict.items() if not isinstance(v, Tensor)}
-        del state_dict
-        if len(extra_state) > 0:
-            extra_state = pickle.dumps(extra_state)
-            tensor_state_dict["_extra_state_"] = torch.frombuffer(
-                extra_state, dtype=torch.uint8
+        del states
+
+        if len(non_tensor_states) > 0:
+            pylog.debug(
+                f"Storing into bytes values {tuple(non_tensor_states.keys())}..."
             )
-        return tensor_state_dict
+            non_tensor_states = pickle.dumps(non_tensor_states)
+            non_tensor_states = torch.frombuffer(non_tensor_states, dtype=torch.uint8)
+            tensor_states["_extra_state_"] = non_tensor_states
+
+        # Enforce contiguous tensors
+        tensor_states = {k: v.contiguous() for k, v in tensor_states.items()}
+        return tensor_states
 
     def forward(
         self,
@@ -533,10 +401,10 @@ class CoNeTTEModel(PreTrainedModel):
 
         # Add task information to batch
         bsize = len(batch["audio"])
-        if isinstance(task, str):
-            task = [task] * bsize
-        elif task is None:
+        if task is None:
             task = [self.default_task] * bsize
+        elif isinstance(task, str):
+            task = [task] * bsize
         elif len(task) != bsize:
             raise ValueError(
                 f"Invalid number of tasks with input. (found {len(task)} tasks but {bsize} elements)"
@@ -556,14 +424,13 @@ class CoNeTTEModel(PreTrainedModel):
                 task_i = self.default_task
             task_i = task_i.split("_")
             dataset_lst[i] = task_i[0]
-
             if len(task_i) == 2:
                 source_lst[i] = task_i[1]
 
         batch["dataset"] = dataset_lst
         batch["source"] = source_lst
 
-        # Internal model forward
+        # Call model forward
         kwds = dict(
             beam_size=beam_size,
             min_pred_size=min_pred_size,
@@ -614,7 +481,10 @@ def conette(
     return model  # type: ignore
 
 
-def setup() -> None:
+def setup(offline: bool = False, verbose: int = 0) -> None:
+    if offline:
+        return None
+
     # Download spaCy model for AACTokenizer
     for model_name in ("en_core_web_sm",):
         command = f"{sys.executable} -m spacy download {model_name}".split(" ")
@@ -622,7 +492,8 @@ def setup() -> None:
             subprocess.check_call(
                 command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
             )
-            pylog.info(f"Model '{model_name}' for spacy downloaded.")
+            if verbose >= 1:
+                pylog.info(f"Model '{model_name}' for spacy downloaded.")
         except (CalledProcessError, PermissionError) as err:  # type: ignore
             pylog.error(
                 f"Cannot download spaCy model '{model_name}' for tokenizer. (command '{command}' with error={err})"
