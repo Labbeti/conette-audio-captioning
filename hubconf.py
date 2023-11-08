@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from conette.nn.huggingface import conette
+from conette import load_conette
 
 
 __all__ = [
-    "conette",
+    "load_conette",
 ]

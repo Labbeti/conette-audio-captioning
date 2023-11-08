@@ -13,8 +13,36 @@ __status__ = "Development"
 __version__ = "0.1.0"
 
 
-from conette.nn.huggingface import (  # noqa: F401
-    CoNeTTEConfig,
-    CoNeTTEModel,
-    get_sample_path,
-)
+from pathlib import Path
+from typing import Any, Optional
+
+from conette.huggingface.config import CoNeTTEConfig  # noqa: F401
+from conette.huggingface.model import CoNeTTEModel  # noqa: F401
+
+
+def load_conette(
+    pretrained_model_name_or_path: str = "Labbeti/conette",
+    config_kwds: Optional[dict[str, Any]] = None,
+    model_kwds: Optional[dict[str, Any]] = None,
+) -> CoNeTTEModel:
+    """Create pretrained CoNeTTEModel."""
+    if config_kwds is None:
+        config_kwds = {}
+    if model_kwds is None:
+        model_kwds = {}
+
+    config = CoNeTTEConfig.from_pretrained(
+        pretrained_model_name_or_path,
+        **config_kwds,
+    )
+    model = CoNeTTEModel.from_pretrained(
+        pretrained_model_name_or_path,
+        config=config,
+        **model_kwds,
+    )
+    return model  # type: ignore
+
+
+def get_sample_path() -> str:
+    path = Path(__file__).parent.parent.parent.joinpath("data", "sample.wav")
+    return str(path)
