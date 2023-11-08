@@ -32,7 +32,8 @@ dependencies = [
     "pyyaml",
     "nltk",
     "spacy",
-    "transformers",
+    "transformers>=4.35.0",
+    "omegaconf",
 ]
 
 [project.urls]
