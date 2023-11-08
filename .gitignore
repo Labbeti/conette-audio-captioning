@@ -1,3 +1,5 @@
 # Directories
 __pycache__/
 *.egg-info/
+Labbeti/conette/
+tmp/
