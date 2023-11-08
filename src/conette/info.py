@@ -12,6 +12,8 @@ import yaml
 
 import conette
 
+from conette.nn.huggingface import get_sample_path
+
 
 def get_package_repository_path() -> str:
     """Return the absolute path where the source code of this package is installed."""
@@ -27,6 +29,7 @@ def get_install_info() -> dict[str, str]:
         "torch": str(torch.__version__),
         "lightning": pytorch_lightning.__version__,  # type: ignore
         "package_path": get_package_repository_path(),
+        "sample_path": get_sample_path(),
     }
 
 
