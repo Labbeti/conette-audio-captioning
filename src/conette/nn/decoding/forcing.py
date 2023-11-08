@@ -26,7 +26,7 @@ def teacher_forcing(
 ) -> Tensor:
     """Compute logits using previous references tokens.
 
-    :param decoder: TODO
+    :param decoder: The decoder part of the model.
     :param pad_id: Padding token id.
     :param bos_id: Begin-of-Sentence token id.
     :param eos_id: End-of-Sentence token id.

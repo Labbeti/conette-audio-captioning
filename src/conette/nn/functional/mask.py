@@ -347,11 +347,11 @@ def tensor_to_tensors_list(
     You must provide a value for one of pad_value, end_value non_pad_mask or lengths.
     If multiple values are provided, only one will be used and the priority order is [pad_value, end_value non_pad_mask, lengths].
 
-    :param tensor: (N, *)
-    :param pad_value: TODO
-    :param end_value: TODO
-    :param non_pad_mask: TODO
-    :param lengths: TODO
+    :param tensor: A tensor of values. If end_value is given instead of pad_value, the number of dims must be <= 2.
+    :param pad_value: The pad value used in tensor. defaults to None.
+    :param end_value: The end value used in tensor. defaults to None.
+    :param non_pad_mask: Non-adding mask used in tensor. defaults to None.
+    :param lengths: Lengths of used in tensor. defaults to None.
     :returns: A list of N tensors of shape (*)
     """
 

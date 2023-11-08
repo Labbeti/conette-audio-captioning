@@ -85,7 +85,6 @@ def generate(
     del bos_id
 
     bod_ids = repeat_interleave_nd(bos_ids, beam_size)
-    # TODO: check if nothing is broken here
 
     # frame_embs: (bsize*beam_size, frame_emb_size, n_frames) -> (n_frames, bsize*beam_size, frame_emb_size)
     frame_embs = frame_embs.permute(2, 0, 1)

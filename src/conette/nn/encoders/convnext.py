@@ -271,8 +271,6 @@ class ConvNeXt(nn.Module):
             input_lens = input_shapes[:, input_time_dim]
             reduction_factor = input_.shape[input_time_dim] // frame_embs.shape[-1]
 
-            # TODO : keep ?
-            # frame_embs_lens = input_lens.div(reduction_factor, rounding_mode="trunc")
             frame_embs_lens = input_lens.div(reduction_factor).round().int()
 
             output_dict |= {

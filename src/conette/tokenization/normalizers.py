@@ -144,7 +144,6 @@ class CleanPunctuation(Replace):
 
 class CleanSpacesBeforePunctuation(Replace):
     def __init__(self) -> None:
-        # pattern = r'\s+([,.!?;:"\'](?:\s|$))'  # TODO: rm?
         pattern = r'\s+([,.!?;:"\'])'
         super().__init__(pattern, r"\1")
 
