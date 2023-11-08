@@ -31,6 +31,14 @@ def _str_to_opt_str(s: str) -> Optional[str]:
         return s
 
 
+def _str_to_opt_int(s: str) -> Optional[int]:
+    s = str(s)
+    if s.lower() == "none":
+        return None
+    else:
+        return int(s)
+
+
 def _setup_logging(pkg_name: str, verbose: int) -> None:
     format_ = "[%(asctime)s][%(name)s][%(levelname)s] - %(message)s"
     handler = logging.StreamHandler(sys.stdout)
