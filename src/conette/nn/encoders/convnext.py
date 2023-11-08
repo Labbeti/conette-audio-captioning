@@ -213,16 +213,13 @@ class ConvNeXt(nn.Module):
 
     def forward_features(self, x: Tensor):
         for i in range(4):
-            # print(x.size())
             x = self.downsample_layers[i](x)
-            # print(x.size())
             x = self.stages[i](x)
 
         x = torch.mean(x, dim=3)
         (x1, _) = torch.max(x, dim=2)
         x2 = torch.mean(x, dim=2)
         x = x1 + x2
-        # print(x.size())
 
         x = self.norm(x)  # global average+max pooling, (N, C, H, W) -> (N, C)
         return x
