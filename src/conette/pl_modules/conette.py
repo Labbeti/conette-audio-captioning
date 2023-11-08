@@ -57,7 +57,7 @@ class CoNeTTEPLM(AACLightningModule):
         # Decoder params
         min_pred_size: int = 3,
         max_pred_size: Optional[int] = 20,
-        beam_size: int = 8,
+        beam_size: int = 3,
         nhead: int = 8,
         d_model: int = 256,
         num_decoder_layers: int = 6,
