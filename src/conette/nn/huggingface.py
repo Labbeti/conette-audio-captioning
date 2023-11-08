@@ -446,6 +446,10 @@ class CoNeTTEModel(PreTrainedModel):
     def default_task(self) -> str:
         return next(iter(self.config.task_names))
 
+    @property
+    def tasks(self) -> list[str]:
+        return list(self.config.task_names)
+
     def eval_and_detach(self) -> None:
         self.eval()
         for p in self.parameters():
