@@ -12,7 +12,7 @@ import yaml
 
 import conette
 
-from conette.nn.huggingface import get_sample_path
+from conette import get_sample_path
 
 
 def get_package_repository_path() -> str:
