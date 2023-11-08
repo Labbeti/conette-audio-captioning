@@ -25,12 +25,14 @@ dynamic = ["version"]
 dependencies = [
     "setuptools",
     "torch>=1.10",
+    "torchaudio",
     "torchlibrosa",
     "pytorch-lightning>=1.7,<2.0",
     "tensorboard",
     "pyyaml",
     "nltk",
     "spacy",
+    "transformers",
 ]
 
 [project.urls]
@@ -39,6 +41,7 @@ Changelog = "https://github.com/Labbeti/conette-audio-captioning/blob/main/CHANG
 
 [project.scripts]
 conette-info = "conette.info:print_install_info"
+conette-predict = "conette.predict:main_predict"
 
 [project.optional-dependencies]
 dev = [
@@ -64,7 +67,6 @@ dev = [
     "audiomentations",
     "bert-score",
     "torch-optimizer",
-    "torchlibrosa",
     "torchopenl3",
     "hydra-optuna-sweeper",
     "hydra-colorlog",
