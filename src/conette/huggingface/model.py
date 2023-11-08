@@ -2,247 +2,26 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import os
 import subprocess
 import sys
 
-from pathlib import Path
 from subprocess import CalledProcessError
-from typing import Any, Iterable, Optional, TypeGuard, Union
+from typing import Any, Iterable, Optional, Union
 
 import pickle
 import torch
-import torchaudio
 
-from torch import Size, Tensor, nn
-from torchaudio.functional import resample
-from transformers import PretrainedConfig, PreTrainedModel
+from torch import Size, Tensor
+from transformers import PreTrainedModel
 
-from conette.nn.encoders.convnext import convnext_tiny
+from conette.huggingface.config import CoNeTTEConfig
+from conette.huggingface.preprocessor import CoNeTTEPreprocessor
 from conette.nn.functional.get import get_device
-from conette.nn.functional.pad import pad_and_stack
 from conette.pl_modules.conette import CoNeTTEPLM
 from conette.tokenization.aac_tokenizer import AACTokenizer
-from conette.utils.collections import unzip, all_eq
 
 
 pylog = logging.getLogger(__name__)
-
-
-def _is_iter_str(x: Any) -> TypeGuard[Iterable[str]]:
-    return isinstance(x, Iterable) and all(isinstance(xi, str) for xi in x)
-
-
-def _is_list_tensor(x: Any) -> TypeGuard[list[Tensor]]:
-    return isinstance(x, list) and all(isinstance(xi, Tensor) for xi in x)
-
-
-def _is_iter_tensor(x: Any) -> TypeGuard[Iterable[Tensor]]:
-    return isinstance(x, Iterable) and all(isinstance(xi, Tensor) for xi in x)
-
-
-class CoNeTTEPreprocessor(nn.Module):
-    def __init__(self, verbose: int = 0) -> None:
-        encoder = convnext_tiny(
-            pretrained=False,
-            strict=False,
-            drop_path_rate=0.0,
-            after_stem_dim=[252, 56],
-            use_speed_perturb=False,
-            waveform_input=True,
-            use_specaug=False,
-            return_clip_outputs=True,
-            return_frame_outputs=True,
-        )
-        super().__init__()
-        self.encoder = encoder
-        self.verbose = verbose
-
-    @property
-    def device(self) -> torch.device:
-        return next(iter(self.parameters())).device
-
-    @property
-    def target_sr(self) -> int:
-        return 32_000  # Hz
-
-    @property
-    def feat_size(self) -> int:
-        return 768
-
-    def forward(
-        self,
-        x: Union[Tensor, str, Iterable[str], Iterable[Tensor]],
-        sr: Union[None, int, Iterable[int]] = None,
-        x_shapes: Union[Tensor, None, list[Size]] = None,
-    ) -> dict[str, Any]:
-        x, x_shapes = self._load_resample(x, sr, x_shapes)
-        outs = self.encoder(x, x_shapes)
-        # outs["frame_embs"]: (bsize, feat_size, n_frames=31)
-        # outs["frame_embs_lens"]: (bsize,)
-
-        frame_embs = outs["frame_embs"]
-        frame_embs_lens = outs["frame_embs_lens"]
-
-        # Transpose (bsize, feat_size, time) -> (bsize, time, features=768)
-        frame_embs = frame_embs.transpose(1, 2)
-        audio_shape = torch.as_tensor(
-            [[self.feat_size, len_i] for len_i in frame_embs_lens], device=self.device
-        )
-        del frame_embs_lens
-
-        batch = {"audio": frame_embs, "audio_shape": audio_shape}
-        return batch
-
-    def _load(self, path: str) -> tuple[Tensor, int]:
-        return torchaudio.load(path)  # type: ignore
-
-    def _load_resample(
-        self,
-        x: Union[Tensor, str, Iterable[str], Iterable[Tensor]],
-        sr: Union[None, int, Iterable[int]] = None,
-        x_shapes: Union[Tensor, None, list[Size]] = None,
-    ) -> tuple[Tensor, Tensor]:
-        # LOAD
-        if _is_iter_str(x):
-            if isinstance(x, str):
-                x = [x]
-            gen = (self._load(xi) for xi in x)
-            x, sr = unzip(gen)
-
-        else:
-            if isinstance(x, Tensor):
-                # expected (n_time,), (n_channel, n_time) or (bsize, n_channels, n_time)
-                if x.ndim == 1:
-                    x = x.unsqueeze(dim=0).unsqueeze(dim=1)
-                elif x.ndim == 2:
-                    x = x.unsqueeze(dim=0)
-                elif x.ndim == 3:
-                    pass
-                else:
-                    raise ValueError(f"Invalid argument shape {x.shape=}.")
-            else:
-                x = list(x)  # type: ignore
-
-            if isinstance(sr, int):
-                sr = [sr]
-            elif sr is None:
-                sr = [self.target_sr]
-            else:
-                sr = list(sr)
-
-        assert _is_list_tensor(x) or isinstance(x, Tensor), f"{type(x)=}"
-
-        if len(sr) == 1 and len(x) != len(sr):
-            sr = sr * len(x)
-
-        if self.verbose >= 2:
-            pylog.debug(f"Found {sr=}.")
-
-        assert len(x) == len(sr) and len(x) > 0
-        assert _is_iter_tensor(x) or isinstance(x, Tensor)
-
-        # MOVE TO DEVICE
-        if isinstance(x, Tensor):
-            x = x.to(device=self.device)
-        elif _is_iter_tensor(x):
-            x = [xi.to(device=self.device) for xi in x]
-
-        # RESAMPLE + MEAN
-        if any(sri != self.target_sr for sri in sr):
-            if x_shapes is not None:
-                raise ValueError(f"Invalid argument {x_shapes=}.")
-
-            if all_eq(sr) and isinstance(x, Tensor):
-                x = resample(x, sr[0], self.target_sr)
-            else:
-                x = [resample(xi, sri, self.target_sr) for xi, sri in zip(x, sr)]
-
-        if isinstance(x, Tensor):
-            x = x.mean(dim=1)
-        else:
-            x = [xi.mean(dim=0) for xi in x]
-
-        # SHAPES + STACK
-        if x_shapes is None:
-            x_shapes = [xi.shape for xi in x]
-        x_shapes = torch.as_tensor(x_shapes, device=self.device)
-        x = pad_and_stack(x)
-
-        return x, x_shapes
-
-
-class CoNeTTEConfig(PretrainedConfig):
-    def __init__(
-        self,
-        task_mode: str = "ds_src",
-        task_names: Iterable[str] = (
-            "clotho",
-            "audiocaps",
-            "macs",
-            "wavcaps_audioset_sl",
-            "wavcaps_bbc_sound_effects",
-            "wavcaps_freesound",
-            "wavcaps_soundbible",
-        ),
-        gen_test_cands: str = "generate",
-        label_smoothing: float = 0.2,
-        gen_val_cands: str = "generate",
-        mixup_alpha: float = 0.4,
-        proj_name: str = "lin768",
-        min_pred_size: int = 3,
-        max_pred_size: int = 20,
-        beam_size: int = 3,
-        nhead: int = 8,
-        d_model: int = 256,
-        num_decoder_layers: int = 6,
-        decoder_dropout_p: float = 0.2,
-        dim_feedforward: int = 2048,
-        acti_name: str = "gelu",
-        optim_name: str = "AdamW",
-        lr: float = 5e-4,
-        weight_decay: float = 2.0,
-        betas: tuple[float, float] = (0.9, 0.999),
-        eps: float = 1e-8,
-        use_custom_wd: bool = True,
-        sched_name: str = "cos_decay",
-        sched_n_steps: int = 400,
-        sched_interval: str = "epoch",
-        sched_freq: int = 1,
-        verbose: int = 0,
-        tokenizer_state: Optional[dict[str, Any]] = None,
-        **kwargs,
-    ) -> None:
-        betas = list(betas)  # type: ignore
-        super().__init__()
-        self.task_mode = task_mode
-        self.task_names = task_names
-        self.gen_test_cands = gen_test_cands
-        self.label_smoothing = label_smoothing
-        self.gen_val_cands = gen_val_cands
-        self.mixup_alpha = mixup_alpha
-        self.proj_name = proj_name
-        self.min_pred_size = min_pred_size
-        self.max_pred_size = max_pred_size
-        self.beam_size = beam_size
-        self.nhead = nhead
-        self.d_model = d_model
-        self.num_decoder_layers = num_decoder_layers
-        self.decoder_dropout_p = decoder_dropout_p
-        self.dim_feedforward = dim_feedforward
-        self.acti_name = acti_name
-        self.optim_name = optim_name
-        self.lr = lr
-        self.weight_decay = weight_decay
-        self.betas = betas
-        self.eps = eps
-        self.use_custom_wd = use_custom_wd
-        self.sched_name = sched_name
-        self.sched_n_steps = sched_n_steps
-        self.sched_interval = sched_interval
-        self.sched_freq = sched_freq
-        self.verbose = verbose
-        self.tokenizer_state = tokenizer_state
 
 
 class CoNeTTEModel(PreTrainedModel):
@@ -252,7 +31,7 @@ class CoNeTTEModel(PreTrainedModel):
         device: Union[str, torch.device, None] = "auto",
         inference: bool = True,
     ) -> None:
-        setup()
+        _setup()
 
         if config.tokenizer_state is None:
             tokenizer = AACTokenizer()
@@ -464,24 +243,7 @@ class CoNeTTEModel(PreTrainedModel):
         )
 
 
-def conette(
-    pretrained_model_name_or_path: str = "Labbeti/conette",
-    **kwargs,
-) -> CoNeTTEModel:
-    """Create pretrained CoNeTTEModel."""
-    config = CoNeTTEConfig.from_pretrained(
-        pretrained_model_name_or_path,
-        **kwargs,
-    )
-    model = CoNeTTEModel.from_pretrained(
-        pretrained_model_name_or_path,
-        config=config,
-        **kwargs,
-    )
-    return model  # type: ignore
-
-
-def setup(offline: bool = False, verbose: int = 0) -> None:
+def _setup(offline: bool = False, verbose: int = 0) -> None:
     if offline:
         return None
 
@@ -498,8 +260,3 @@ def setup(offline: bool = False, verbose: int = 0) -> None:
             pylog.error(
                 f"Cannot download spaCy model '{model_name}' for tokenizer. (command '{command}' with error={err})"
             )
-
-
-def get_sample_path() -> str:
-    path = Path(__file__).parent.parent.parent.parent.joinpath("data", "sample.wav")
-    return str(path)
