@@ -6,6 +6,7 @@ import logging
 import subprocess
 import sys
 
+from pathlib import Path
 from subprocess import CalledProcessError
 from typing import Any, Iterable, Optional, TypeGuard, Union
 
@@ -622,3 +623,8 @@ def setup() -> None:
             pylog.error(
                 f"Cannot download spaCy model '{model_name}' for tokenizer. (command '{command}' with error={err})"
             )
+
+
+def get_sample_path() -> str:
+    path = Path(__file__).parent.parent.parent.parent.joinpath("data", "sample.wav")
+    return str(path)

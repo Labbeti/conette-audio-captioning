@@ -13,4 +13,8 @@ __status__ = "Development"
 __version__ = "0.1.0"
 
 
-from conette.huggingface import CoNeTTEConfig, CoNeTTEModel  # noqa: F401
+from conette.nn.huggingface import (  # noqa: F401
+    CoNeTTEConfig,
+    CoNeTTEModel,
+    get_sample_path,
+)
