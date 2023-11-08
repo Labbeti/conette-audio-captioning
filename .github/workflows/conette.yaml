@@ -32,14 +32,16 @@ jobs:
 
     steps:
     # --- INSTALLATIONS ---  
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
         cache: 'pip'
+
+    - name: Install soundfile
+      run: |
+        # For soundfile dep
+        sudo apt-get install libsndfile1
 
     - name: Install soundfile
       run: |
