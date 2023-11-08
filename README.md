@@ -4,7 +4,8 @@ This model generate a short textual description of any audio file.
 
 ## Installation
 ```bash
-pip install conette
+python -m pip install conette
+python -m spacy download en_core_web_sm
 ```
 
 ## Usage

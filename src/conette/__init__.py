@@ -13,8 +13,4 @@ __status__ = "Development"
 __version__ = "0.1.0"
 
 
-from aac.nn.conette_hf import (  # noqa: F401
-    CoNeTTEConfig,
-    CoNeTTEModel,
-    conette,
-)
+from conette.huggingface import CoNeTTEConfig, CoNeTTEModel  # noqa: F401
