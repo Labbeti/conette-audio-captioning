@@ -50,7 +50,7 @@ jobs:
 
     - name: Install local packages
       run: |
-        python -m pip install conette
+        python -m pip install -e .
 
     # --- TESTS ---      
     - name: Print install info
