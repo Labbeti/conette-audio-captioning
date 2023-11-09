@@ -2,6 +2,6 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.0] UNRELEASED
+## [0.1.0] 2023-11-09
 ### Added
 - First version of the conette package to load CoNeTTE model.
