@@ -74,8 +74,8 @@ conette-predict --audio "/your/path/to/audio.wav"
 This model checkpoint has been trained for the Clotho dataset, but it can also reach a good performance on AudioCaps with the "audiocaps" task.
 
 ## Limitations
-- The model expected audio sampled at 32 kHz. The model automatically resample up or down the input audio files. However, it might give worse results, especially when using audio with lower sampling rates.
-- The model has been trained on audio lasting from 1 to 30 seconds. It can handle longer audio files, but it might require more memory and give worse results.
+- The model expected audio sampled at **32 kHz**. The model automatically resample up or down the input audio files. However, it might give worse results, especially when using audio with lower sampling rates.
+- The model has been trained on audio lasting from **1 to 30 seconds**. It can handle longer audio files, but it might require more memory and give worse results.
 
 ## Citation
 The preprint version of the paper describing CoNeTTE is available on arxiv: https://arxiv.org/pdf/2309.00454.pdf
@@ -96,7 +96,7 @@ The preprint version of the paper describing CoNeTTE is available on arxiv: http
 ## Additional information
 - CoNeTTE stands for **Co**nv**Ne**Xt-**T**ransformer with **T**ask **E**mbedding.
 - Model weights are available on HuggingFace: https://huggingface.co/Labbeti/conette
-- The encoder part of the architecture is based on a ConvNeXt model for audio classification, available here: https://huggingface.co/topel/ConvNeXt-Tiny-AT. More precisely, the encoder weights used are named "convnext_tiny_465mAP_BL_AC_70kit.pth", available on Zenodo: https://zenodo.org/record/8020843.
+- The encoder part of the architecture is based on a ConvNeXt model for audio classification, available here: https://zenodo.org/record/8020843 under the filename "convnext_tiny_465mAP_BL_AC_70kit.pth".
 
 ## Contact
 Maintainer:
