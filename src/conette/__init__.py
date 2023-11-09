@@ -25,7 +25,7 @@ def conette(
     config_kwds: Optional[dict[str, Any]] = None,
     model_kwds: Optional[dict[str, Any]] = None,
 ) -> CoNeTTEModel:
-    """Create pretrained CoNeTTEModel."""
+    """Create pretrained CoNeTTEModel for inference."""
     if config_kwds is None:
         config_kwds = {}
     if model_kwds is None:
@@ -48,5 +48,6 @@ def conette(
 
 
 def get_sample_path() -> str:
+    """Returns audio sample absolute path."""
     path = Path(__file__).parent.joinpath("data", "sample.wav")
     return str(path)

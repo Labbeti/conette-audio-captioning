@@ -18,6 +18,7 @@ pylog = logging.getLogger(__name__)
 
 
 def get_predict_args() -> Namespace:
+    """Return main_predict arguments."""
     parser = ArgumentParser(
         description="Download models and external code to evaluate captions."
     )
@@ -77,6 +78,7 @@ def get_predict_args() -> Namespace:
 
 
 def main_predict() -> None:
+    """Main entrypoint for CoNeTTE predict."""
     args = get_predict_args()
     _setup_logging("conette", verbose=args.verbose, set_format=False)
     seed_everything(args.seed)
