@@ -1,6 +1,6 @@
-# CoNeTTE (ConvNext-Transformer with Task Embedding) for Automated Audio Captioning
+# CoNeTTE model source code
 
-This model generate a short textual description of any audio file.
+CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file. It has been developped by me ([Étienne Labbé](https://labbeti.github.io/)) during my PhD.
 
 ## Installation
 ```bash
@@ -51,10 +51,10 @@ print(candidate)
 
 ## Performance
 
-| Test dataset | SPIDEr (%) | SPIDEr-FL (%) | FENSE (%) |
-| ------------- | ------------- | ------------- | ------------- |
-| AudioCaps | 44.14 | 43.98 | 60.81 |
-| Clotho | 30.97 | 30.87 | 51.72 |
+| Test data | SPIDEr (%) | SPIDEr-FL (%) | FENSE (%) | Vocab | Outputs | Scores |
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+| AC-test | 44.14 | 43.98 | 60.81 | 309 | [:clipboard:](results/conette/outputs_audiocaps_test.csv) | [:chart_with_upwards_trend:](results/conette/scores_audiocaps_test.yaml) |
+| CL-eval | 30.97 | 30.87 | 51.72 | 636 | [:clipboard:](results/conette/outputs_clotho_eval.csv) | [:chart_with_upwards_trend:](results/conette/scores_clotho_eval.yaml) |
 
 This model checkpoint has been trained for the Clotho dataset, but it can also reach a good performance on AudioCaps with the "audiocaps" task.
 
