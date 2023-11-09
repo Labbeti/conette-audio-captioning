@@ -49,6 +49,7 @@ dev = [
     "pytest",
     "flake8",
     "black",
+    "ipykernel",
 ]
 
 [tool.setuptools.packages.find]
