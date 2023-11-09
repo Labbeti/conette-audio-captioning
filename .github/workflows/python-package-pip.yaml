@@ -58,4 +58,4 @@ jobs:
 
     - name: Test CoNeTTE predict
       run: |
-        conette-predict --audio data/sample.wav
+        conette-predict --audio src/conette/data/sample.wav
