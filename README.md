@@ -23,7 +23,7 @@ CoNeTTE is an audio captioning system, which generate a short textual descriptio
 
 <!-- </div> -->
 
-CoNeTTE stands for ConvNeXt-Transformer model with Task Embedding, and the architecture and training is explained in the corresponding [paper](https://arxiv.org/pdf/2309.00454.pdf). CoNeTTE has been developped by me ([Étienne Labbé](https://labbeti.github.io/)) during my PhD. 
+The architecture and training are explained in the corresponding [paper](https://arxiv.org/pdf/2309.00454.pdf). CoNeTTE has been developped by me ([Étienne Labbé](https://labbeti.github.io/)) during my PhD. 
 
 ## Installation
 ```bash
@@ -88,12 +88,13 @@ conette-predict --audio "/your/path/to/audio.wav"
 This model checkpoint has been trained for the Clotho dataset, but it can also reach a good performance on AudioCaps with the "audiocaps" task.
 
 ## Limitations
-The model has been trained on audio sampled at 32 kHz and lasting from 1 to 30 seconds. It can handle longer audio files, but it might give worse results.
+- The model expected audio sampled at 32 kHz. The model automatically resample up or down the input audio files. However, it might give worse results, especially when using audio with lower sampling rates.
+- The model has been trained on audio lasting from 1 to 30 seconds. It can handle longer audio files, but it might require more memory and give worse results.
 
 ## Citation
 The preprint version of the paper describing CoNeTTE is available on arxiv: https://arxiv.org/pdf/2309.00454.pdf
 
-```
+```bibtex
 @misc{labbé2023conette,
 	title        = {CoNeTTE: An efficient Audio Captioning system leveraging multiple datasets with Task Embedding},
 	author       = {Étienne Labbé and Thomas Pellegrini and Julien Pinquier},
@@ -107,7 +108,7 @@ The preprint version of the paper describing CoNeTTE is available on arxiv: http
 ```
 
 ## Additional information
-
+- CoNeTTE stands for **Co**nv**Ne**Xt-**T**ransformer with **T**ask **E**mbedding.
 - Model weights are available on HuggingFace: https://huggingface.co/Labbeti/conette
 - The encoder part of the architecture is based on a ConvNeXt model for audio classification, available here: https://huggingface.co/topel/ConvNeXt-Tiny-AT. More precisely, the encoder weights used are named "convnext_tiny_465mAP_BL_AC_70kit.pth", available on Zenodo: https://zenodo.org/record/8020843.
 
