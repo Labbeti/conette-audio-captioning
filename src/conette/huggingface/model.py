@@ -181,30 +181,31 @@ class CoNeTTEModel(PreTrainedModel):
         # Add task information to batch
         bsize = len(batch["audio"])
         if task is None:
-            task = [self.default_task] * bsize
+            tasks = [self.default_task] * bsize
         elif isinstance(task, str):
-            task = [task] * bsize
+            tasks = [task] * bsize
         elif len(task) != bsize:
             raise ValueError(
                 f"Invalid number of tasks with input. (found {len(task)} tasks but {bsize} elements)"
             )
+        else:
+            tasks = task
+        del task
 
-        for task_i in task:
-            if task_i not in self.config.task_names:
+        for task in tasks:
+            if task not in self.config.task_names:
                 raise ValueError(
-                    f"Invalid argument {task=}. (task {task_i} is not in {self.config.task_names})"
+                    f"Invalid argument {tasks=}. (task {task} is not in {self.config.task_names})"
                 )
 
         dataset_lst = [self.default_task] * bsize
         source_lst: list[Optional[str]] = [None] * bsize
 
-        for i, task_i in enumerate(task):
-            if task is None:
-                task_i = self.default_task
-            task_i = task_i.split("_")
-            dataset_lst[i] = task_i[0]
-            if len(task_i) == 2:
-                source_lst[i] = task_i[1]
+        for i, task in enumerate(tasks):
+            task = task.split("_")
+            dataset_lst[i] = task[0]
+            if len(task) == 2:
+                source_lst[i] = task[1]
 
         batch["dataset"] = dataset_lst
         batch["source"] = source_lst
@@ -217,6 +218,7 @@ class CoNeTTEModel(PreTrainedModel):
         )
         kwds = {k: v for k, v in kwds.items() if v is not None}
         outs = self.model(batch, **kwds)
+        outs["tasks"] = tasks
 
         return outs
 

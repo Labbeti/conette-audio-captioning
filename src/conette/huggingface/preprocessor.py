@@ -13,7 +13,7 @@ from torchaudio.functional import resample
 
 from conette.nn.encoders.convnext import convnext_tiny
 from conette.nn.functional.pad import pad_and_stack
-from conette.utils.collections import unzip, all_eq
+from conette.utils.collections import all_eq, unzip
 
 
 pylog = logging.getLogger(__name__)

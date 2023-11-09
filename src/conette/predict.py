@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import csv
 import logging
 import os.path as osp
 
 from argparse import ArgumentParser, Namespace
+from typing import Any
 
 from pytorch_lightning.utilities.seed import seed_everything
 
@@ -60,6 +62,12 @@ def get_predict_args() -> Namespace:
         default=1234,
     )
     parser.add_argument(
+        "--csv_export",
+        type=_str_to_opt_str,
+        help="Path to CSV output file.",
+        default=None,
+    )
+    parser.add_argument(
         "--verbose",
         type=int,
         help="Verbose level.",
@@ -99,11 +107,31 @@ def main_predict() -> None:
         pylog.debug(f"Enc checksum: '{enc_csum}'")
         pylog.debug(f"Model checksum: '{model_csum}'")
 
-    outputs = hf_model(fpaths, task=tasks)
-    cands = outputs["cands"]
+    outs = hf_model(fpaths, task=tasks)
 
-    for fpath, task, cand in zip(fpaths, tasks, cands):
-        pylog.info(f"{osp.basename(fpath)} ({task}): {cand}")
+    cands = outs["cands"]
+    tasks = outs["tasks"]
+    fnames = [osp.basename(fpath) for fpath in fpaths]
+
+    results = [
+        {"audio": fname, "task": task, "candidate": cand}
+        for fname, task, cand in zip(fnames, tasks, cands)
+    ]
+
+    pylog.info(f"Results for {len(fpaths)} files:")
+    for result in results:
+        fname = result["audio"]
+        task = result["task"]
+        cand = result["candidate"]
+        pylog.info(f"File '{fname}', Task '{task}': {cand}")
+
+    csv_export = args.csv_export
+    if csv_export is not None:
+        with open(csv_export, "w") as file:
+            fieldnames = ["audio", "task", "candidate"]
+            writer = csv.DictWriter(file, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(results)
 
 
 if __name__ == "__main__":
