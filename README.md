@@ -1,13 +1,15 @@
-<div align="center">
+---
+{{ card_data }}
+---
 
-# CoNeTTE model source
-
-<a href="https://www.python.org/"><img alt="Python" src="https://img.shields.io/badge/-Python 3.10+-blue?style=for-the-badge&logo=python&logoColor=white"></a>
-<a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/-PyTorch 1.10.1+-ee4c2c?style=for-the-badge&logo=pytorch&logoColor=white"></a>
-<a href="https://black.readthedocs.io/en/stable/"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-black.svg?style=for-the-badge&labelColor=gray"></a>
+<a href="https://www.python.org/"><img alt="Python" src="https://img.shields.io/badge/-Python 3.10+-blue?style=for-the-badge&logo=python&logoColor=white"></a><a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/-PyTorch 1.10.1+-ee4c2c?style=for-the-badge&logo=pytorch&logoColor=white"></a><a href="https://black.readthedocs.io/en/stable/"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-black.svg?style=for-the-badge&labelColor=gray"></a>
 <a href="https://github.com/Labbeti/conette-audio-captioning/actions">
     <img alt="Build" src="https://img.shields.io/github/actions/workflow/status/Labbeti/conette-audio-captioning/python-package-pip.yaml?branch=main&style=for-the-badge&logo=github">
 </a>
+
+<div align="center">
+
+# CoNeTTE model source
 <!-- <a href='https://aac-metrics.readthedocs.io/en/stable/?badge=stable'>
     <img src='https://readthedocs.org/projects/aac-metrics/badge/?version=stable&style=for-the-badge' alt='Documentation Status' />
 </a> -->
@@ -76,10 +78,13 @@ conette-predict --audio "/your/path/to/audio.wav"
 
 | Test data | SPIDEr (%) | SPIDEr-FL (%) | FENSE (%) | Vocab | Outputs | Scores |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| AC-test | 44.14 | 43.98 | 60.81 | 309 | [:clipboard:](results/conette/outputs_audiocaps_test.csv) | [:chart_with_upwards_trend:](results/conette/scores_audiocaps_test.yaml) |
-| CL-eval | 30.97 | 30.87 | 51.72 | 636 | [:clipboard:](results/conette/outputs_clotho_eval.csv) | [:chart_with_upwards_trend:](results/conette/scores_clotho_eval.yaml) |
+| AC-test | 44.14 | 43.98 | 60.81 | 309 | [Link](https://github.com/Labbeti/conette-audio-captioning/blob/main/results/conette/outputs_audiocaps_test.csv) | [Link](https://github.com/Labbeti/conette-audio-captioning/blob/main/results/conette/scores_audiocaps_test.yaml) |
+| CL-eval | 30.97 | 30.87 | 51.72 | 636 | [Link](https://github.com/Labbeti/conette-audio-captioning/blob/main/results/conette/outputs_clotho_eval.csv) | [Link](https://github.com/Labbeti/conette-audio-captioning/blob/main/results/conette/scores_clotho_eval.yaml) |
 
 This model checkpoint has been trained for the Clotho dataset, but it can also reach a good performance on AudioCaps with the "audiocaps" task.
+
+## Limitations
+The model has been trained on audio sampled at 32 kHz and lasting from 1 to 30 seconds. It can handle longer audio files, but it might give worse results.
 
 ## Citation
 The preprint version of the paper describing CoNeTTE is available on arxiv: https://arxiv.org/pdf/2309.00454.pdf
