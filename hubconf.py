@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from conette import conette
+dependencies = ["conette"]
+
+
+from conette import conette  # noqa: E402
 
 
 __all__ = [
