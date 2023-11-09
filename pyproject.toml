@@ -1,0 +1,87 @@
+[project]
+name = "conette"
+authors = [
+    {name = "Etienne Labbé (Labbeti)", email = "labbeti.pub@gmail.com"},
+]
+description = "CoNeTTE model for Audio Captioning."
+readme = "README.md"
+requires-python = ">=3.10"
+keywords = ["audio", "deep-learning", "pytorch", "captioning", "audio-captioning"]
+license = {file = "LICENSE"}
+classifiers = [
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+maintainers = [
+    {name = "Etienne Labbé (Labbeti)", email = "labbeti.pub@gmail.com"},
+]
+dynamic = ["version"]
+
+dependencies = [
+    "setuptools",
+    "torch>=1.10",
+    "torchaudio",
+    "torchlibrosa",
+    "pytorch-lightning>=1.7,<2.0",
+    "tensorboard",
+    "pyyaml",
+    "nltk",
+    "spacy",
+    "transformers>=4.35.0",
+    "omegaconf",
+]
+
+[project.urls]
+Repository = "https://github.com/Labbeti/conette-audio-captioning.git"
+Changelog = "https://github.com/Labbeti/conette-audio-captioning/blob/main/CHANGELOG.md"
+
+[project.scripts]
+conette-info = "conette.info:print_install_info"
+conette-predict = "conette.predict:main_predict"
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "flake8",
+    "black",
+    "black",
+    "hydra-core",
+    "h5py",
+    "sentencepiece",
+    "py7zr",
+    "jupyter",
+    "sentence-transformers",
+    "numpy",
+    "scikit-image",
+    "gensim",
+    "click",
+    "pytz",
+    "pyemd",
+    "pydantic>=1.8.2",
+    "matplotlib",
+    "scikit-learn-intelex",
+    "audiomentations",
+    "bert-score",
+    "torch-optimizer",
+    "torchopenl3",
+    "hydra-optuna-sweeper",
+    "hydra-colorlog",
+    "timm",
+    "audiomentations",
+    "language_tool_python",
+    "hydra_colorlog",
+    "aac-datasets~=0.4.1",
+    "aac-metrics~=0.4.6",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]  # list of folders that contain the packages (["."] by default)
+include = ["conette*"]  # package names should match these glob patterns (["*"] by default)
+
+[tool.setuptools.dynamic]
+version = {attr = "conette.__version__"}
