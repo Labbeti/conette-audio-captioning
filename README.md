@@ -1,6 +1,22 @@
-# CoNeTTE model source code
+<div align="center">
 
-CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file. It has been developped by me ([Étienne Labbé](https://labbeti.github.io/)) during my PhD. CoNeTTE stands for ConvNeXt-Transformer model with Task Embedding, and the architecture and training is explained in the corresponding [paper](https://arxiv.org/pdf/2309.00454.pdf).
+# CoNeTTE model source
+
+<a href="https://www.python.org/"><img alt="Python" src="https://img.shields.io/badge/-Python 3.10+-blue?style=for-the-badge&logo=python&logoColor=white"></a>
+<a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/-PyTorch 1.10.1+-ee4c2c?style=for-the-badge&logo=pytorch&logoColor=white"></a>
+<a href="https://black.readthedocs.io/en/stable/"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-black.svg?style=for-the-badge&labelColor=gray"></a>
+<a href="https://github.com/Labbeti/conette-audio-captioning/actions">
+    <img alt="Build" src="https://img.shields.io/github/actions/workflow/status/Labbeti/conette-audio-captioning/python-package-pip.yaml?branch=main&style=for-the-badge&logo=github">
+</a>
+<!-- <a href='https://aac-metrics.readthedocs.io/en/stable/?badge=stable'>
+    <img src='https://readthedocs.org/projects/aac-metrics/badge/?version=stable&style=for-the-badge' alt='Documentation Status' />
+</a> -->
+
+CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file. 
+
+</div>
+
+CoNeTTE has been developped by me ([Étienne Labbé](https://labbeti.github.io/)) during my PhD. CoNeTTE stands for ConvNeXt-Transformer model with Task Embedding, and the architecture and training is explained in the corresponding [paper](https://arxiv.org/pdf/2309.00454.pdf).
 
 ## Installation
 ```bash
