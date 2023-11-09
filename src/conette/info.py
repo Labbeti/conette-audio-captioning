@@ -21,6 +21,7 @@ def get_package_repository_path() -> str:
 
 
 def get_install_info() -> dict[str, str]:
+    """Return local installation and paths."""
     return {
         "conette": conette.__version__,
         "python": f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}",
@@ -34,7 +35,7 @@ def get_install_info() -> dict[str, str]:
 
 
 def print_install_info() -> None:
-    """Show main packages versions."""
+    """Show main packages versions and paths."""
     install_info = get_install_info()
     print(yaml.dump(install_info, sort_keys=False))
 

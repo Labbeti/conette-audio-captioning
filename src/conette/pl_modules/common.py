@@ -35,6 +35,8 @@ class TrainBatch(TypedDict):
     audio: Tensor
     audio_shape: Tensor
     captions: Tensor
+    dataset: str
+    source: Optional[str]
 
 
 class ValBatch(TypedDict):
@@ -42,6 +44,8 @@ class ValBatch(TypedDict):
     audio_shape: Tensor
     mult_captions: Tensor
     mult_references: list[list[str]]
+    dataset: str
+    source: Optional[str]
 
 
 class TestBatch(TypedDict):
@@ -52,6 +56,7 @@ class TestBatch(TypedDict):
     dataset: str
     subset: str
     fname: str
+    source: Optional[str]
 
 
 def count_params(model: nn.Module, only_trainable: bool = False) -> int:

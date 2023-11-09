@@ -32,7 +32,6 @@ pylog = logging.getLogger(__name__)
 
 class AACLightningModule(LightningModule):
     ON_EPOCH_KWARGS: ClassVar[dict[str, Any]] = ON_EPOCH_KWARGS
-    OLD_COMPATIBILITY: bool = True
 
     def __init__(
         self,
@@ -80,28 +79,6 @@ class AACLightningModule(LightningModule):
         state_dict: Mapping[str, Any],
         strict: bool = True,
     ) -> _IncompatibleKeys:
-        replaces = {}
-        if self.OLD_COMPATIBILITY:
-            replaces |= {
-                "train_tokenizer._extra_state": "tokenizer._extra_state",
-                "model.encoder": "encoder",
-                "model.decoder": "decoder",
-                "decoder.tch_decoder.": "decoder.",
-                "decoder.pos_encoder": "decoder.pos_encoding",
-                "decoder.word_embed": "decoder.emb_layer",
-                "decoder.projection_layer": "decoder.classifier",
-            }
-        replaces |= {
-            "tokenizer.": "tokenizers.0.",
-        }
-
-        def apply_replaces(k: str) -> str:
-            for old, new in replaces.items():
-                k = k.replace(old, new)
-            return k
-
-        state_dict = {apply_replaces(k): v for k, v in state_dict.items()}
-
         if not self.is_built():
             all_fit = True
             for name, tokenizer in self.tokenizers.items():

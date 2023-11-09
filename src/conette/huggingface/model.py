@@ -23,6 +23,8 @@ pylog = logging.getLogger(__name__)
 
 
 class CoNeTTEModel(PreTrainedModel):
+    """CoNeTTE PreTrainedModel for inference."""
+
     def __init__(
         self,
         config: CoNeTTEConfig,

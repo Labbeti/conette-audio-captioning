@@ -1,29 +1,15 @@
----
-{{ card_data }}
----
+<div align="center">
 
-<!-- <div align="center"> -->
+# CoNeTTE model for Audio Captioning
 
-# CoNeTTE model source
-
-<!-- [![](<https://img.shields.io/badge/-Python 3.10+-blue?style=for-the-badge&logo=python&logoColor=white>)](https://www.python.org/)
+[![](<https://img.shields.io/badge/-Python 3.10+-blue?style=for-the-badge&logo=python&logoColor=white>)](https://www.python.org/)
 [![](<https://img.shields.io/badge/-PyTorch 1.10.1+-ee4c2c?style=for-the-badge&logo=pytorch&logoColor=white>)](https://pytorch.org/get-started/locally/)
 [![](https://img.shields.io/badge/code%20style-black-black.svg?style=for-the-badge&labelColor=gray)](https://black.readthedocs.io/en/stable/)
-[![](https://img.shields.io/github/actions/workflow/status/Labbeti/conette-audio-captioning/python-package-pip.yaml?branch=main&style=for-the-badge&logo=github)](https://github.com/Labbeti/conette-audio-captioning/actions) -->
+[![](https://img.shields.io/github/actions/workflow/status/Labbeti/conette-audio-captioning/python-package-pip.yaml?branch=main&style=for-the-badge&logo=github)](https://github.com/Labbeti/conette-audio-captioning/actions)
 
-<!-- <a href="https://www.python.org/"><img alt="Python" src="https://img.shields.io/badge/-Python 3.10+-blue?style=for-the-badge&logo=python&logoColor=white"></a>
-<a href="https://pytorch.org/get-started/locally/"><img alt="PyTorch" src="https://img.shields.io/badge/-PyTorch 1.10.1+-ee4c2c?style=for-the-badge&logo=pytorch&logoColor=white"></a>
-<a href="https://black.readthedocs.io/en/stable/"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-black.svg?style=for-the-badge&labelColor=gray"></a>
-<a href="https://github.com/Labbeti/conette-audio-captioning/actions"><img alt="Build" src="https://img.shields.io/github/actions/workflow/status/Labbeti/conette-audio-captioning/python-package-pip.yaml?branch=main&style=for-the-badge&logo=github"></a> -->
-<!-- <a href='https://aac-metrics.readthedocs.io/en/stable/?badge=stable'>
-    <img src='https://readthedocs.org/projects/aac-metrics/badge/?version=stable&style=for-the-badge' alt='Documentation Status' />
-</a> -->
+</div>
 
-CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file. 
-
-<!-- </div> -->
-
-CoNeTTE stands for ConvNeXt-Transformer model with Task Embedding, and the architecture and training is explained in the corresponding [paper](https://arxiv.org/pdf/2309.00454.pdf). CoNeTTE has been developped by me ([Étienne Labbé](https://labbeti.github.io/)) during my PhD. 
+CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file. The architecture and training are explained in the corresponding [paper](https://arxiv.org/pdf/2309.00454.pdf). The model has been developped by me ([Étienne Labbé](https://labbeti.github.io/)) during my PhD. 
 
 ## Installation
 ```bash
@@ -88,12 +74,13 @@ conette-predict --audio "/your/path/to/audio.wav"
 This model checkpoint has been trained for the Clotho dataset, but it can also reach a good performance on AudioCaps with the "audiocaps" task.
 
 ## Limitations
-The model has been trained on audio sampled at 32 kHz and lasting from 1 to 30 seconds. It can handle longer audio files, but it might give worse results.
+- The model expected audio sampled at **32 kHz**. The model automatically resample up or down the input audio files. However, it might give worse results, especially when using audio with lower sampling rates.
+- The model has been trained on audio lasting from **1 to 30 seconds**. It can handle longer audio files, but it might require more memory and give worse results.
 
 ## Citation
 The preprint version of the paper describing CoNeTTE is available on arxiv: https://arxiv.org/pdf/2309.00454.pdf
 
-```
+```bibtex
 @misc{labbé2023conette,
 	title        = {CoNeTTE: An efficient Audio Captioning system leveraging multiple datasets with Task Embedding},
 	author       = {Étienne Labbé and Thomas Pellegrini and Julien Pinquier},
@@ -107,9 +94,9 @@ The preprint version of the paper describing CoNeTTE is available on arxiv: http
 ```
 
 ## Additional information
-
+- CoNeTTE stands for **Co**nv**Ne**Xt-**T**ransformer with **T**ask **E**mbedding.
 - Model weights are available on HuggingFace: https://huggingface.co/Labbeti/conette
-- The encoder part of the architecture is based on a ConvNeXt model for audio classification, available here: https://huggingface.co/topel/ConvNeXt-Tiny-AT. More precisely, the encoder weights used are named "convnext_tiny_465mAP_BL_AC_70kit.pth", available on Zenodo: https://zenodo.org/record/8020843.
+- The encoder part of the architecture is based on a ConvNeXt model for audio classification, available here: https://zenodo.org/record/8020843 under the filename "convnext_tiny_465mAP_BL_AC_70kit.pth".
 
 ## Contact
 Maintainer:

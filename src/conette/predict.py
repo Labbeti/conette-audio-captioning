@@ -18,6 +18,7 @@ pylog = logging.getLogger(__name__)
 
 
 def get_predict_args() -> Namespace:
+    """Return main_predict arguments."""
     parser = ArgumentParser(
         description="Download models and external code to evaluate captions."
     )
@@ -77,6 +78,7 @@ def get_predict_args() -> Namespace:
 
 
 def main_predict() -> None:
+    """Main entrypoint for CoNeTTE predict."""
     args = get_predict_args()
     _setup_logging("conette", verbose=args.verbose, set_format=False)
     seed_everything(args.seed)
@@ -96,7 +98,6 @@ def main_predict() -> None:
         config=config,
         device=args.device,
         token=args.token,
-        use_safetensors=False,
     )
     hf_model.eval_and_detach()
 

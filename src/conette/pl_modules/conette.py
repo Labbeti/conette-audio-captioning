@@ -35,6 +35,8 @@ pylog = logging.getLogger(__name__)
 
 
 class CoNeTTEPLM(AACLightningModule):
+    """CoNeTTE pytorch lightning module class."""
+
     def __init__(
         self,
         task_mode: str = "ds_src",
