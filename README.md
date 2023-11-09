@@ -21,7 +21,7 @@ candidate = outputs["cands"][0]
 print(candidate)
 ```
 
-The model can also accept several audio files at the same time (list[str]), or a list of pre-loaded audio files (list[Tensor]). IN this second case you also need to provide the sampling rate of this files:
+The model can also accept several audio files at the same time (list[str]), or a list of pre-loaded audio files (list[Tensor]). In this second case you also need to provide the sampling rate of this files:
 
 ```py
 import torchaudio
@@ -50,7 +50,8 @@ print(candidate)
 ```
 
 ## Performance
-| Dataset | SPIDEr (%) | SPIDEr-FL (%) | FENSE (%) |
+
+| Test dataset | SPIDEr (%) | SPIDEr-FL (%) | FENSE (%) |
 | ------------- | ------------- | ------------- | ------------- |
 | AudioCaps | 44.14 | 43.98 | 60.81 |
 | Clotho | 30.97 | 30.87 | 51.72 |

@@ -20,8 +20,8 @@ from conette.huggingface.config import CoNeTTEConfig  # noqa: F401
 from conette.huggingface.model import CoNeTTEModel  # noqa: F401
 
 
-def load_conette(
-    pretrained_model_name_or_path: str = "Labbeti/conette",
+def conette(
+    pretrained_model_name_or_path: Optional[str] = "Labbeti/conette",
     config_kwds: Optional[dict[str, Any]] = None,
     model_kwds: Optional[dict[str, Any]] = None,
 ) -> CoNeTTEModel:
@@ -31,15 +31,19 @@ def load_conette(
     if model_kwds is None:
         model_kwds = {}
 
-    config = CoNeTTEConfig.from_pretrained(
-        pretrained_model_name_or_path,
-        **config_kwds,
-    )
-    model = CoNeTTEModel.from_pretrained(
-        pretrained_model_name_or_path,
-        config=config,
-        **model_kwds,
-    )
+    if pretrained_model_name_or_path is None:
+        config = CoNeTTEConfig(**config_kwds)
+        model = CoNeTTEModel(**model_kwds)
+    else:
+        config = CoNeTTEConfig.from_pretrained(
+            pretrained_model_name_or_path,
+            **config_kwds,
+        )
+        model = CoNeTTEModel.from_pretrained(
+            pretrained_model_name_or_path,
+            config=config,
+            **model_kwds,
+        )
     return model  # type: ignore
 
 
