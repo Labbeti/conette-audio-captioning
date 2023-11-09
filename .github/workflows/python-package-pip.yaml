@@ -56,6 +56,10 @@ jobs:
       run: |
         conette-info
 
-    - name: Test CoNeTTE predict
+    - name: Run CoNeTTE predict command line
       run: |
         conette-predict --audio src/conette/data/sample.wav
+
+    - name: Run CoNeTTE unittests
+      run: |
+        python -m pytest -v
