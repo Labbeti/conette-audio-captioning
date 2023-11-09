@@ -2,7 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.1] UNRELEASED
+## [0.1.1] 2023-11-09
+### Added
+- Unittests for hf model.
+
 ### Fixed
 - Fix sample path for PyPI package.
 
