@@ -48,5 +48,5 @@ def conette(
 
 
 def get_sample_path() -> str:
-    path = Path(__file__).parent.parent.parent.joinpath("data", "sample.wav")
+    path = Path(__file__).parent.joinpath("data", "sample.wav")
     return str(path)
