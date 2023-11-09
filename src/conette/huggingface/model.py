@@ -2,10 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import subprocess
-import sys
 
-from subprocess import CalledProcessError
 from typing import Any, Iterable, Optional, Union
 
 import pickle
@@ -16,6 +13,7 @@ from transformers import PreTrainedModel
 
 from conette.huggingface.config import CoNeTTEConfig
 from conette.huggingface.preprocessor import CoNeTTEPreprocessor
+from conette.huggingface.setup import setup_other_models
 from conette.nn.functional.get import get_device
 from conette.pl_modules.conette import CoNeTTEPLM
 from conette.tokenization.aac_tokenizer import AACTokenizer
@@ -31,7 +29,7 @@ class CoNeTTEModel(PreTrainedModel):
         device: Union[str, torch.device, None] = "auto",
         inference: bool = True,
     ) -> None:
-        _setup()
+        setup_other_models()
 
         if config.tokenizer_state is None:
             tokenizer = AACTokenizer()
@@ -243,22 +241,3 @@ class CoNeTTEModel(PreTrainedModel):
             min_pred_size=min_pred_size,
             max_pred_size=max_pred_size,
         )
-
-
-def _setup(offline: bool = False, verbose: int = 0) -> None:
-    if offline:
-        return None
-
-    # Download spaCy model for AACTokenizer
-    for model_name in ("en_core_web_sm",):
-        command = f"{sys.executable} -m spacy download {model_name}".split(" ")
-        try:
-            subprocess.check_call(
-                command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-            )
-            if verbose >= 1:
-                pylog.info(f"Model '{model_name}' for spacy downloaded.")
-        except (CalledProcessError, PermissionError) as err:  # type: ignore
-            pylog.error(
-                f"Cannot download spaCy model '{model_name}' for tokenizer. (command '{command}' with error={err})"
-            )
