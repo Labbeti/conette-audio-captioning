@@ -18,18 +18,19 @@ def setup_other_models(offline: bool = False, verbose: int = 0) -> None:
         return None
 
     # Download spaCy model for AACTokenizer
-    for model_name in ("en_core_web_sm",):
-        command = f"{sys.executable} -m spacy download {model_name}".split(" ")
-        try:
-            subprocess.check_call(
-                command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-            )
-            if verbose >= 1:
-                pylog.info(f"Model '{model_name}' for spacy downloaded.")
-        except (CalledProcessError, PermissionError) as err:  # type: ignore
-            pylog.error(
-                f"Cannot download spaCy model '{model_name}' for tokenizer. (command '{command}' with error={err})"
-            )
+    spacy_model = "en_core_web_sm"
+    cmd = [sys.executable, "-m", "spacy", "download", spacy_model]
+    try:
+        subprocess.check_call(
+            cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+        )
+        if verbose >= 1:
+            pylog.info(f"Model '{spacy_model}' for spacy downloaded.")
+    except (CalledProcessError, PermissionError) as err:  # type: ignore
+        pylog.error(
+            f"Cannot download spaCy model '{spacy_model}' for tokenizer. (command '{cmd}' with error={err})"
+        )
 
     # Download stopwords list for constrained beam search
-    nltk.download("stopwords")
+    nltk_model = "stopwords"
+    nltk.download(nltk_model, quiet=verbose <= 0)
