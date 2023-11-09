@@ -1,6 +1,6 @@
 # CoNeTTE model source code
 
-CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file. It has been developped by me ([Étienne Labbé](https://labbeti.github.io/)) during my PhD.
+CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file. It has been developped by me ([Étienne Labbé](https://labbeti.github.io/)) during my PhD. CoNeTTE stands for ConvNeXt-Transformer model with Task Embedding, and the architecture and training is explained in the corresponding [paper](https://arxiv.org/pdf/2309.00454.pdf).
 
 ## Installation
 ```bash
@@ -8,14 +8,14 @@ python -m pip install conette
 python -m spacy download en_core_web_sm
 ```
 
-## Usage
+## Usage with python
 ```py
 from conette import CoNeTTEConfig, CoNeTTEModel
 
 config = CoNeTTEConfig.from_pretrained("Labbeti/conette")
 model = CoNeTTEModel.from_pretrained("Labbeti/conette", config=config)
 
-path = "/my/path/to/audio.wav"
+path = "/your/path/to/audio.wav"
 outputs = model(path)
 candidate = outputs["cands"][0]
 print(candidate)
@@ -26,8 +26,8 @@ The model can also accept several audio files at the same time (list[str]), or a
 ```py
 import torchaudio
 
-path_1 = "/my/path/to/audio_1.wav"
-path_2 = "/my/path/to/audio_2.wav"
+path_1 = "/your/path/to/audio_1.wav"
+path_2 = "/your/path/to/audio_2.wav"
 
 audio_1, sr_1 = torchaudio.load(path_1)
 audio_2, sr_2 = torchaudio.load(path_2)
@@ -47,6 +47,13 @@ print(candidate)
 outputs = model(path, task="audiocaps")
 candidate = outputs["cands"][0]
 print(candidate)
+```
+
+## Usage with command line
+Simply use the command `conette-predict` with `--audio PATH1 PATH2 ...` option. You can also export results to a CSV file using `--csv_export PATH`.
+
+```bash
+conette-predict --audio "/your/path/to/audio.wav"
 ```
 
 ## Performance
@@ -76,7 +83,9 @@ The preprint version of the paper describing CoNeTTE is available on arxiv: http
 
 ## Additional information
 
-The encoder part of the architecture is based on a ConvNeXt model for audio classification, available here: https://huggingface.co/topel/ConvNeXt-Tiny-AT.
-More precisely, the encoder weights used are named "convnext_tiny_465mAP_BL_AC_70kit.pth", available on Zenodo: https://zenodo.org/record/8020843.
+- Model weights are available on HuggingFace: https://huggingface.co/Labbeti/conette
+- The encoder part of the architecture is based on a ConvNeXt model for audio classification, available here: https://huggingface.co/topel/ConvNeXt-Tiny-AT. More precisely, the encoder weights used are named "convnext_tiny_465mAP_BL_AC_70kit.pth", available on Zenodo: https://zenodo.org/record/8020843.
 
-It was created by [@{{ author }}](https://hf.co/{{author}}).
+## Contact
+Maintainer:
+- Etienne Labbé "Labbeti": labbeti.pub@gmail.com
