@@ -96,7 +96,6 @@ def main_predict() -> None:
         config=config,
         device=args.device,
         token=args.token,
-        use_safetensors=False,
     )
     hf_model.eval_and_detach()
 

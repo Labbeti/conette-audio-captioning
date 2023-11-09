@@ -3,7 +3,7 @@ name = "conette"
 authors = [
     {name = "Etienne Labbé (Labbeti)", email = "labbeti.pub@gmail.com"},
 ]
-description = "CoNeTTE model for Audio Captioning."
+description = "CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file."
 readme = "README.md"
 requires-python = ">=3.10"
 keywords = ["audio", "deep-learning", "pytorch", "captioning", "audio-captioning"]
@@ -24,14 +24,14 @@ dynamic = ["version"]
 
 dependencies = [
     "setuptools",
+    "pyyaml",
     "torch>=1.10",
     "torchaudio",
     "torchlibrosa",
     "pytorch-lightning>=1.7,<2.0",
-    "tensorboard",
-    "pyyaml",
     "nltk",
     "spacy",
+    "tensorboard",
     "transformers>=4.35.0",
     "omegaconf",
 ]

@@ -19,7 +19,7 @@
     <img src='https://readthedocs.org/projects/aac-metrics/badge/?version=stable&style=for-the-badge' alt='Documentation Status' />
 </a> -->
 
-CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file. 
+CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file.
 
 <!-- </div> -->
 
