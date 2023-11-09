@@ -147,7 +147,7 @@ class CoNeTTEModel(PreTrainedModel):
             pylog.debug(
                 f"Storing into bytes values {tuple(non_tensor_states.keys())}..."
             )
-            non_tensor_states = pickle.dumps(non_tensor_states)
+            non_tensor_states = bytearray(pickle.dumps(non_tensor_states))
             non_tensor_states = torch.frombuffer(non_tensor_states, dtype=torch.uint8)
             tensor_states["_extra_state_"] = non_tensor_states
 
