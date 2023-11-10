@@ -32,20 +32,36 @@ def get_activation_fn(name: str) -> Callable[[Tensor], Tensor]:
 
 
 def get_device(
-    device: Union[str, torch.device, None] = "auto"
+    device: Union[str, torch.device, None] = "auto",
+    safe_auto: bool = True,
 ) -> Optional[torch.device]:
     if device == "auto":
         device = "cuda" if torch.cuda.is_available() else "cpu"
+
+        if device == "cuda" and safe_auto:
+            try:
+                _ = torch.empty((1,), device=device)
+            except RuntimeError:
+                device = "cpu"
+
     if isinstance(device, str):
         device = torch.device(device)
     return device
 
 
 def get_device_name(
-    device_name: Union[str, torch.device, None] = "auto"
+    device_name: Union[str, torch.device, None] = "auto",
+    safe_auto: bool = True,
 ) -> Optional[str]:
     if device_name == "auto":
         device_name = "cuda" if torch.cuda.is_available() else "cpu"
+
+        if device_name == "cuda" and safe_auto:
+            try:
+                _ = torch.empty((1,), device=device_name)
+            except RuntimeError:
+                device_name = "cpu"
+
     if isinstance(device_name, torch.device):
         device_name = f"{device_name.type}:{device_name.index}"
     return device_name
