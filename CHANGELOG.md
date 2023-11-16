@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.2] UNRELEASED
+### Fixed
+- Task embeddings inputs `wavcaps_audioset_sl` and `wavcaps_bbc_sound_effects`.
+
 ## [0.1.1] 2023-11-09
 ### Added
 - Unittests for hf model.
