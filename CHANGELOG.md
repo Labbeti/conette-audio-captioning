@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.2] UNRELEASED
+## [0.1.2] 2023-11-17
 ### Fixed
 - Task embeddings inputs `wavcaps_audioset_sl` and `wavcaps_bbc_sound_effects`.
 
