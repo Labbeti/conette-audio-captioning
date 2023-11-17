@@ -78,7 +78,7 @@ class CoNeTTEModel(PreTrainedModel):
         self._register_load_state_dict_pre_hook(self._pre_hook_load_state_dict)
 
         device = get_device(device)
-        self.to(device=device)
+        self.to(device=device)  # type: ignore
 
         if inference:
             self.eval_and_detach()
