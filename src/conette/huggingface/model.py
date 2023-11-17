@@ -78,7 +78,7 @@ class CoNeTTEModel(PreTrainedModel):
         self._register_load_state_dict_pre_hook(self._pre_hook_load_state_dict)
 
         device = get_device(device)
-        self.to(device=device)
+        self.to(device=device)  # type: ignore
 
         if inference:
             self.eval_and_detach()
@@ -204,8 +204,8 @@ class CoNeTTEModel(PreTrainedModel):
         for i, task in enumerate(tasks):
             task = task.split("_")
             dataset_lst[i] = task[0]
-            if len(task) == 2:
-                source_lst[i] = task[1]
+            if len(task) >= 2:
+                source_lst[i] = "_".join(task[1:])
 
         batch["dataset"] = dataset_lst
         batch["source"] = source_lst

@@ -10,7 +10,7 @@ __author_email__ = "labbeti.pub@gmail.com"
 __license__ = "MIT"
 __maintainer__ = "Etienne Labbé (Labbeti)"
 __status__ = "Development"
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 
 from pathlib import Path
@@ -19,9 +19,11 @@ from typing import Any, Optional
 from conette.huggingface.config import CoNeTTEConfig  # noqa: F401
 from conette.huggingface.model import CoNeTTEModel  # noqa: F401
 
+DEFAULT_MODEL_NAME = "Labbeti/conette"
+
 
 def conette(
-    pretrained_model_name_or_path: Optional[str] = "Labbeti/conette",
+    pretrained_model_name_or_path: Optional[str] = DEFAULT_MODEL_NAME,
     config_kwds: Optional[dict[str, Any]] = None,
     model_kwds: Optional[dict[str, Any]] = None,
 ) -> CoNeTTEModel:
