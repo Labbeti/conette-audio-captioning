@@ -10,7 +10,7 @@ __author_email__ = "labbeti.pub@gmail.com"
 __license__ = "MIT"
 __maintainer__ = "Etienne Labbé (Labbeti)"
 __status__ = "Development"
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 
 
 from pathlib import Path

@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.3] UNRELEASED
+## [0.1.3] 2023-11-20
 ### Added
 - Forbid repetition mode argument to LightningModule and HuggingFace wrapper.
 
