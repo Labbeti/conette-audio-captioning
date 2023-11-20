@@ -259,9 +259,8 @@ def get_forbid_rep_mask(
     else:
         FORBID_MODES = (
             "none",
+            "all",
             "content_words",
-            "content_words_not_bpe_part",
-            "content_words_stem_lemm",
         )
         raise ValueError(
             f"Invalid argument {forbid_rep_mode=}. (expected one of {FORBID_MODES})"

@@ -411,6 +411,14 @@ class CoNeTTEPLM(AACLightningModule):
             if "bos_id" not in kwargs:
                 raise ValueError(f"Missing argument 'bos_id' for {decode_method=}.")
 
+            forbid_rep_mode = kwargs.get("forbid_rep_mode", None)
+            if forbid_rep_mode is None:
+                forbid_rep_mask = self.forbid_rep_mask
+            else:
+                forbid_rep_mask = get_forbid_rep_mask(
+                    forbid_rep_mode, self.tokenizer, self.device, self.hp.verbose
+                )
+
             generate_expt_hp = {
                 "pad_id": self.pad_id,
                 "bos_id": self.bos_id,
@@ -418,7 +426,7 @@ class CoNeTTEPLM(AACLightningModule):
                 "vocab_size": self.tokenizer.get_vocab_size(),
                 "min_pred_size": self.hp.min_pred_size,
                 "max_pred_size": self.hp.max_pred_size,
-                "forbid_rep_mask": self.forbid_rep_mask,
+                "forbid_rep_mask": forbid_rep_mask,
                 "beam_size": self.hp.beam_size,
             }
             kwargs = generate_expt_hp | kwargs

@@ -167,6 +167,7 @@ class CoNeTTEModel(PreTrainedModel):
         beam_size: Optional[int] = None,
         min_pred_size: Optional[int] = None,
         max_pred_size: Optional[int] = None,
+        forbid_rep_mode: Optional[str] = None,
     ) -> dict[str, Any]:
         # Preprocessing (load data + encode features)
         if preprocess:
@@ -215,6 +216,7 @@ class CoNeTTEModel(PreTrainedModel):
             beam_size=beam_size,
             min_pred_size=min_pred_size,
             max_pred_size=max_pred_size,
+            forbid_rep_mode=forbid_rep_mode,
         )
         kwds = {k: v for k, v in kwds.items() if v is not None}
         outs = self.model(batch, **kwds)
@@ -233,6 +235,7 @@ class CoNeTTEModel(PreTrainedModel):
         beam_size: Optional[int] = None,
         min_pred_size: Optional[int] = None,
         max_pred_size: Optional[int] = None,
+        forbid_rep_mode: Optional[str] = None,
     ) -> dict[str, Any]:
         return super().__call__(
             x=x,
@@ -242,4 +245,5 @@ class CoNeTTEModel(PreTrainedModel):
             beam_size=beam_size,
             min_pred_size=min_pred_size,
             max_pred_size=max_pred_size,
+            forbid_rep_mode=forbid_rep_mode,
         )

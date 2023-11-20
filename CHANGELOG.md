@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] 2023-11-20
+### Added
+- Forbid repetition mode argument to LightningModule and HuggingFace wrapper.
+
 ## [0.1.2] 2023-11-17
 ### Fixed
 - Task embeddings inputs `wavcaps_audioset_sl` and `wavcaps_bbc_sound_effects`.

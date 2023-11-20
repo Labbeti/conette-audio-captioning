@@ -10,8 +10,7 @@ from torch.distributions.beta import Beta
 
 
 def pann_mixup(x: Tensor, mixup_lambda: Tensor) -> Tensor:
-    """Mixup x of even indexes (0, 2, 4, ...) with x of odd indexes
-    (1, 3, 5, ...).
+    """Mixup x of even indexes (0, 2, 4, ...) with x of odd indexes (1, 3, 5, ...).
 
     Args:
       x: (batch_size * 2, ...)
@@ -28,7 +27,9 @@ def pann_mixup(x: Tensor, mixup_lambda: Tensor) -> Tensor:
 
 
 def sample_lambda(
-    alpha: Union[float, Tensor], asymmetric: bool, size: Iterable[int] = ()
+    alpha: Union[float, Tensor],
+    asymmetric: bool,
+    size: Iterable[int] = (),
 ) -> Tensor:
     """
     :param alpha: alpha hp to control the Beta distribution.
