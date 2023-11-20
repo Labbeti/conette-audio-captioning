@@ -49,6 +49,13 @@ class TestInference(TestCase):
         self.assertIsInstance(candidate_cl, str)
         self.assertIsInstance(candidate_ac, str)
 
+    def test_forbid_rep_mode(self) -> None:
+        path = get_sample_path()
+        outputs = self.model(path, task="audiocaps", forbid_rep_mode="none")
+        cand = outputs["cands"][0]
+
+        self.assertIsInstance(cand, str)
+
 
 if __name__ == "__main__":
     unittest.main()
