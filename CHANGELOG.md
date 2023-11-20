@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [0.1.4] 2023-11-20
-### Added
+### Fixed
 - Fix forbid repetition mode argument.
 
 ## [0.1.3] 2023-11-20
