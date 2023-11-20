@@ -411,7 +411,7 @@ class CoNeTTEPLM(AACLightningModule):
             if "bos_id" not in kwargs:
                 raise ValueError(f"Missing argument 'bos_id' for {decode_method=}.")
 
-            forbid_rep_mode = kwargs.get("forbid_rep_mode", None)
+            forbid_rep_mode = kwargs.pop("forbid_rep_mode", None)
             if forbid_rep_mode is None:
                 forbid_rep_mask = self.forbid_rep_mask
             else:
