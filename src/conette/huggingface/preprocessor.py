@@ -61,6 +61,7 @@ class CoNeTTEPreprocessor(nn.Module):
 
         frame_embs = outs["frame_embs"]
         frame_embs_lens = outs["frame_embs_lens"]
+        clip_probs = outs["clipwise_output"]
 
         # Transpose (bsize, feat_size, time) -> (bsize, time, features=768)
         frame_embs = frame_embs.transpose(1, 2)
@@ -69,7 +70,11 @@ class CoNeTTEPreprocessor(nn.Module):
         )
         del frame_embs_lens
 
-        batch = {"audio": frame_embs, "audio_shape": audio_shape}
+        batch = {
+            "audio": frame_embs,
+            "audio_shape": audio_shape,
+            "clip_probs": clip_probs,
+        }
         return batch
 
     def _load(self, path: str) -> tuple[Tensor, int]:

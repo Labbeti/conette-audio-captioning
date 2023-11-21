@@ -3,7 +3,7 @@
 
 import logging
 
-from typing import Any, Iterable, Optional, Union
+from typing import Any, Iterable, Optional, TypedDict, Union
 
 import pickle
 import torch
@@ -17,9 +17,19 @@ from conette.huggingface.setup import setup_other_models
 from conette.nn.functional.get import get_device
 from conette.pl_modules.conette import CoNeTTEPLM
 from conette.tokenization.aac_tokenizer import AACTokenizer
+from conette.transforms.audioset_labels import probs_to_labels
 
 
 pylog = logging.getLogger(__name__)
+
+
+class CoNeTTEOutput(TypedDict):
+    cands: list[str]
+    tasks: list[str]
+    preds: Tensor
+    lprobs: Tensor
+    tags: list[list[str]]
+    tags_probs: Tensor
 
 
 class CoNeTTEModel(PreTrainedModel):
@@ -162,22 +172,27 @@ class CoNeTTEModel(PreTrainedModel):
         sr: Union[None, int, Iterable[int]] = None,
         x_shapes: Union[Tensor, None, list[Size]] = None,
         preprocess: bool = True,
+        threshold: Union[float, Tensor] = 0.3,
         # Beam search options
         task: Union[str, list[str], None] = None,
         beam_size: Optional[int] = None,
         min_pred_size: Optional[int] = None,
         max_pred_size: Optional[int] = None,
         forbid_rep_mode: Optional[str] = None,
-    ) -> dict[str, Any]:
+    ) -> CoNeTTEOutput:
         # Preprocessing (load data + encode features)
         if preprocess:
             batch = self.preprocessor(x, sr, x_shapes)
+            clip_probs = batch.pop("clip_probs")
+            tags = probs_to_labels(clip_probs, threshold, True, self.config.verbose)
         else:
             assert isinstance(x, Tensor) and isinstance(x_shapes, Tensor)
             batch: dict[str, Any] = {
                 "audio": x.to(self.device),
                 "audio_shape": x_shapes.to(self.device),
             }
+            clip_probs = None
+            tags = None
 
         # Add task information to batch
         bsize = len(batch["audio"])
@@ -222,6 +237,10 @@ class CoNeTTEModel(PreTrainedModel):
         outs = self.model(batch, **kwds)
         outs["tasks"] = tasks
 
+        if clip_probs is not None and tags is not None:
+            outs["tags_probs"] = clip_probs
+            outs["tags"] = tags
+
         return outs
 
     def __call__(
@@ -230,17 +249,21 @@ class CoNeTTEModel(PreTrainedModel):
         x: Union[Tensor, str, Iterable[str], Iterable[Tensor]],
         sr: Union[None, int, Iterable[int]] = None,
         x_shapes: Union[Tensor, None, list[Size]] = None,
+        preprocess: bool = True,
+        threshold: Union[float, Tensor] = 0.3,
         # Beam search options
         task: Union[str, list[str], None] = None,
         beam_size: Optional[int] = None,
         min_pred_size: Optional[int] = None,
         max_pred_size: Optional[int] = None,
         forbid_rep_mode: Optional[str] = None,
-    ) -> dict[str, Any]:
+    ) -> CoNeTTEOutput:
         return super().__call__(
             x=x,
             sr=sr,
             x_shapes=x_shapes,
+            preprocess=preprocess,
+            threshold=threshold,
             task=task,
             beam_size=beam_size,
             min_pred_size=min_pred_size,

@@ -255,19 +255,15 @@ class AACLightningModule(LightningModule):
         self.example_input_array = self.get_example()
 
     def encode_text(self, *args, **kwargs) -> Any:
-        assert isinstance(self.tokenizer, AACTokenizer)
         return self.tokenizer.encode_rec(*args, **kwargs)
 
     def tokenize_text(self, *args, **kwargs) -> Any:
-        assert isinstance(self.tokenizer, AACTokenizer)
         return self.tokenizer.tokenize_rec(*args, **kwargs)
 
     def decode_text(self, *args, **kwargs) -> Any:
-        assert isinstance(self.tokenizer, AACTokenizer)
         return self.tokenizer.decode_rec(*args, **kwargs)
 
     def detokenize_text(self, *args, **kwargs) -> Any:
-        assert isinstance(self.tokenizer, AACTokenizer)
         return self.tokenizer.detokenize_rec(*args, **kwargs)
 
     def csum_module(self, only_trainable: bool = False) -> int:

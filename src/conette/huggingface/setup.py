@@ -9,6 +9,8 @@ from subprocess import CalledProcessError
 
 import nltk
 
+from conette.transforms.audioset_labels import download_audioset_mapping
+
 
 pylog = logging.getLogger(__name__)
 
@@ -32,3 +34,6 @@ def setup_other_models(offline: bool = False, verbose: int = 0) -> None:
     # Download stopwords list for constrained beam search
     nltk_model = "stopwords"
     nltk.download(nltk_model, quiet=verbose <= 0)
+
+    # Download Audioset mapping ids in cache
+    download_audioset_mapping(verbose)
