@@ -20,21 +20,7 @@ classifiers = [
 maintainers = [
     {name = "Etienne Labbé (Labbeti)", email = "labbeti.pub@gmail.com"},
 ]
-dynamic = ["version"]
-
-dependencies = [
-    "setuptools",
-    "pyyaml",
-    "torch>=1.10",
-    "torchaudio",
-    "torchlibrosa",
-    "pytorch-lightning>=1.7,<2.0",
-    "nltk",
-    "spacy",
-    "tensorboard",
-    "transformers>=4.35.0",
-    "omegaconf",
-]
+dynamic = ["version", "dependencies", "optional-dependencies"]
 
 [project.urls]
 Repository = "https://github.com/Labbeti/conette-audio-captioning.git"
@@ -44,17 +30,11 @@ Changelog = "https://github.com/Labbeti/conette-audio-captioning/blob/main/CHANG
 conette-info = "conette.info:print_install_info"
 conette-predict = "conette.predict:main_predict"
 
-[project.optional-dependencies]
-dev = [
-    "pytest",
-    "flake8",
-    "black",
-    "ipykernel",
-]
-
 [tool.setuptools.packages.find]
 where = ["src"]  # list of folders that contain the packages (["."] by default)
 include = ["conette*"]  # package names should match these glob patterns (["*"] by default)
 
 [tool.setuptools.dynamic]
 version = {attr = "conette.__version__"}
+dependencies = {file = ["requirements.txt"]}
+optional-dependencies = {dev = { file = ["requirements-dev.txt"] }}

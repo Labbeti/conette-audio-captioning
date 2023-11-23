@@ -1,0 +1,6 @@
+# -*- coding: utf-8 -*-
+
+pytest
+flake8
+black
+ipykernel
