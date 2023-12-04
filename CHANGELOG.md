@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.5] UNRELEASED
+### Added
+- ConvNeXt tag logits to CoNeTTE model outputs.
+
 ## [0.1.4] 2023-11-20
 ### Fixed
 - Fix forbid repetition mode argument.
