@@ -11,12 +11,14 @@
 
 CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file. The architecture and training are explained in the corresponding [paper](https://arxiv.org/pdf/2309.00454.pdf). The model has been developped by me ([Étienne Labbé](https://labbeti.github.io/)) during my PhD. A simple interface to test CoNeTTE is available on [HuggingFace website](https://huggingface.co/spaces/Labbeti/conette).
 
-## Installation
+## Inference
+
+### Installation
 ```bash
 python -m pip install conette
 ```
 
-## Usage with python
+### Usage with python
 ```py
 from conette import CoNeTTEConfig, CoNeTTEModel
 
@@ -57,14 +59,14 @@ candidate = outputs["cands"][0]
 print(candidate)
 ```
 
-## Usage with command line
+### Usage with command line
 Simply use the command `conette-predict` with `--audio PATH1 PATH2 ...` option. You can also export results to a CSV file using `--csv_export PATH`.
 
 ```bash
 conette-predict --audio "/your/path/to/audio.wav"
 ```
 
-## Performance
+### Performance
 
 | Test data | SPIDEr (%) | SPIDEr-FL (%) | FENSE (%) | Vocab | Outputs | Scores |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
@@ -73,9 +75,50 @@ conette-predict --audio "/your/path/to/audio.wav"
 
 This model checkpoint has been trained for the Clotho dataset, but it can also reach a good performance on AudioCaps with the "audiocaps" task.
 
-## Limitations
+### Limitations
 - The model expected audio sampled at **32 kHz**. The model automatically resample up or down the input audio files. However, it might give worse results, especially when using audio with lower sampling rates.
 - The model has been trained on audio lasting from **1 to 30 seconds**. It can handle longer audio files, but it might require more memory and give worse results.
+
+## Train a model
+### Requirements
+Intended for Ubuntu 20.04 only. Requires **java** < 1.13, **ffmpeg**, **ytdlp**, and **zip** commands.
+Recommanded GPU: GPU V100-32G.
+WavCaps dataset might requires more than 1 TB of disk storage.
+
+### Installation
+```bash
+python -m pip install conette[train]
+```
+
+### Download external models and data
+This step might take a while (few hours to download and prepare everything depending on your CPU, GPU and SSD/HDD).
+
+```bash
+conette-prepare data=none default=true pack_to_hdf=false
+```
+
+```bash
+cnext_bl_path="$HOME/.cache/torch/hub/checkpoints/convnext_tiny_465mAP_BL_AC.pth"
+common_args="data.download=true pack_to_hdf=false audio_t=resample_mean_convnext audio_t.pretrain_path=${cnext_bl_path} post_hdf_name=bl pretag=cnext_bl audio_t.transpose_frame_embs=true audio_t.only_frame_embs=false"
+
+conette-prepare data=audiocaps audio_t.src_sr=32000 ${common_args}
+conette-prepare data=clotho audio_t.src_sr=44100 ${common_args}
+conette-prepare data=macs audio_t.src_sr=48000 ${common_args}
+conette-prepare data=wavcaps audio_t.src_sr=32000 ${common_args} datafilter.min_audio_size=0.1 datafilter.max_audio_size=30.0 datafilter.sr=32000
+```
+
+### Training a model
+CNext-trans on CL only (~3 hours on 1 GPU V100-32G)
+```bash
+conette-train expt=[clotho_cnext_bl] pl=baseline
+```
+
+CoNeTTE on AC+CL+MA+WC, specialized for CL (~4 hours on 1 GPU V100-32G)
+```bash
+conette-train expt=[camw_cnext_bl_for_c,task_ds_src_camw] pl=conette
+```
+
+**About reproducibility** : any training with AC data cannot be reproduced because a part of this data is deleted from the YouTube source, and I cannot share my own audio files.
 
 ## Citation
 The preprint version of the paper describing CoNeTTE is available on arxiv: https://arxiv.org/pdf/2309.00454.pdf
