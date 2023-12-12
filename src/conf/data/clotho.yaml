@@ -11,3 +11,4 @@ verbose: ${verbose}
 subsets: null
 version: "v2.1"
 download: false
+clean_archives: false

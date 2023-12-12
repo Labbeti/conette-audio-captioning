@@ -207,7 +207,7 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
 
     elif dataname == "clotho":
         Clotho.FORCE_PREPARE_DATA = False
-        Clotho.CLEAN_ARCHIVES = False
+        Clotho.CLEAN_ARCHIVES = cfg.data.clean_archives
 
         if cfg.data.subsets is None:
             subsets = ClothoCard.SUBSETS
@@ -225,7 +225,7 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
 
     elif dataname == "macs":
         MACS.FORCE_PREPARE_DATA = False
-        MACS.CLEAN_ARCHIVES = False
+        MACS.CLEAN_ARCHIVES = cfg.data.clean_archives
 
         if cfg.data.subsets is None:
             subsets = MACSCard.SUBSETS

@@ -11,3 +11,4 @@ verbose: ${verbose}
 subsets: null
 download: false
 tags_to_str: true
+clean_archives: false
