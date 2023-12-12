@@ -2,7 +2,7 @@
 
 defaults:
   - hydra: custom
-  - launcher: "???"
+  - launcher: ???
   - _self_
 
 # --- Common params
