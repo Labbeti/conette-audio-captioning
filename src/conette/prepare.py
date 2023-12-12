@@ -161,6 +161,9 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
 
     dsets: dict[str, Any] = {}
 
+    dataroot: str = cfg.data.root
+    os.makedirs(dataroot, exist_ok=True)
+
     if dataname == "audiocaps":
         AudioCaps.FORCE_PREPARE_DATA = False
 
@@ -196,7 +199,7 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
 
         for subset in subsets:
             dsets[subset] = AudioCaps(
-                cfg.data.root,
+                dataroot,
                 subset,
                 download=cfg.data.download,
                 verbose=cfg.verbose,
@@ -216,7 +219,7 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
 
         for subset in subsets:
             dsets[subset] = Clotho(
-                cfg.data.root,
+                dataroot,
                 subset,
                 download=cfg.data.download,
                 verbose=cfg.verbose,
@@ -234,7 +237,7 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
 
         for subset in subsets:
             dsets[subset] = MACS(
-                cfg.data.root,
+                dataroot,
                 subset=subset,
                 download=cfg.data.download,
                 verbose=cfg.verbose,
@@ -248,7 +251,7 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
 
     elif dataname == "hdf":
         hdf_fpaths = get_hdf_fpaths(
-            cfg.data.name, cfg.data.subsets, cfg.data.root, cfg.data.hdf_suffix
+            cfg.data.name, cfg.data.subsets, dataroot, cfg.data.hdf_suffix
         )
         dsets = {}
         for subset, hdf_fpath in hdf_fpaths.items():
@@ -264,7 +267,7 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
 
         dsets = {
             subset: WavCaps(
-                cfg.data.root,
+                dataroot,
                 subset,
                 download=cfg.data.download,
                 hf_cache_dir=cfg.data.hf_cache_dir,
