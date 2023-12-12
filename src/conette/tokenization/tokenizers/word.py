@@ -4,7 +4,11 @@
 from typing import ClassVar
 
 from conette.tokenization.tokenizers.base import StrTokenizer
-from conette.tokenization.tokenizers.ptb import PTBWordTokenizer
+
+try:
+    from conette.tokenization.tokenizers.ptb import PTBWordTokenizer
+except ImportError:
+    PTBWordTokenizer = None
 from conette.tokenization.tokenizers.spacy import SpacyWordTokenizer
 from conette.tokenization.tokenizers.wrapper import TokenizerWrapper
 
@@ -28,6 +32,10 @@ def _word_tokenizer_factory(backend: str = "spacy", *args, **kwargs) -> StrToken
     if backend == "spacy":
         tokenizer = SpacyWordTokenizer(*args, **kwargs)
     elif backend == "ptb":
+        if PTBWordTokenizer is None:
+            raise RuntimeError(
+                "Please install aac-metrics package to use ptb tokenizer backend. (found None PTBWordTokenizer)"
+            )
         tokenizer = PTBWordTokenizer(*args, **kwargs)
     else:
         raise ValueError(
