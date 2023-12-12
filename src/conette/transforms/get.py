@@ -20,7 +20,6 @@ from conette.nn.encoders.convnext import convnext_tiny
 from conette.nn.encoders.cnn10 import Cnn10
 from conette.nn.encoders.cnn14_decisionlevel_att import Cnn14_DecisionLevelAtt
 from conette.nn.encoders.cnn14 import Cnn14
-from conette.nn.encoders.passt import PASST
 from conette.nn.functional.get import get_device
 from conette.nn.modules.misc import (
     Lambda,
@@ -318,33 +317,6 @@ def get_resample_mean_convnext(
         Mean(dim=mean_dim),
         TensorTo(device=device),
         Lambda(get_model_outputs),
-    )
-
-
-def get_resample_mean_passt(
-    src_sr: int,
-    tgt_sr: int,
-    mean_dim: Optional[int] = 0,
-    device: Union[str, torch.device, None] = "auto",
-) -> nn.Sequential:
-    if not isinstance(src_sr, int):
-        error_message = _get_error_message(src_sr)
-        pylog.error(error_message)
-        raise ValueError(error_message)
-
-    device = get_device(device)
-
-    passt = PASST(freeze_mode="all").to(device)
-
-    def get_passt_embs(audio: Tensor) -> Tensor:
-        return passt(audio, return_dict=False, return_clip_embs=False)
-
-    return nn.Sequential(
-        Resample(src_sr, tgt_sr),
-        Mean(dim=mean_dim),
-        Unsqueeze(dim=0),
-        TensorTo(device=device),
-        Lambda(get_passt_embs),
     )
 
 
