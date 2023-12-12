@@ -2,8 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.1.5] UNRELEASED
+## [0.2.0] UNRELEASED
 ### Added
+- CoNeTTE training source code, with entire data processing.
 - ConvNeXt tag logits to CoNeTTE model outputs.
 
 ## [0.1.4] 2023-11-20
