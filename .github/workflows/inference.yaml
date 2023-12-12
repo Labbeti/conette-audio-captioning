@@ -1,6 +1,6 @@
 # Template: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: CoNeTTE inference test
+name: CoNeTTE inference
 
 on:
   push:
