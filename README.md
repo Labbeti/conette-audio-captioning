@@ -86,6 +86,7 @@ Recommanded GPU: GPU V100-32G.
 WavCaps dataset might requires more than 1 TB of disk storage.
 
 ### Installation
+By default, **only the inference requirements are installed for conette**. To install training requirements you need to use the following command:
 ```bash
 python -m pip install conette[train]
 ```
@@ -99,7 +100,7 @@ conette-prepare data=none default=true pack_to_hdf=false
 
 ```bash
 cnext_bl_path="$HOME/.cache/torch/hub/checkpoints/convnext_tiny_465mAP_BL_AC.pth"
-common_args="data.download=true pack_to_hdf=false audio_t=resample_mean_convnext audio_t.pretrain_path=${cnext_bl_path} post_hdf_name=bl pretag=cnext_bl audio_t.transpose_frame_embs=true audio_t.only_frame_embs=false"
+common_args="data.download=true pack_to_hdf=false audio_t=resample_mean_convnext audio_t.pretrain_path=${cnext_bl_path} post_hdf_name=bl pretag=cnext_bl"
 
 conette-prepare data=audiocaps audio_t.src_sr=32000 ${common_args}
 conette-prepare data=clotho audio_t.src_sr=44100 ${common_args}
