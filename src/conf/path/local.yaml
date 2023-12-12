@@ -21,6 +21,6 @@ tmp: "/tmp"
 # To redirect torch models (default: ~/.cache/torch/hub)
 torch_hub: null
 # For audiocaps download
-youtube_dl: "youtube-dl"
+ytdl: "yt-dlp"
 # For FSD50K download
 zip: "zip"
