@@ -23,6 +23,7 @@ class TestInference(TestCase):
         outputs = self.model(path)
         candidate = outputs["cands"][0]
 
+        # expected: "rain is pouring down and people are talking in the background"
         self.assertIsInstance(candidate, str)
 
     def test_example_2(self) -> None:
