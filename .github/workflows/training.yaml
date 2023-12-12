@@ -53,7 +53,8 @@ jobs:
 
     - name: Prepare data
       run: |
-        conette-prepare data=clotho default=true pann=false pack_to_hdf=true data.clean_archives=true data.subsets=[dev,val,eval]
+        cnext_bl_path="$HOME/.cache/torch/hub/checkpoints/convnext_tiny_465mAP_BL_AC_70kit.pth"
+        conette-prepare data=clotho default=true pann=false pack_to_hdf=true data.clean_archives=true data.subsets=[dev,val,eval] audio_t.src_sr=44100 audio_t.pretrain_path=${cnext_bl_path} post_hdf_name=bl pretag=cnext_bl
 
     # --- TESTS ---
     - name: Print install info
