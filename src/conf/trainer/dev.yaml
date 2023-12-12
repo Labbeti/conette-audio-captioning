@@ -1,0 +1,10 @@
+# @package trainer
+
+defaults:
+  - fit_test
+
+detect_anomaly: true
+enable_checkpointing: false
+fast_dev_run: true
+log_every_n_steps: 1
+max_epochs: 5

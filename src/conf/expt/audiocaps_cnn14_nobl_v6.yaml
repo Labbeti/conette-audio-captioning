@@ -1,0 +1,18 @@
+# @package _global_
+
+defaults:
+  - hp_audiocaps_v2
+
+dm:
+  train_hdfs:
+  - audiocaps_train_v6_resample_mean_cnn14_ident_454_nobl.hdf
+  val_hdfs:
+  - audiocaps_val_resample_mean_cnn14_ident_454_nobl.hdf
+  test_hdfs:
+  - clotho_val_resample_mean_cnn14_ident_554_nobl.hdf
+  - clotho_eval_resample_mean_cnn14_ident_554_nobl.hdf
+  - audiocaps_val_resample_mean_cnn14_ident_454_nobl.hdf
+  - audiocaps_test_resample_mean_cnn14_ident_454_nobl.hdf
+
+pl:
+  proj_name: "lin2048"

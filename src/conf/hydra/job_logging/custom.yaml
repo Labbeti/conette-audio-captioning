@@ -1,0 +1,44 @@
+# @package hydra.job_logging
+
+# Note: redirect log file to output_subdir
+
+version: 1
+formatters:
+  simple:
+    format: '[%(asctime)s][%(name)s][%(levelname)s] - %(message)s'
+  colorlog:
+    '()': 'colorlog.ColoredFormatter'
+    format: '[%(cyan)s%(asctime)s%(reset)s][%(blue)s%(name)s%(reset)s][%(log_color)s%(levelname)s%(reset)s] - %(message)s'
+    log_colors:
+      DEBUG: purple
+      INFO: green
+      WARNING: yellow
+      ERROR: red
+      CRITICAL: red
+  # colorlog_rank:
+  #   '()': 'colorlog.ColoredFormatter'
+  #   # SLURM_PROCID is global_rank in https://pytorch-lightning.readthedocs.io/en/stable/_modules/lightning_lite/plugins/environments/slurm.html#SLURMEnvironment
+  #   format: '[%(green)sRANK${oc.env:SLURM_PROCID}%(reset)s][%(cyan)s%(asctime)s%(reset)s][%(blue)s%(name)s%(reset)s][%(log_color)s%(levelname)s%(reset)s] - %(message)s'
+  #   log_colors:
+  #     DEBUG: purple
+  #     INFO: green
+  #     WARNING: yellow
+  #     ERROR: red
+  #     CRITICAL: red
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    formatter: colorlog
+    stream: ext://sys.stdout
+  file:
+    class: conette.utils.hydra.CustomFileHandler
+    formatter: colorlog
+    filename: "${hydra.sweep.dir}/${hydra.sweep.subdir}/logs/outputs.log"
+
+root:
+  level: INFO
+  handlers:
+    - console
+    - file
+disable_existing_loggers: false

@@ -1,0 +1,3 @@
+# @package trainer.plugins
+
+_target_: "pytorch_lightning.plugins.environments.LightningEnvironment"

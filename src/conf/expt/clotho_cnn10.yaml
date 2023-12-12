@@ -1,0 +1,21 @@
+# @package _global_
+
+defaults:
+  - hp_clotho_v2
+
+dm:
+  train_hdfs:
+  - clotho_dev_resample_mean_cnn10_ident_695.hdf
+  val_hdfs:
+  - clotho_val_resample_mean_cnn10_ident_695.hdf
+  test_hdfs:
+  - audiocaps_val_resample_mean_cnn10_ident_539.hdf
+  - audiocaps_test_resample_mean_cnn10_ident_539.hdf
+  - clotho_val_resample_mean_cnn10_ident_695.hdf
+  - clotho_eval_resample_mean_cnn10_ident_695.hdf
+  predict_hdfs:
+  - clotho_test_resample_mean_cnn10_ident_695.hdf
+  - clotho_analysis_resample_mean_cnn10_ident_695.hdf
+
+pl:
+  proj_name: "lin512"

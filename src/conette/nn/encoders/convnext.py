@@ -14,7 +14,7 @@ from conette.nn.functional.init import trunc_normal_
 from conette.nn.modules.drop import DropPath
 from conette.nn.modules.norm import LayerNorm
 from conette.transforms.mixup import pann_mixup
-from conette.transforms.speed_perturb import SpeedPerturbation
+from conette.transforms.audio.speed_perturb import SpeedPerturbation
 
 
 class ConvNeXtBlock(nn.Module):

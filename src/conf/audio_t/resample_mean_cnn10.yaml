@@ -1,0 +1,12 @@
+# @package audio_t
+
+_target_: "conette.transforms.get.get_resample_mean_cnn10"
+
+src_sr: ???
+tgt_sr: 32000
+mean_dim: 0
+window_size: 1024
+hop_size: 320
+mel_bins: 64
+device: "auto"
+transpose_frame_embs: true

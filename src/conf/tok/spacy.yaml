@@ -1,0 +1,12 @@
+# @package tok
+
+_target_: "conette.tokenization.aac_tokenizer.AACTokenizer"
+
+level: "word"
+lowercase: true
+punctuation_mode: "remove"
+normalize: true
+
+backend: "spacy"
+
+model_name: "en_core_web_sm"

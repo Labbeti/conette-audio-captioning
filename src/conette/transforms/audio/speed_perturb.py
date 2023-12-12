@@ -10,7 +10,7 @@ from torch import nn, Tensor
 
 from conette.nn.modules.crop import CropDim
 from conette.nn.modules.pad import PadDim
-from conette.transforms.resample import ResampleNearest
+from conette.transforms.audio.resample import ResampleNearest
 
 
 class SpeedPerturbation(nn.Module):

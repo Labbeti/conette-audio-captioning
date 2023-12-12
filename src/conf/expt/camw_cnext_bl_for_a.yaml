@@ -1,0 +1,32 @@
+# @package _global_
+
+defaults:
+  - hp_audiocaps_v2  # note: could be changed if target dset change
+
+dm:
+  train_hdfs:
+  - clotho_dev_resample_mean_convnext_ident_767_bl.hdf
+  - audiocaps_train_v6_resample_mean_convnext_ident_667_bl.hdf
+  - macs_full_resample_mean_convnext_ident_667_bl.hdf
+  - wavcaps_as_noac_resample_mean_convnext_ident_7_bl.hdf
+  - wavcaps_bbc_resample_mean_convnext_ident_7_bl.hdf
+  - wavcaps_sb_resample_mean_convnext_ident_7_bl.hdf
+  - wavcaps_fsd_nocl_resample_mean_convnext_ident_7_bl.hdf
+  val_hdfs:
+  - audiocaps_val_resample_mean_convnext_ident_667_bl.hdf  # note: could be changed if target dset change
+  test_hdfs:
+  - audiocaps_val_resample_mean_convnext_ident_667_bl.hdf
+  - audiocaps_test_resample_mean_convnext_ident_667_bl.hdf
+  - clotho_val_resample_mean_convnext_ident_767_bl.hdf
+  - clotho_eval_resample_mean_convnext_ident_767_bl.hdf
+  predict_hdfs:
+  - clotho_test_resample_mean_convnext_ident_767_bl.hdf
+  - clotho_analysis_resample_mean_convnext_ident_767_bl.hdf
+
+  main_hdf_min: audiocaps_train_v6_resample_mean_convnext_ident_667_bl.hdf  # note: could be changed if target dset change
+
+pl:
+  proj_name: "lin768"
+
+trainer:
+  reload_dataloaders_every_n_epochs: 1  # /!\ to be used with main_hdf_min to sample different other data across epochs

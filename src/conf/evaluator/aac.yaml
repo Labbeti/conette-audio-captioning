@@ -1,0 +1,14 @@
+# @package evaluator
+
+_target_: "conette.callbacks.aac_evaluator.AACEvaluator"
+
+subrun_path: "${hydra:sweep.dir}/${hydra:sweep.subdir}"
+cache_path: "${path.cache}"
+java_path: "${path.java}"
+tmp_path: "${path.tmp}"
+verbose: ${verbose}
+debug: ${debug}
+save_to_csv: ${save}
+save_dcase_csv_file: ${save}
+metric_device: null
+cpus: ${slurm.cpus_per_task}
