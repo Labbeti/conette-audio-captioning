@@ -39,7 +39,7 @@ include = ["conette*"]  # package names should match these glob patterns (["*"] 
 [tool.setuptools.dynamic]
 version = {attr = "conette.__version__"}
 dependencies = {file = ["requirements.txt"]}
-optional-dependencies = { dev = { file = ["requirements-train.txt", "requirements-dev.txt"] }, train = { file = ["requirements-train.txt"]}}
+optional-dependencies = { dev = { file = ["requirements-dev.txt"] }, train = { file = ["requirements-train.txt"]}}
 
 [tool.ruff]
 ignore = ["E501", "E402"]
