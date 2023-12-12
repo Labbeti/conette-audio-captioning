@@ -29,6 +29,8 @@ Changelog = "https://github.com/Labbeti/conette-audio-captioning/blob/main/CHANG
 [project.scripts]
 conette-info = "conette.info:print_install_info"
 conette-predict = "conette.predict:main_predict"
+conette-train = "conette.train:main_train"
+conette-prepare = "conette.prepare:main_prepare"
 
 [tool.setuptools.packages.find]
 where = ["src"]  # list of folders that contain the packages (["."] by default)
@@ -37,4 +39,7 @@ include = ["conette*"]  # package names should match these glob patterns (["*"] 
 [tool.setuptools.dynamic]
 version = {attr = "conette.__version__"}
 dependencies = {file = ["requirements.txt"]}
-optional-dependencies = {dev = { file = ["requirements-dev.txt"] }}
+optional-dependencies = { dev = { file = ["requirements-train.txt", "requirements-dev.txt"] }, train = { file = ["requirements-train.txt"]}}
+
+[tool.ruff]
+ignore = ["E501", "E402"]

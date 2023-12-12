@@ -4,3 +4,4 @@ __pycache__/
 Labbeti/conette/
 tmp/
 dist/
+logs/
