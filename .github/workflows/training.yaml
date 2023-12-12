@@ -53,9 +53,13 @@ jobs:
 
     - name: Prepare data
       run: |
-        conette-prepare data=none default=false
+        conette-prepare data=clotho default=true pann=false pack_to_hdf=true data.clean_archives=true
 
     # --- TESTS ---
     - name: Print install info
       run: |
         conette-info
+
+    - name: Train a model
+      run: |
+        conette-train pl=baseline trainer=lim2 expt=clotho_cnext_bl dm.test_hdfs=[clotho_val_resample_mean_convnext_ident_767_bl.hdf,clotho_eval_resample_mean_convnext_ident_767_bl.hdf]
