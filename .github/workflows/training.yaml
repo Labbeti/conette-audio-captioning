@@ -53,7 +53,7 @@ jobs:
 
     - name: Prepare data
       run: |
-        conette-prepare data=none defaults=false
+        conette-prepare data=none default=false
 
     # --- TESTS ---
     - name: Print install info
