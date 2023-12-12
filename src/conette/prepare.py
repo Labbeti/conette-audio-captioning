@@ -205,7 +205,7 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
                 verbose=cfg.verbose,
                 with_tags=cfg.data.with_tags,
                 ffmpeg_path=cfg.path.ffmpeg,
-                ytdl_path=cfg.path.youtube_dl,
+                ytdl_path=cfg.path.ytdl,
             )
 
     elif dataname == "clotho":
