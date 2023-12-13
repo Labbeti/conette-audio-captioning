@@ -90,6 +90,7 @@ By default, **only the inference requirements are installed for conette**. To in
 ```bash
 python -m pip install conette[train]
 ```
+If you already installed conette for inference, it is **heavily recommanded to create another environment** before installing conette for training.
 
 ### Download external models and data
 This step might take a while (few hours to download and prepare everything depending on your CPU, GPU and SSD/HDD).
