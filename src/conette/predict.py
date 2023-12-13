@@ -7,6 +7,8 @@ import os.path as osp
 
 from argparse import ArgumentParser, Namespace
 
+import transformers
+
 from lightning_fabric.utilities.seed import seed_everything
 
 from conette.huggingface.model import CoNeTTEConfig, CoNeTTEModel
@@ -89,15 +91,22 @@ def main_predict() -> None:
     if args.verbose >= 1:
         pylog.info(f"Initilizing '{args.model_name}' model...")
 
-    config = CoNeTTEConfig.from_pretrained(
-        args.model_name,
-        token=args.token,
-    )
+    # To support transformers < 4.35, which is required for aac-metrics dependancy
+    major, minor, _patch = map(int, transformers.__version__.split("."))
+    if major < 4 or (major == 4 and minor < 35):
+        token_key = "use_auth_token"
+    else:
+        token_key = "token"
+
+    common_args = {
+        "pretrained_model_name_or_path": args.model_name,
+        token_key: args.token,
+    }
+    config = CoNeTTEConfig.from_pretrained(**common_args)
     hf_model: CoNeTTEModel = CoNeTTEModel.from_pretrained(  # type: ignore
-        args.model_name,
         config=config,
         device=args.device,
-        token=args.token,
+        **common_args,
     )
     hf_model.eval_and_detach()
 
