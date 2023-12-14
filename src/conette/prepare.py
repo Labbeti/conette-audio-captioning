@@ -449,7 +449,13 @@ def pack_dsets_to_hdf(cfg: DictConfig, dsets: dict[str, Any]) -> None:
             "captions": sentence_transform_params,
         }
         csum = csum_any(transforms_params) % 1000
-        hdf_fname = f"{dataname}_{subset}_{audio_transform_name}_{sentence_transform_name}_{csum}.hdf"
+        if cfg.csum_in_hdf_name:
+            csum_suffix = f"_{csum}"
+        else:
+            csum_suffix = ""
+
+        hdf_fname = f"{dataname}_{subset}_{audio_transform_name}_{sentence_transform_name}{csum_suffix}.hdf"
+
         if cfg.datafilter.imin is not None or cfg.datafilter.imax is not None:
             hdf_fname = hdf_fname.replace(
                 ".hdf", f"_lim_{cfg.datafilter.imin}_{cfg.datafilter.imax}.hdf"
