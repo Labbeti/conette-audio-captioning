@@ -1,9 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
+
 from typing import Any, Iterable, Optional
 
 from transformers import PretrainedConfig
+
+pylog = logging.getLogger(__name__)
 
 
 class CoNeTTEConfig(PretrainedConfig):
@@ -47,6 +51,11 @@ class CoNeTTEConfig(PretrainedConfig):
         tokenizer_state: Optional[dict[str, Any]] = None,
         **kwargs,
     ) -> None:
+        if len(kwargs) > 0:
+            pylog.warning(
+                f"Unknown {len(kwargs)} keywords arguments for {self.__class__.__name__}. (found {tuple(kwargs.keys())})"
+            )
+
         betas = list(betas)  # type: ignore
         super().__init__()
         self.task_mode = task_mode

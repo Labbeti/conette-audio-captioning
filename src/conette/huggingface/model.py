@@ -40,8 +40,10 @@ class CoNeTTEModel(PreTrainedModel):
         config: CoNeTTEConfig,
         device: Union[str, torch.device, None] = "auto",
         inference: bool = True,
+        offline: bool = False,
+        model_override: Optional[CoNeTTEPLM] = None,
     ) -> None:
-        setup_other_models()
+        setup_other_models(offline)
 
         if config.tokenizer_state is None:
             tokenizer = AACTokenizer()
@@ -49,36 +51,39 @@ class CoNeTTEModel(PreTrainedModel):
             tokenizer = AACTokenizer.from_txt_state(config.tokenizer_state)
 
         preprocessor = CoNeTTEPreprocessor(verbose=config.verbose)
-        model = CoNeTTEPLM(
-            task_mode=config.task_mode,
-            task_names=config.task_names,
-            gen_test_cands=config.gen_test_cands,
-            label_smoothing=config.label_smoothing,
-            gen_val_cands=config.gen_val_cands,
-            mixup_alpha=config.mixup_alpha,
-            proj_name=config.proj_name,
-            min_pred_size=config.min_pred_size,
-            max_pred_size=config.max_pred_size,
-            beam_size=config.beam_size,
-            nhead=config.nhead,
-            d_model=config.d_model,
-            num_decoder_layers=config.num_decoder_layers,
-            decoder_dropout_p=config.decoder_dropout_p,
-            dim_feedforward=config.dim_feedforward,
-            acti_name=config.acti_name,
-            optim_name=config.optim_name,
-            lr=config.lr,
-            weight_decay=config.weight_decay,
-            betas=config.betas,
-            eps=config.eps,
-            use_custom_wd=config.use_custom_wd,
-            sched_name=config.sched_name,
-            sched_n_steps=config.sched_n_steps,
-            sched_interval=config.sched_interval,
-            sched_freq=config.sched_freq,
-            train_tokenizer=tokenizer,
-            verbose=config.verbose,
-        )
+        if model_override is not None:
+            model = model_override
+        else:
+            model = CoNeTTEPLM(
+                task_mode=config.task_mode,
+                task_names=config.task_names,
+                gen_test_cands=config.gen_test_cands,
+                label_smoothing=config.label_smoothing,
+                gen_val_cands=config.gen_val_cands,
+                mixup_alpha=config.mixup_alpha,
+                proj_name=config.proj_name,
+                min_pred_size=config.min_pred_size,
+                max_pred_size=config.max_pred_size,
+                beam_size=config.beam_size,
+                nhead=config.nhead,
+                d_model=config.d_model,
+                num_decoder_layers=config.num_decoder_layers,
+                decoder_dropout_p=config.decoder_dropout_p,
+                dim_feedforward=config.dim_feedforward,
+                acti_name=config.acti_name,
+                optim_name=config.optim_name,
+                lr=config.lr,
+                weight_decay=config.weight_decay,
+                betas=config.betas,
+                eps=config.eps,
+                use_custom_wd=config.use_custom_wd,
+                sched_name=config.sched_name,
+                sched_n_steps=config.sched_n_steps,
+                sched_interval=config.sched_interval,
+                sched_freq=config.sched_freq,
+                train_tokenizer=tokenizer,
+                verbose=config.verbose,
+            )
 
         super().__init__(config)
         self.config: CoNeTTEConfig

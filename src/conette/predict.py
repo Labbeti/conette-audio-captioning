@@ -6,12 +6,18 @@ import logging
 import os.path as osp
 
 from argparse import ArgumentParser, Namespace
+from typing import Optional, Union
 
+import torch
 import transformers
+import yaml
 
 from lightning_fabric.utilities.seed import seed_everything
+from omegaconf import OmegaConf, DictConfig
 
+from conette.nn.functional.get import get_device
 from conette.huggingface.model import CoNeTTEConfig, CoNeTTEModel
+from conette.pl_modules.conette import CoNeTTEPLM
 from conette.utils.cmdline import _str_to_opt_str, _str_to_opt_int, _setup_logging
 from conette.utils.csum import csum_module
 
@@ -41,9 +47,15 @@ def get_predict_args() -> Namespace:
     )
     parser.add_argument(
         "--model_name",
-        type=str,
+        type=_str_to_opt_str,
         help="Model name on huggingface.",
         default="Labbeti/conette",
+    )
+    parser.add_argument(
+        "--model_path",
+        type=_str_to_opt_str,
+        help="Path to trained model directory.",
+        default=None,
     )
     parser.add_argument(
         "--device",
@@ -79,17 +91,14 @@ def get_predict_args() -> Namespace:
     return args
 
 
-def main_predict() -> None:
-    """Main entrypoint for CoNeTTE predict."""
-    args = get_predict_args()
-    _setup_logging("conette", verbose=args.verbose, set_format=False)
-    seed_everything(args.seed)
-
-    fpaths = list(args.audio)
-    tasks = args.task
-
-    if args.verbose >= 1:
-        pylog.info(f"Initilizing '{args.model_name}' model...")
+def _load_hf_model(
+    model_name: str,
+    token: Optional[str],
+    device: Union[str, torch.device, None],
+    verbose: int,
+) -> CoNeTTEModel:
+    if verbose >= 1:
+        pylog.info(f"Initilizing '{model_name}' model...")
 
     # To support transformers < 4.35, which is required for aac-metrics dependancy
     major, minor, _patch = map(int, transformers.__version__.split("."))
@@ -99,19 +108,75 @@ def main_predict() -> None:
         token_key = "token"
 
     common_args = {
-        "pretrained_model_name_or_path": args.model_name,
-        token_key: args.token,
+        "pretrained_model_name_or_path": model_name,
+        token_key: token,
     }
     config = CoNeTTEConfig.from_pretrained(**common_args)
     hf_model: CoNeTTEModel = CoNeTTEModel.from_pretrained(  # type: ignore
         config=config,
-        device=args.device,
+        device=device,
         **common_args,
     )
-    hf_model.eval_and_detach()
+    if verbose >= 1:
+        pylog.info(f"Model '{model_name}' is initialized.")
+    return hf_model
 
-    if args.verbose >= 1:
-        pylog.info(f"Model '{args.model_name}' is initialized.")
+
+def _load_model_from_path(
+    model_path: str,
+    device: Union[str, torch.device, None],
+    verbose: int,
+) -> CoNeTTEModel:
+    if verbose >= 1:
+        pylog.info(f"Initilizing model from '{model_path}'...")
+
+    cfg_fpath = osp.join(model_path, "hydra", "config.yaml")
+    with open(cfg_fpath, "r") as file:
+        cfg = yaml.safe_load(file)
+    cfg: DictConfig = OmegaConf.create(cfg)  # type: ignore
+
+    pl_cfg = cfg["pl"]
+    target = pl_cfg.pop("_target_", "unknown")
+    if CoNeTTEPLM.__name__ not in target:
+        raise NotImplementedError(f"Unsupported pretrained model type '{target}'.")
+
+    model = CoNeTTEPLM(**pl_cfg)
+
+    ckpt_fpath = osp.join(model_path, "checkpoints", "best.ckpt")
+    ckpt_data = torch.load(ckpt_fpath, map_location=model.device)
+    state_dict = ckpt_data["state_dict"]
+    model.load_state_dict(state_dict, strict=True)
+
+    device = get_device(device)
+    config = CoNeTTEConfig(**pl_cfg)
+    hf_model = CoNeTTEModel(config, device=device, model_override=model)
+
+    if verbose >= 1:
+        pylog.info(f"Model from '{model_path}' is initialized.")
+    return hf_model
+
+
+def main_predict() -> None:
+    """Main entrypoint for CoNeTTE predict."""
+    args = get_predict_args()
+    _setup_logging("conette", verbose=args.verbose, set_format=False)
+    seed_everything(args.seed)
+
+    fpaths = list(args.audio)
+    tasks = args.task
+
+    if args.model_name is not None:
+        hf_model = _load_hf_model(
+            args.model_name, args.token, args.device, args.verbose
+        )
+    elif args.model_path is not None:
+        hf_model = _load_model_from_path(args.model_path, args.device, args.verbose)
+    else:
+        raise ValueError(
+            f"Invalid arguments {args.model_name=} and {args.model_path=}. (expected at one str value)"
+        )
+
+    hf_model.eval_and_detach()
 
     if args.verbose >= 2:
         enc_csum = csum_module(hf_model.preprocessor.encoder, with_names=False)
