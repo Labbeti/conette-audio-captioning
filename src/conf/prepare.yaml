@@ -62,7 +62,7 @@ overwrite_hdf: false
 # Optional[str]
 post_hdf_name: null
 # bool
-csum_in_hdf_name: true
+csum_in_hdf_name: false
 
 # Override data.download option
 data:

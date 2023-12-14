@@ -5,14 +5,14 @@ defaults:
 
 dm:
   train_hdfs:
-  - audiocaps_train_v6_resample_mean_convnext_ident_667_bl.hdf
+  - audiocaps_train_v6_resample_mean_convnext_ident_bl.hdf
   val_hdfs:
-  - audiocaps_val_resample_mean_convnext_ident_667_bl.hdf
+  - audiocaps_val_resample_mean_convnext_ident_bl.hdf
   test_hdfs:
-  - clotho_val_resample_mean_convnext_ident_767_bl.hdf
-  - clotho_eval_resample_mean_convnext_ident_767_bl.hdf
-  - audiocaps_val_resample_mean_convnext_ident_667_bl.hdf
-  - audiocaps_test_resample_mean_convnext_ident_667_bl.hdf
+  - clotho_val_resample_mean_convnext_ident_bl.hdf
+  - clotho_eval_resample_mean_convnext_ident_bl.hdf
+  - audiocaps_val_resample_mean_convnext_ident_bl.hdf
+  - audiocaps_test_resample_mean_convnext_ident_bl.hdf
 
 pl:
   proj_name: "lin768"

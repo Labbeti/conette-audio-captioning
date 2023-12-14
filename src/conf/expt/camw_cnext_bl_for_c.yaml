@@ -5,25 +5,25 @@ defaults:
 
 dm:
   train_hdfs:
-  - clotho_dev_resample_mean_convnext_ident_767_bl.hdf
-  - audiocaps_train_v6_resample_mean_convnext_ident_667_bl.hdf
-  - macs_full_resample_mean_convnext_ident_667_bl.hdf
-  - wavcaps_as_noac_resample_mean_convnext_ident_7_bl.hdf
-  - wavcaps_bbc_resample_mean_convnext_ident_7_bl.hdf
-  - wavcaps_sb_resample_mean_convnext_ident_7_bl.hdf
-  - wavcaps_fsd_nocl_resample_mean_convnext_ident_7_bl.hdf
+  - clotho_dev_resample_mean_convnext_ident_bl.hdf
+  - audiocaps_train_v6_resample_mean_convnext_ident_bl.hdf
+  - macs_full_resample_mean_convnext_ident_bl.hdf
+  - wavcaps_as_noac_resample_mean_convnext_ident_bl.hdf
+  - wavcaps_bbc_resample_mean_convnext_ident_bl.hdf
+  - wavcaps_sb_resample_mean_convnext_ident_bl.hdf
+  - wavcaps_fsd_nocl_resample_mean_convnext_ident_bl.hdf
   val_hdfs:
-  - clotho_val_resample_mean_convnext_ident_767_bl.hdf
+  - clotho_val_resample_mean_convnext_ident_bl.hdf
   test_hdfs:
-  - audiocaps_val_resample_mean_convnext_ident_667_bl.hdf
-  - audiocaps_test_resample_mean_convnext_ident_667_bl.hdf
-  - clotho_val_resample_mean_convnext_ident_767_bl.hdf
-  - clotho_eval_resample_mean_convnext_ident_767_bl.hdf
+  - audiocaps_val_resample_mean_convnext_ident_bl.hdf
+  - audiocaps_test_resample_mean_convnext_ident_bl.hdf
+  - clotho_val_resample_mean_convnext_ident_bl.hdf
+  - clotho_eval_resample_mean_convnext_ident_bl.hdf
   predict_hdfs:
-  - clotho_test_resample_mean_convnext_ident_767_bl.hdf
-  - clotho_analysis_resample_mean_convnext_ident_767_bl.hdf
+  - clotho_test_resample_mean_convnext_ident_bl.hdf
+  - clotho_analysis_resample_mean_convnext_ident_bl.hdf
 
-  main_hdf_min: clotho_dev_resample_mean_convnext_ident_767_bl.hdf
+  main_hdf_min: clotho_dev_resample_mean_convnext_ident_bl.hdf
 
 pl:
   proj_name: "lin768"

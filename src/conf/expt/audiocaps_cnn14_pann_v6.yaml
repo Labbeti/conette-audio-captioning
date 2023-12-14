@@ -5,14 +5,14 @@ defaults:
 
 dm:
   train_hdfs:
-  - audiocaps_train_v6_resample_mean_cnn14_ident_555_pann.hdf
+  - audiocaps_train_v6_resample_mean_cnn14_ident_pann.hdf
   val_hdfs:
-  - audiocaps_val_resample_mean_cnn14_ident_555_pann.hdf
+  - audiocaps_val_resample_mean_cnn14_ident_pann.hdf
   test_hdfs:
-  - clotho_val_resample_mean_cnn14_ident_655_pann.hdf
-  - clotho_eval_resample_mean_cnn14_ident_655_pann.hdf
-  - audiocaps_val_resample_mean_cnn14_ident_555_pann.hdf
-  - audiocaps_test_resample_mean_cnn14_ident_555_pann.hdf
+  - clotho_val_resample_mean_cnn14_ident_pann.hdf
+  - clotho_eval_resample_mean_cnn14_ident_pann.hdf
+  - audiocaps_val_resample_mean_cnn14_ident_pann.hdf
+  - audiocaps_test_resample_mean_cnn14_ident_pann.hdf
 
 pl:
   proj_name: "lin2048"
