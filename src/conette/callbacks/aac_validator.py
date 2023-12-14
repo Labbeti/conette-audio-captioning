@@ -14,6 +14,7 @@ from aac_metrics.classes.fense import FENSE
 
 from conette.metrics.classes.diversity import Diversity
 from conette.metrics.classes.text_stats import TextStats
+from conette.nn.functional.get import get_device
 
 
 class AACValidator(Callback):
@@ -30,15 +31,8 @@ class AACValidator(Callback):
         else:
             metrics_keys = list(metrics_keys)
 
-        if computation_device == "auto":
-            computation_device = "cuda" if torch.cuda.is_available() else "cpu"
-        if isinstance(computation_device, str):
-            computation_device = torch.device(computation_device)
-
-        if other_device == "auto":
-            other_device = "cuda" if torch.cuda.is_available() else "cpu"
-        if isinstance(other_device, str):
-            other_device = torch.device(other_device)
+        computation_device = get_device(computation_device)
+        other_device = get_device(other_device)
 
         if isinstance(monitors, str):
             monitors = [monitors]
@@ -101,7 +95,8 @@ class AACValidator(Callback):
 
     # Other methods
     def __build_metrics(
-        self, computation_device: Union[str, torch.device, None] = None
+        self,
+        computation_device: Union[str, torch.device, None],
     ) -> None:
         metrics: dict[str, nn.Module] = {
             "cider_d": CIDErD(return_all_scores=True),
@@ -111,6 +106,8 @@ class AACValidator(Callback):
 
         if computation_device is None:
             computation_device = self._computation_device
+        else:
+            self._computation_device = get_device(computation_device)
 
         if (
             any("fense" in monitor for monitor in self._monitors)
