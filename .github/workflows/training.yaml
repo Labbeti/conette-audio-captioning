@@ -10,6 +10,7 @@ on:
 
 env:
   CACHE_NUMBER: 0  # increase to reset cache manually
+  DATAROOT: "$HOME/.cache/data"
 
 # Cancel workflow if a new push occurs
 concurrency:
@@ -64,7 +65,7 @@ jobs:
       if: steps.cache_dot_cache.outputs.cache-hit != 'true'
       run: |
         cnext_bl_path="$HOME/.cache/torch/hub/checkpoints/convnext_tiny_465mAP_BL_AC_70kit.pth"
-        conette-prepare data=clotho default=true pann=false pack_to_hdf=true data.clean_archives=true data.subsets=[val] audio_t.src_sr=44100 audio_t.pretrain_path=${cnext_bl_path} post_hdf_name=bl pretag=cnext_bl csum_in_hdf_name=false path.data=~/.cache/data
+        conette-prepare data=clotho default=true pann=false pack_to_hdf=true data.clean_archives=true data.subsets=[val] audio_t.src_sr=44100 audio_t.pretrain_path=${cnext_bl_path} post_hdf_name=bl pretag=cnext_bl csum_in_hdf_name=false path.data=$DATAROOT
 
     # --- TESTS ---
     - name: Print install info
@@ -74,4 +75,4 @@ jobs:
     - name: Train a model
       run: |
         target_hdf="clotho_val_resample_mean_convnext_ident_bl.hdf"
-        conette-train pl=baseline trainer=lim2 expt=clotho_cnext_bl dm.train_hdfs=${target_hdf} dm.val_hdfs=${target_hdf} dm.test_hdfs=${target_hdf} dm.predict_hdfs=[] trainer.accelerator=cpu enable_dspeed=false path.data=~/.cache/data
+        conette-train pl=baseline trainer=lim2 expt=clotho_cnext_bl dm.train_hdfs=${target_hdf} dm.val_hdfs=${target_hdf} dm.test_hdfs=${target_hdf} dm.predict_hdfs=[] trainer.accelerator=cpu enable_dspeed=false path.data=$DATAROOT
