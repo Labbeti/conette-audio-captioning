@@ -448,8 +448,8 @@ def pack_dsets_to_hdf(cfg: DictConfig, dsets: dict[str, Any]) -> None:
             "audio": audio_transform_params,
             "captions": sentence_transform_params,
         }
-        csum = csum_any(transforms_params) % 1000
         if cfg.csum_in_hdf_name:
+            csum = csum_any(transforms_params) % 1000
             csum_suffix = f"_{csum}"
         else:
             csum_suffix = ""
