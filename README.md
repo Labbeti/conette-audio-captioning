@@ -96,7 +96,7 @@ If you already installed conette for inference, it is **highly recommanded to cr
 This step might take a while (few hours to download and prepare everything depending on your CPU, GPU and SSD/HDD).
 
 ```bash
-conette-prepare data=none default=true pack_to_hdf=false
+conette-prepare data=none default=true pack_to_hdf=false csum_in_hdf_name=false
 ```
 
 ```bash
