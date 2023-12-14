@@ -64,4 +64,4 @@ jobs:
     - name: Train a model
       run: |
         target_hdf="clotho_val_resample_mean_convnext_ident_767_bl.hdf"
-        conette-train pl=baseline trainer=lim2 expt=clotho_cnext_bl dm.train_hdfs=${target_hdf} dm.val_hdfs=${target_hdf} dm.test_hdfs=${target_hdf} dm.predict_hdfs=[]
+        conette-train pl=baseline trainer=lim2 expt=clotho_cnext_bl dm.train_hdfs=${target_hdf} dm.val_hdfs=${target_hdf} dm.test_hdfs=${target_hdf} dm.predict_hdfs=[] trainer.accelerator=cpu
