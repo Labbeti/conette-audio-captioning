@@ -141,7 +141,7 @@ The preprint version of the paper describing CoNeTTE is available on arxiv: http
 ## Additional information
 - CoNeTTE stands for **Co**nv**Ne**Xt-**T**ransformer with **T**ask **E**mbedding.
 - Model weights are available on HuggingFace: https://huggingface.co/Labbeti/conette
-- The encoder part of the architecture is based on a ConvNeXt model for audio classification, available here: https://zenodo.org/record/8020843 under the filename "convnext_tiny_465mAP_BL_AC_70kit.pth".
+- The weights of the encoder part of the architecture is based on a ConvNeXt model for audio classification, available here: https://zenodo.org/record/8020843 under the filename "convnext_tiny_465mAP_BL_AC_70kit.pth".
 
 ## Contact
 Maintainer:
