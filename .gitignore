@@ -2,6 +2,6 @@
 __pycache__/
 *.egg-info/
 Labbeti/conette/
-tmp/
+*tmp/
 dist/
 logs/
