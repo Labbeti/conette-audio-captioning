@@ -57,9 +57,9 @@ jobs:
       id: cache_dot_cache
       with:
         path: "~/.cache"
-        key: ${{ runner.os }}-cache
+        key: ${{ runner.os }}-dot_cache
         restore-keys: |
-          ${{ runner.os }}-cache
+          ${{ runner.os }}-dot_cache
 
     - name: Prepare data
       if: steps.cache_dot_cache.outputs.cache-hit != 'true'
