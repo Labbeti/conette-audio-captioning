@@ -1,1 +1,8 @@
 # @package data
+
+# Common params
+root: "."
+bsize: 1
+n_workers: ${slurm.cpus_per_task}
+pin_memory: false
+verbose: ${verbose}
