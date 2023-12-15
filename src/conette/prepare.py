@@ -424,7 +424,10 @@ def pack_dsets_to_hdf(cfg: DictConfig, dsets: dict[str, Any]) -> None:
                     f"Invalid input sr {src_sr} with audio sr {meta.sample_rate}. (with dataset '{name}')"
                 )
 
-    hdf_root = osp.join(cfg.path.data, "HDF")
+    dataroot: str = cfg.path.data
+    dataroot = osp.expandvars(dataroot)
+    dataroot = osp.expanduser(dataroot)
+    hdf_root = osp.join(dataroot, "HDF")
     os.makedirs(hdf_root, exist_ok=True)
 
     for subset, dset in dsets.items():
