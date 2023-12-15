@@ -142,7 +142,9 @@ class CustomModelCheckpoint(ModelCheckpoint):
             min_epoch = self.save_after_epoch
         elif isinstance(self.save_after_epoch, float):
             if trainer.max_epochs is None:
-                raise RuntimeError(f"Cannot use float {self.save_after_epoch=} with {trainer.max_epochs=}.")
+                raise RuntimeError(
+                    f"Cannot use float {self.save_after_epoch=} with {trainer.max_epochs=}."
+                )
             min_epoch = math.floor(self.save_after_epoch * trainer.max_epochs)
         else:
             raise TypeError(
