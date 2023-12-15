@@ -162,6 +162,8 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
     dsets: dict[str, Any] = {}
 
     dataroot: str = cfg.data.root
+    dataroot = osp.expandvars(dataroot)
+    dataroot = osp.expanduser(dataroot)
     os.makedirs(dataroot, exist_ok=True)
 
     if dataname == "audiocaps":
