@@ -8,6 +8,7 @@ import os.path as osp
 import re
 
 from datetime import timedelta
+from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
 from pytorch_lightning import LightningModule, Trainer
@@ -60,7 +61,7 @@ class CustomModelCheckpoint(ModelCheckpoint):
         save_after_epoch: Union[None, int, float] = None,
         create_symlink: bool = True,
     ) -> None:
-        if dirpath is not None:
+        if isinstance(dirpath, (str, Path)):
             dirpath = osp.expandvars(dirpath)
             dirpath = osp.expanduser(dirpath)
 
@@ -140,6 +141,8 @@ class CustomModelCheckpoint(ModelCheckpoint):
         elif isinstance(self.save_after_epoch, int):
             min_epoch = self.save_after_epoch
         elif isinstance(self.save_after_epoch, float):
+            if trainer.max_epochs is None:
+                raise RuntimeError(f"Cannot use float {self.save_after_epoch=} with {trainer.max_epochs=}.")
             min_epoch = math.floor(self.save_after_epoch * trainer.max_epochs)
         else:
             raise TypeError(
