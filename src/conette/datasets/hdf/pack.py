@@ -187,6 +187,9 @@ def pack_to_hdf(
         if verbose >= 2:
             pylog.debug(f"Found loader_n_workers is None, set to {loader_n_workers}.")
 
+    if verbose >= 2:
+        pylog.debug(f"Start packing data into HDF file '{hdf_fpath}'...")
+
     # Step 1: Init max_shapes and hdf_dtypes with the first item
     item_0 = dataset[0]
     if not isinstance(item_0, dict):
@@ -387,4 +390,8 @@ def pack_to_hdf(
                 )
                 raise err
 
-    return HDFDataset(hdf_fpath, open_hdf=False)
+    if verbose >= 2:
+        pylog.debug(f"Data into has been packed into HDF file '{hdf_fpath}'.")
+
+    hdf_dataset = HDFDataset(hdf_fpath, open_hdf=False)
+    return hdf_dataset
