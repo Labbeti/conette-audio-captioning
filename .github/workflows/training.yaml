@@ -64,8 +64,9 @@ jobs:
     - name: Prepare data
       if: steps.cache_dot_cache.outputs.cache-hit != 'true'
       run: |
+        echo "Prepare data in dataroot '$DATAROOT'"
         cnext_bl_path="$HOME/.cache/torch/hub/checkpoints/convnext_tiny_465mAP_BL_AC_70kit.pth"
-        conette-prepare data=clotho default=true pann=false pack_to_hdf=true data.clean_archives=true data.subsets=[val] audio_t.src_sr=44100 audio_t.pretrain_path=${cnext_bl_path} post_hdf_name=bl pretag=cnext_bl csum_in_hdf_name=false path.data=$DATAROOT
+        conette-prepare data=clotho default=true pann=false pack_to_hdf=true data.clean_archives=true data.subsets=[val] audio_t.src_sr=44100 audio_t.pretrain_path=${cnext_bl_path} post_hdf_name=bl pretag=cnext_bl csum_in_hdf_name=false path.data=$DATAROOT verbose=2
 
     # --- TESTS ---
     - name: Print install info
@@ -75,4 +76,4 @@ jobs:
     - name: Train a model
       run: |
         target_hdf="clotho_val_resample_mean_convnext_ident_bl.hdf"
-        conette-train pl=baseline trainer=lim2 expt=clotho_cnext_bl dm.train_hdfs=${target_hdf} dm.val_hdfs=${target_hdf} dm.test_hdfs=${target_hdf} dm.predict_hdfs=[] trainer.accelerator=cpu enable_dspeed=false path.data=$DATAROOT
+        conette-train pl=baseline trainer=lim2 expt=clotho_cnext_bl dm.train_hdfs=${target_hdf} dm.val_hdfs=${target_hdf} dm.test_hdfs=${target_hdf} dm.predict_hdfs=[] trainer.accelerator=cpu enable_dspeed=false path.data=$DATAROOT verbose=2
