@@ -16,7 +16,7 @@ defaults:
   - trainer: fit_test
   - _self_
   # note: expt must be the last in defaults list
-  - expt: audiocaps_cnext_bl_v6
+  - expt: clotho_cnext_bl
 
 # --- Common params
 

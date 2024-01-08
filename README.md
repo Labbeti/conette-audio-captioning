@@ -82,7 +82,7 @@ This model checkpoint has been trained for the Clotho dataset, but it can also r
 ## Train a model
 ### Requirements
 Intended for Ubuntu 20.04 only. Requires **java** < 1.13, **ffmpeg**, **ytdlp**, and **zip** commands.
-Recommanded GPU: GPU V100-32G.
+Minimal recommanded GPU: GPU V100-32G.
 WavCaps dataset might requires more than 1 TB of disk storage.
 
 ### Installation

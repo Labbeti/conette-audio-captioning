@@ -339,10 +339,15 @@ class AACEvaluator(Callback):
                     f"Computing sentence level metrics... ({datasubset=}, {pred_key=})"
                 )
 
-            pred_global_scores, pred_sents_scores = self._all_metrics(
-                all_cands,
-                all_mrefs,
-            )
+            # TODO: clean
+            try:
+                pred_global_scores, pred_sents_scores = self._all_metrics(
+                    all_cands,
+                    all_mrefs,
+                )
+            except ValueError as err:
+                breakpoint()
+                raise err
             corpus_scores |= {
                 f"{self._model_name}.{pred_key}.{metric_name}": score
                 for metric_name, score in pred_global_scores.items()

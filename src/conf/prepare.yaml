@@ -3,7 +3,7 @@
 # Group params
 defaults:
   - audio_t: resample_mean_convnext
-  - data: audiocaps
+  - data: clotho
   - hydra: custom
   - launcher: local
   - logger: custom_tb
