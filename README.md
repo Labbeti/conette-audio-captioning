@@ -67,13 +67,14 @@ conette-predict --audio "/your/path/to/audio.wav"
 ```
 
 ### Performance
+The model has been trained on AudioCaps (AC), Clotho (CL), MACS (MA) and WavCaps (WC). The performance on the test subsets are :
 
 | Test data | SPIDEr (%) | SPIDEr-FL (%) | FENSE (%) | Vocab | Outputs | Scores |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
 | AC-test | 44.14 | 43.98 | 60.81 | 309 | [Link](https://github.com/Labbeti/conette-audio-captioning/blob/main/results/conette/outputs_audiocaps_test.csv) | [Link](https://github.com/Labbeti/conette-audio-captioning/blob/main/results/conette/scores_audiocaps_test.yaml) |
 | CL-eval | 30.97 | 30.87 | 51.72 | 636 | [Link](https://github.com/Labbeti/conette-audio-captioning/blob/main/results/conette/outputs_clotho_eval.csv) | [Link](https://github.com/Labbeti/conette-audio-captioning/blob/main/results/conette/scores_clotho_eval.yaml) |
 
-This model checkpoint has been trained for the Clotho dataset, but it can also reach a good performance on AudioCaps with the "audiocaps" task.
+This model checkpoint has been trained with focus on the Clotho dataset, but it can also reach a good performance on AudioCaps with the "audiocaps" task.
 
 ### Limitations
 - The model expected audio sampled at **32 kHz**. The model automatically resample up or down the input audio files. However, it might give worse results, especially when using audio with lower sampling rates.
@@ -81,9 +82,9 @@ This model checkpoint has been trained for the Clotho dataset, but it can also r
 
 ## Train a model
 ### Requirements
-Intended for Ubuntu 20.04 only. Requires **java** < 1.13, **ffmpeg**, **ytdlp**, and **zip** commands.
-Minimal recommanded GPU: GPU V100-32G.
-WavCaps dataset might requires more than 1 TB of disk storage.
+- Intended for Ubuntu 20.04 only. Requires **java** < 1.13, **ffmpeg**, **yt-dlp**, and **zip** commands.
+- Minimal recommanded GPU: GPU V100-32G.
+- WavCaps dataset might requires more than 2 TB of disk storage.
 
 ### Installation
 By default, **only the inference requirements are installed for conette**. To install training requirements you need to use the following command:
@@ -93,12 +94,14 @@ python -m pip install conette[train]
 If you already installed conette for inference, it is **highly recommanded to create another environment** before installing conette for training.
 
 ### Download external models and data
-This step might take a while (few hours to download and prepare everything depending on your CPU, GPU and SSD/HDD).
+These steps might take a while (few hours to download and prepare everything depending on your CPU, GPU and SSD/HDD).
 
+First, download the ConvNext, NLTK and spacy models :
 ```bash
 conette-prepare data=none default=true pack_to_hdf=false csum_in_hdf_name=false
 ```
 
+Then download the 4 datasets used to train CoNeTTE :
 ```bash
 cnext_bl_path="$HOME/.cache/torch/hub/checkpoints/convnext_tiny_465mAP_BL_AC.pth"
 common_args="data.download=true pack_to_hdf=true audio_t=resample_mean_convnext audio_t.pretrain_path=${cnext_bl_path} post_hdf_name=bl pretag=cnext_bl"
@@ -118,6 +121,11 @@ conette-train expt=[clotho_cnext_bl] pl=baseline
 CoNeTTE on AC+CL+MA+WC, specialized for CL (~4 hours on 1 GPU V100-32G)
 ```bash
 conette-train expt=[camw_cnext_bl_for_c,task_ds_src_camw] pl=conette
+```
+
+CoNeTTE on AC+CL+MA+WC, specialized for AC (~3 hours on 1 GPU V100-32G)
+```bash
+conette-train expt=[camw_cnext_bl_for_a,task_ds_src_camw] pl=conette
 ```
 
 **About reproducibility** : any training with AC data cannot be reproduced because a part of this data is deleted from the YouTube source, and I cannot share my own audio files.
