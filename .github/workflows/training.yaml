@@ -11,6 +11,7 @@ on:
 env:
   CACHE_NUMBER: 0  # increase to reset cache manually
   DATAROOT: "$HOME/.cache/data"
+  LOGROOT: "logs"
 
 # Cancel workflow if a new push occurs
 concurrency:
@@ -76,4 +77,11 @@ jobs:
     - name: Train a model
       run: |
         target_hdf="clotho_val_resample_mean_convnext_ident_bl.hdf"
-        conette-train pl=baseline expt=clotho_cnext_bl dm.train_hdfs=${target_hdf} dm.val_hdfs=${target_hdf} dm.test_hdfs=${target_hdf} dm.predict_hdfs=[] trainer.accelerator=cpu enable_dspeed=false path.data=$DATAROOT verbose=2 trainer=lim2 dm.bsize=3 trainer.max_epochs=1
+        conette-train pl=baseline expt=clotho_cnext_bl dm.train_hdfs=${target_hdf} dm.val_hdfs=${target_hdf} dm.test_hdfs=${target_hdf} dm.predict_hdfs=[] trainer.accelerator=cpu enable_dspeed=false path.data=$DATAROOT verbose=2 trainer=lim2 dm.bsize=3 trainer.max_epochs=1 path.log_root=$LOGROOT
+
+    - name: Run CoNeTTE predict with trained model
+      run: |
+        latest=`ls -Art "$LOGROOT" | grep train | tail -n 1`
+        model_path=$LOGROOT/$latest
+        echo "Predict with $model_path..."
+        conette-predict --audio src/conette/data/sample.wav --model_path "$model_path"
