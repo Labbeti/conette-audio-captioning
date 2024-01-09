@@ -165,12 +165,12 @@ def main_predict() -> None:
     fpaths = list(args.audio)
     tasks = args.task
 
-    if args.model_name is not None:
+    if args.model_path is not None:
+        hf_model = _load_model_from_path(args.model_path, args.device, args.verbose)
+    elif args.model_name is not None:
         hf_model = _load_hf_model(
             args.model_name, args.token, args.device, args.verbose
         )
-    elif args.model_path is not None:
-        hf_model = _load_model_from_path(args.model_path, args.device, args.verbose)
     else:
         raise ValueError(
             f"Invalid arguments {args.model_name=} and {args.model_path=}. (expected at one str value)"
