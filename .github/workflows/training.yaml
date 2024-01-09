@@ -62,7 +62,11 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-dot_cache
 
-    - name: Prepare data
+    - name: Prepare models (NLTK and spaCy models)
+      run: |
+        conette-prepare data=none default=false verbose=2 spacy=true nltk=true
+
+    - name: Prepare data and other models if necessary
       if: steps.cache_dot_cache.outputs.cache-hit != 'true'
       run: |
         echo "Prepare data in dataroot '$DATAROOT'"
