@@ -296,18 +296,21 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
 
     dsets = filter_dsets(cfg, dsets)
 
-    if cfg.verbose >= 2:
+    if cfg.verbose >= 2 and len(dsets) > 0:
         rand_subset = random.choice(list(dsets.keys()))
-        rand_idx = random.randint(0, len(dsets[rand_subset]) - 1)
-        meta_lst = dsets[rand_subset].at(rand_idx, "audio_metadata")
-        pylog.debug(f"Sample random metadata from subset '{rand_subset}':")
-        pylog.debug(f"{meta_lst}")
+        dset = dsets[rand_subset]
+        if len(dset) > 0:
+            rand_idx = random.randint(0, len(dset) - 1)
+            meta_lst = dset.at(rand_idx, "audio_metadata")
+            pylog.debug(f"Sample random metadata from subset '{rand_subset}':")
+            pylog.debug(f"{meta_lst}")
 
     return dsets
 
 
 def filter_dsets(
-    cfg: DictConfig, dsets: dict[str, AACDatasetLike]
+    cfg: DictConfig,
+    dsets: dict[str, AACDatasetLike],
 ) -> dict[str, AACDatasetLike]:
     min_audio_size = float(cfg.datafilter.min_audio_size)
     max_audio_size = float(cfg.datafilter.max_audio_size)
