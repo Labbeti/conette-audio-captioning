@@ -90,7 +90,8 @@ jobs:
 
     - name: Run CoNeTTE predict with trained model
       run: |
-        latest=`ls -Art "$LOGROOT" | grep train | tail -n 1`
-        model_path=$LOGROOT/$latest
+        latest_parent_logdir=`ls -Art "$LOGROOT" | grep train | tail -n 1`
+        latest_logdir=`ls -Art "$latest_parent_logdir" | tail -n 1`
+        model_path=$LOGROOT/$latest_parent_logdir/$latest_logdir
         echo "Predict with $model_path..."
         conette-predict --audio src/conette/data/sample.wav --model_path "$model_path"
