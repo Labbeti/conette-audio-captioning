@@ -53,6 +53,10 @@ jobs:
       run: |
         python -m pip install -e .[train]
 
+    - name: Print install info
+      run: |
+        conette-info
+
     - name: Prepare spaCy models
       run: |
         conette-prepare data=none default=false verbose=2 spacy=true
@@ -79,10 +83,6 @@ jobs:
         conette-prepare data=clotho default=true pann=false pack_to_hdf=true data.clean_archives=true data.subsets=[val] audio_t.src_sr=44100 audio_t.pretrain_path=${cnext_bl_path} post_hdf_name=bl pretag=cnext_bl csum_in_hdf_name=false path.data=$DATAROOT verbose=2
 
     # --- TESTS ---
-    - name: Print install info
-      run: |
-        conette-info
-
     - name: Train a model
       run: |
         target_hdf="clotho_val_resample_mean_convnext_ident_bl.hdf"
@@ -91,7 +91,7 @@ jobs:
     - name: Run CoNeTTE predict with trained model
       run: |
         latest_parent_logdir=`ls -Art "$LOGROOT" | grep train | tail -n 1`
-        latest_logdir=`ls -Art "$latest_parent_logdir" | tail -n 1`
+        latest_logdir=`ls -Art "$LOGROOT/$latest_parent_logdir" | tail -n 1`
         model_path=$LOGROOT/$latest_parent_logdir/$latest_logdir
         echo "Predict with $model_path..."
         conette-predict --audio src/conette/data/sample.wav --model_path "$model_path"
