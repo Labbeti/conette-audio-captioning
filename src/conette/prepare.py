@@ -24,6 +24,7 @@ from typing import Any
 
 import hydra
 import nltk
+import spacy
 import torch
 import torchaudio
 import yaml
@@ -71,6 +72,7 @@ def download_models(cfg: DictConfig) -> None:
     if cfg.nltk:
         # Download wordnet and omw-1.4 NLTK model for nltk METEOR metric
         # Download punkt NLTK model for nltk tokenizer
+        # Download stopwords for constrained beam seach generation
         for model_name in (
             "wordnet",
             "omw-1.4",
@@ -82,17 +84,24 @@ def download_models(cfg: DictConfig) -> None:
 
     if cfg.spacy:
         # Download spaCy model for AACTokenizer
-        for model_name in ("en_core_web_sm", "fr_core_news_sm", "xx_ent_wiki_sm"):
-            command = f"{sys.executable} -m spacy download {model_name}".split(" ")
+        SPACY_MODELS = ("en_core_web_sm", "fr_core_news_sm", "xx_ent_wiki_sm")
+        for model_name in SPACY_MODELS:
             try:
-                subprocess.check_call(
-                    command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
-                )
-                pylog.info(f"Model '{model_name}' for spacy downloaded.")
-            except (CalledProcessError, PermissionError) as err:  # type: ignore
-                pylog.error(
-                    f"Cannot download spaCy model '{model_name}' for tokenizer. (command '{command}' with error={err})"
-                )
+                _model = spacy.load(model_name)
+                pylog.info(f"Model '{model_name}' for spacy is already downloaded.")
+            except OSError:
+                command = [sys.executable, "-m", "spacy", "download", model_name]
+                try:
+                    subprocess.check_call(
+                        command,
+                        stdout=subprocess.DEVNULL,
+                        stderr=subprocess.DEVNULL,
+                    )
+                    pylog.info(f"Model '{model_name}' for spacy has been downloaded.")
+                except (CalledProcessError, PermissionError) as err:  # type: ignore
+                    pylog.error(
+                        f"Cannot download spaCy model '{model_name}' for tokenizer. (command '{command}' with error={err})"
+                    )
 
     if str(cfg.pann).lower() != "none":
         ckpt_dir = osp.join(torch.hub.get_dir(), "checkpoints")

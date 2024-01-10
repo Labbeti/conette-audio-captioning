@@ -53,21 +53,26 @@ jobs:
       run: |
         python -m pip install -e .[train]
 
-    - name: Load dot cache
-      uses: actions/cache@master
-      id: cache_dot_cache
-      with:
-        path: "~/.cache"
-        key: ${{ runner.os }}-dot_cache
-        restore-keys: |
-          ${{ runner.os }}-dot_cache
-
-    - name: Prepare models (NLTK and spaCy models)
+    - name: Prepare spaCy models
       run: |
-        conette-prepare data=none default=false verbose=2 spacy=true nltk=true
+        conette-prepare data=none default=false verbose=2 spacy=true
+
+    - name: Load prepare cache
+      uses: actions/cache@master
+      id: cache_preparation
+      with:
+        path: |
+          "~/.cache/aac-metrics"
+          "~/.cache/conette"
+          "~/.cache/huggingface"
+          "~/.cache/torch"
+          "~/nltk_data"
+        key: ${{ runner.os }}-cache_preparation
+        restore-keys: |
+          ${{ runner.os }}-cache_preparation
 
     - name: Prepare data and other models if necessary
-      if: steps.cache_dot_cache.outputs.cache-hit != 'true'
+      if: steps.cache_preparation.outputs.cache-hit != 'true'
       run: |
         echo "Prepare data in dataroot '$DATAROOT'"
         cnext_bl_path="$HOME/.cache/torch/hub/checkpoints/convnext_tiny_465mAP_BL_AC_70kit.pth"
