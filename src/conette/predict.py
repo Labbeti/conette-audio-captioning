@@ -131,18 +131,28 @@ def _load_model_from_path(
         pylog.info(f"Initilizing model from '{model_path}'...")
 
     cfg_fpath = osp.join(model_path, "hydra", "config.yaml")
-    with open(cfg_fpath, "r") as file:
-        cfg = yaml.safe_load(file)
-    cfg: DictConfig = OmegaConf.create(cfg)  # type: ignore
+    ckpt_fpath = osp.join(model_path, "checkpoints", "best.ckpt")
 
-    pl_cfg = cfg["pl"]
+    if not osp.isfile(cfg_fpath):
+        raise FileNotFoundError(
+            f"Cannot find config file in model_path directory. ({cfg_fpath} is not a file)"
+        )
+    if not osp.isfile(ckpt_fpath):
+        raise FileNotFoundError(
+            f"Cannot find checkpoint file in model_path directory. ({ckpt_fpath} is not a file)"
+        )
+
+    with open(cfg_fpath, "r") as file:
+        raw_cfg = yaml.safe_load(file)
+    cfg: DictConfig = OmegaConf.create(raw_cfg)  # type: ignore
+
+    pl_cfg = cfg.get("pl", {})
     target = pl_cfg.pop("_target_", "unknown")
     if CoNeTTEPLM.__name__ not in target:
         raise NotImplementedError(f"Unsupported pretrained model type '{target}'.")
 
     model = CoNeTTEPLM(**pl_cfg)
 
-    ckpt_fpath = osp.join(model_path, "checkpoints", "best.ckpt")
     ckpt_data = torch.load(ckpt_fpath, map_location=model.device)
     state_dict = ckpt_data["state_dict"]
     model.load_state_dict(state_dict, strict=True)
