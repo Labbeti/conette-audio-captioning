@@ -21,4 +21,4 @@ sweep:
   subdir: "${hydra.job.num}-${subtagv}"
 
 # Set args save in board dir
-output_subdir: "${hydra.sweep.dir}/${hydra.sweep.subdir}/hydra"
+output_subdir: "${hydra.sweep.subdir}/hydra"
