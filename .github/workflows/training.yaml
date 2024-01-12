@@ -62,21 +62,21 @@ jobs:
         conette-prepare data=none default=false verbose=2 spacy=true
 
     - name: Load prepare cache
-      uses: actions/cache@master
+      uses: actions/cache@v3
       id: cache_preparation
       with:
         path: |
-          "~/.cache/aac-metrics"
-          "~/.cache/conette"
-          "~/.cache/huggingface"
-          "~/.cache/torch"
-          "~/nltk_data"
-        key: ${{ runner.os }}-cache_preparation
+          "/home/runner/.cache/aac-metrics"
+          "/home/runner/.cache/conette"
+          "/home/runner/.cache/huggingface"
+          "/home/runner/.cache/torch"
+          "/home/runner/nltk_data"
+        key: ${{ runner.os }}-cache_preparation-${{ hashFiles('src/conette/prepare.py') }}
         restore-keys: |
           ${{ runner.os }}-cache_preparation
 
     - name: Prepare data and other models if necessary
-      if: steps.cache_preparation.outputs.cache-hit != 'true'
+      if: ${{ steps.cache_preparation.outputs.cache-hit != 'true' }}
       run: |
         echo "Prepare data in dataroot '$DATAROOT'"
         cnext_bl_path="$HOME/.cache/torch/hub/checkpoints/convnext_tiny_465mAP_BL_AC_70kit.pth"
