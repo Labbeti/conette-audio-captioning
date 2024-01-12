@@ -66,11 +66,11 @@ jobs:
       id: cache_preparation
       with:
         path: |
-          "/home/runner/.cache/aac-metrics"
-          "/home/runner/.cache/conette"
-          "/home/runner/.cache/huggingface"
-          "/home/runner/.cache/torch"
-          "/home/runner/nltk_data"
+          ~/.cache/aac-metrics
+          ~/.cache/conette
+          ~/.cache/huggingface
+          ~/.cache/torch
+          ~/nltk_data
         key: ${{ runner.os }}-cache_preparation-${{ hashFiles('src/conette/prepare.py') }}
         restore-keys: |
           ${{ runner.os }}-cache_preparation
