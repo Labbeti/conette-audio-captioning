@@ -96,9 +96,9 @@ If you already installed conette for inference, it is **highly recommanded to cr
 ### Download external models and data
 These steps might take a while (few hours to download and prepare everything depending on your CPU, GPU and SSD/HDD).
 
-First, download the ConvNext, NLTK and spacy models :
+First, download the ConvNeXt, NLTK and spacy models :
 ```bash
-conette-prepare data=none default=true pack_to_hdf=false csum_in_hdf_name=false
+conette-prepare data=none default=true pack_to_hdf=false csum_in_hdf_name=false pann=false
 ```
 
 Then download the 4 datasets used to train CoNeTTE :
@@ -112,8 +112,8 @@ conette-prepare data=macs audio_t.src_sr=48000 ${common_args}
 conette-prepare data=wavcaps audio_t.src_sr=32000 ${common_args} datafilter.min_audio_size=0.1 datafilter.max_audio_size=30.0 datafilter.sr=32000
 ```
 
-### Training a model
-CNext-trans on CL only (~3 hours on 1 GPU V100-32G)
+### Train a model
+CNext-trans (baseline) on CL only (~3 hours on 1 GPU V100-32G)
 ```bash
 conette-train expt=[clotho_cnext_bl] pl=baseline
 ```
