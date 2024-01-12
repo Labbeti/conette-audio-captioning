@@ -1,0 +1,14 @@
+# @package tok
+
+_target_: "conette.tokenization.aac_tokenizer.AACTokenizer"
+
+level: "word"
+lowercase: false
+punctuation_mode: "remove"  # note: PTB tokenizer already delete punctuations tokens
+normalize: true
+
+backend: "ptb"
+
+cache_path: "${path.cache}"
+java_path: "${path.java}"
+tmp_path: "${path.tmp}"

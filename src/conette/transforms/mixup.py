@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import random
+
 from typing import Any, Iterable, Union
 
 import torch
 
-from torch import Tensor
+from torch import nn, Tensor
 from torch.distributions.beta import Beta
 
 
@@ -53,3 +55,76 @@ def sample_lambda(
     if asymmetric:
         lbd = torch.max(lbd, 1.0 - lbd)
     return lbd
+
+
+class Mixup(nn.Module):
+    """
+    Mix linearly inputs with coefficient sampled from a Beta distribution.
+    """
+
+    def __init__(
+        self,
+        alpha: float = 0.4,
+        asymmetric: bool = False,
+        p: float = 1.0,
+    ) -> None:
+        """
+        ```
+        lambda ~ Beta(alpha, alpha)
+        x = lambda * x + (1.0 - lambda) * shuffle(x)
+        y = lambda * y + (1.0 - lambda) * shuffle(y)
+        ```
+
+        :param alpha: The parameter used by the beta distribution.
+            If alpha -> 0, the value sampled will be close to 0 or 1.
+            If alpha -> 1, the value will be sampled from a uniform distribution.
+            defaults to 0.4.
+        :param asymmetric: If True, the first coefficient will always be the higher one, which means the result will be closer to the input.
+            defaults to False.
+        :param p: The probability to apply the mixup.
+            defaults to 1.0.
+        """
+        assert 0.0 <= p <= 1.0
+        super().__init__()
+        self.alpha = alpha
+        self.asymmetric = asymmetric
+        self.p = p
+
+        self.beta = Beta(alpha, alpha)
+
+    # nn.Module methods
+    def extra_repr(self) -> str:
+        hparams = {
+            "alpha": self.alpha,
+            "asymmetric": self.asymmetric,
+            "p": self.p,
+        }
+        return ", ".join(f"{k}={v}" for k, v in hparams.items())
+
+    def __call__(self, x: Tensor, y: Tensor) -> tuple[Tensor, Tensor]:
+        # This method is here only for typing
+        return super().__call__(x, y)
+
+    def forward(self, x: Tensor, y: Tensor) -> tuple[Tensor, Tensor]:
+        if self.p >= 1.0 or random.random() < self.p:
+            return self.apply_transform(x, y)
+        else:
+            return x, y
+
+    # Other methods
+    def sample_lambda(self, size: Iterable[int] = ()) -> Tensor:
+        return sample_lambda(self.alpha, self.asymmetric, size)
+
+    def apply_transform(self, x: Tensor, y: Tensor) -> tuple[Tensor, Tensor]:
+        if x.shape[0] != y.shape[0]:
+            raise ValueError(
+                f"Data to mix must have the same size along the first dim. ({x.shape[0]=} != {y.shape[0]=})"
+            )
+
+        bsize = x.shape[0]
+        lbd = self.sample_lambda(())
+        indexes = torch.randperm(bsize)
+
+        x = x * lbd + x[indexes] * (1.0 - lbd)
+        y = y * lbd + y[indexes] * (1.0 - lbd)
+        return x, y

@@ -1,0 +1,57 @@
+# @package _global_
+
+defaults:
+  - hydra: custom
+  - launcher: ???
+  - _self_
+
+# --- Common params
+
+# bool
+debug: false
+# str | None
+git_hash: null
+# str
+posttag: ""
+# str
+pretag: ""
+# int
+seed: 1234
+# str | None
+sharing_strategy: null
+# str | list[str] | "auto"
+subtagk: "auto"
+# str | list[str]
+tagk: []
+# int
+verbose: 1
+
+# --- Auto params
+
+# str
+datetime: ${now:%Y.%m.%d-%H.%M.%S}
+# str
+tagv: ${get_tag:}
+# str
+subtagv: ${get_subtag:}
+
+# --- Other params
+
+# str | list[str]
+resume: ???
+# str | list[str]
+hdf_fnames: ???
+# int
+bsize: 512
+# int
+n_workers: ${slurm.cpus_per_task}
+# str
+device: "auto"
+# str | list[str]
+t2a_modes:
+  - "loss"
+  - "scaled_loss"
+# str | list[str]
+a2t_modes:
+  - "loss"
+  - "scaled_loss"

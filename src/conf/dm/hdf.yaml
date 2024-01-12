@@ -1,0 +1,24 @@
+# @package dm
+
+_target_: "conette.datamodules.hdf.HDFDataModule"
+
+root: "${path.data}"
+bsize: 512
+n_workers: ${slurm.cpus_per_task}
+pin_memory: true
+train_drop_last: false
+verbose: ${verbose}
+
+train_cols: [audio, audio_shape, captions]
+val_cols: [audio, audio_shape, captions]
+test_cols: [audio, audio_shape, captions, dataset, subset, fname, index]
+
+train_hdfs: ???
+val_hdfs: ???
+test_hdfs: ???
+predict_hdfs: []
+audio_padding: "batch"
+main_hdf_duplicate: null
+main_hdf_min: null
+main_hdf_balanced: null
+n_added_data: null

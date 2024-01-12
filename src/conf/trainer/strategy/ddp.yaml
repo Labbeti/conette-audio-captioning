@@ -1,0 +1,8 @@
+# @package trainer.strategy
+
+_target_: "pytorch_lightning.strategies.DDPStrategy"
+
+find_unused_parameters: false
+static_graph: true
+# null, "nccl", "mpi", "gloo"
+# process_group_backend: null

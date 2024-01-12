@@ -1,0 +1,5 @@
+# @package trainer.plugins
+
+_target_: "pytorch_lightning.plugins.environments.SLURMEnvironment"
+
+auto_requeue: false

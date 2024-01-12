@@ -1,0 +1,21 @@
+# @package _global_
+
+defaults:
+  - hp_clotho_v2
+
+dm:
+  train_hdfs:
+  - clotho_dev_resample_mean_convnext_ident_bl.hdf
+  val_hdfs:
+  - clotho_val_resample_mean_convnext_ident_bl.hdf
+  test_hdfs:
+  - audiocaps_val_resample_mean_convnext_ident_bl.hdf
+  - audiocaps_test_resample_mean_convnext_ident_bl.hdf
+  - clotho_val_resample_mean_convnext_ident_bl.hdf
+  - clotho_eval_resample_mean_convnext_ident_bl.hdf
+  predict_hdfs:
+  - clotho_test_resample_mean_convnext_ident_bl.hdf
+  - clotho_analysis_resample_mean_convnext_ident_bl.hdf
+
+pl:
+  proj_name: "lin768"

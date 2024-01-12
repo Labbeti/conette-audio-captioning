@@ -1,0 +1,24 @@
+# @package hydra
+
+defaults:
+  - override hydra_logging: colorlog
+  - override job_logging: custom  # redirect log file to output_subdir
+  - override launcher: basic
+  - override sweeper: basic
+  - _self_
+
+job:
+  # note: add default num for single-runs
+  num: 0
+
+# Set hydra working dir for single runs
+run:
+  dir: "${path.log_root}/${hydra.job.name}-${datetime}-${tagv}"
+
+# Set hydra working dir for multiruns
+sweep:
+  dir: "${path.log_root}/${hydra.job.name}-${datetime}-${tagv}"
+  subdir: "${hydra.job.num}-${subtagv}"
+
+# Set args save in board dir
+output_subdir: "${hydra.sweep.subdir}/hydra"

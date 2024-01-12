@@ -23,6 +23,7 @@ class TestInference(TestCase):
         outputs = self.model(path)
         candidate = outputs["cands"][0]
 
+        # expected: "rain is pouring down and people are talking in the background"
         self.assertIsInstance(candidate, str)
 
     def test_example_2(self) -> None:
@@ -55,6 +56,14 @@ class TestInference(TestCase):
         cand = outputs["cands"][0]
 
         self.assertIsInstance(cand, str)
+
+    def test_tags(self) -> None:
+        path = get_sample_path()
+        outputs = self.model(path, task="clotho", forbid_rep_mode="none", beam_size=1)
+        tags = outputs["tags"]
+
+        assert tags is not None
+        self.assertIsInstance(tags, list)
 
 
 if __name__ == "__main__":

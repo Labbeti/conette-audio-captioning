@@ -1,0 +1,55 @@
+# @package _global_
+
+defaults:
+  - /path: local
+  - _self_
+
+
+slurm:
+  # --- Config
+
+  # Account for sbatch
+  account: null
+  # Nodes constraints (also -C)
+  constraint: null
+  # Number of CPUs (also -c)
+  cpus_per_task: null
+  # Cores selection (also -m)
+  distribution: null
+  # Path to the stderr file (also -e)
+  error: "${path.log_root}/slurm/%j-${slurm.job_name}.out"
+  # GPU resources
+  gres: "gpu:${slurm.gpus}"
+  # GPU resources flags
+  gres_flags: null
+  # Job name (also -J)
+  job_name: "${tagv}-${subtagv}"
+  # Global RAM memory to use. Memory format : number[K|M|G|T]. If "0", no memory limit, use all of memory in node.
+  mem: null
+  # Memory per CPU to use.
+  mem_per_cpu: null
+  # Number of nodes (also -N)
+  nodes: 1
+  # Number of tasks (also -n)
+  ntasks_per_node: 1
+  # Path to the stdout file (also -o)
+  output: "${path.log_root}/slurm/%j-${slurm.job_name}.out"
+  # Partition (also -p)
+  partition: null
+  # Quality Of Service queue (also -q)
+  qos: null
+  # Time format : days-hours:minutes:seconds. If "0", no time limit. Example for 3 days : 3-00:00:00 (also -t)
+  time: 0
+
+  # --- Other
+
+  # Number of GPUs
+  gpus: 1
+  # Module commands executed before srun
+  module_cmds: ""
+  # Sbatch command used to execute the sbatch script
+  sbatch: "bash"
+  # Srun prefix used to run python command
+  srun: ""
+  # Test sbatch file without launching the job
+  test_only: false

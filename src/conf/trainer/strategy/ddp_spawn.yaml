@@ -1,0 +1,3 @@
+# @package trainer.strategy
+
+_target_: "pytorch_lightning.strategies.DDPSpawnStrategy"

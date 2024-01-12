@@ -1,0 +1,11 @@
+# @package trainer.profiler
+
+_target_: "pytorch_lightning.profilers.PyTorchProfiler"
+
+dirpath: "${hydra.sweep.dir}/${hydra.sweep.subdir}"
+filename: "pytorch_profiler"
+record_shapes: True
+profile_memory: True
+with_stack: True
+with_flops: True
+with_modules: True

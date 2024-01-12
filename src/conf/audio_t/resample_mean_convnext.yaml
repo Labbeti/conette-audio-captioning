@@ -1,0 +1,12 @@
+# @package audio_t
+
+_target_: "conette.transforms.get.get_resample_mean_convnext"
+
+src_sr: ???
+tgt_sr: 32000
+mean_dim: 0
+
+device: "auto"
+transpose_frame_embs: true
+only_frame_embs: false
+pretrain_path: ???

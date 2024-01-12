@@ -1,0 +1,15 @@
+# @package ckpts
+
+- _target_: "conette.callbacks.custom_ckpt.CustomModelCheckpoint"
+
+  dirpath: "${hydra:sweep.dir}/${hydra:sweep.subdir}/checkpoints"
+  save_last: false
+  save_top_k: 1
+  monitor: "val/fense"
+  mode: "max"
+  verbose: ${verbose}
+  filename: "{epoch:03d}-{step:06d}-mode_${ckpts.0.mode}-{${ckpts.0.monitor}:.4f}"  # default: "{epoch}-{step}"
+
+  log_best_score: true
+  save_after_epoch: null
+  create_symlink: true

@@ -1,0 +1,13 @@
+# -*- coding: utf-8 -*-
+
+setuptools
+pyyaml
+torch>=1.10,<2.0
+torchaudio
+torchlibrosa
+pytorch-lightning>=1.7,<2.0
+nltk
+spacy
+tensorboard
+transformers
+omegaconf

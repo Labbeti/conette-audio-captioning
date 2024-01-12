@@ -1,0 +1,13 @@
+# @package audio_t
+
+_target_: "conette.transforms.audio.spec_aug.SpecAugmentRatio"
+
+# Note: input must be (bsize, n_channels, time_steps, freq_steps) or (n_channels, time_steps, freq_steps)
+
+time_ratios: [0.0, 0.1]
+time_stripes_num: 2
+freq_ratios: [0.0, 0.1]
+freq_stripes_num: 2
+time_dim: -2
+freq_dim: -1
+p: 1.0

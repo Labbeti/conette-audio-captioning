@@ -1,0 +1,39 @@
+# @package trainer
+
+defaults:
+  - plugins: none
+  - profiler: none
+  - strategy: none
+
+_target_: "pytorch_lightning.trainer.Trainer"
+
+accelerator: "gpu"
+accumulate_grad_batches: 1
+auto_scale_batch_size: null
+benchmark: false
+detect_anomaly: false
+deterministic: false
+devices: ${slurm.gpus}
+enable_checkpointing: ${save}
+enable_model_summary: false
+fast_dev_run: false
+gradient_clip_algorithm: "norm"
+gradient_clip_val: 10
+limit_predict_batches: null
+limit_test_batches: null
+limit_train_batches: null
+limit_val_batches: null
+log_every_n_steps: 5
+max_epochs: 100
+max_steps: -1
+move_metrics_to_cpu: false
+# multiple_trainloader_mode: "max_size_cycle", "min_size"
+multiple_trainloader_mode: "max_size_cycle"
+num_nodes: 1
+# precision: 32, 16
+precision: 32
+reload_dataloaders_every_n_epochs: 0
+resume_from_checkpoint: null
+num_sanity_val_steps: 0
+track_grad_norm: -1
+val_check_interval: null

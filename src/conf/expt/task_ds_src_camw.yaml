@@ -1,0 +1,15 @@
+# @package _global_
+
+defaults:
+  - override /pl: conette
+
+pl:
+  task_names: [clotho, audiocaps, macs, wavcaps_audioset_sl, wavcaps_bbc_sound_effects, wavcaps_freesound, wavcaps_soundbible]
+  task_mode: ds_src
+  gen_val_cands: generate
+  gen_test_cands: generate
+
+dm:
+  train_cols: [audio, audio_shape, captions, dataset, source]
+  val_cols: [audio, audio_shape, captions, dataset, source]
+  test_cols: [audio, audio_shape, captions, dataset, subset, fname, index, source]

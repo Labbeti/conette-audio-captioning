@@ -1,0 +1,93 @@
+# @package _global_
+
+defaults:
+  - audio_t@audio_t.train: spec_aug_ratio_emb
+  - audio_t@audio_t.val: none
+  - audio_t@audio_t.test: none
+  - ckpts: loss
+  - dm: hdf
+  - evaluator: aac
+  - hydra: custom
+  - launcher: local
+  - logger: custom_tb
+  - pl: conette
+  - tok@train_tok: spacy
+  - tok@test_tok: test
+  - trainer: fit_test
+  - _self_
+  # note: expt must be the last in defaults list
+  - expt: clotho_cnext_bl
+
+# --- Common params
+
+# bool
+debug: false
+# str | None
+git_hash: null
+# str
+posttag: ""
+# str
+pretag: ""
+# int
+seed: 1234
+# str | None
+sharing_strategy: null
+# str | list[str] | "auto"
+subtagk: "auto"
+# str | list[str]
+tagk: []
+# int
+verbose: 1
+
+# --- Auto params
+
+# str
+datetime: ${now:%Y.%m.%d-%H.%M.%S}
+# str
+tagv: ${get_tag:}
+# str
+subtagv: ${get_subtag:}
+
+# --- Other params
+
+# str | None
+resume: null
+# str | None
+resume_2: null
+# bool
+strict_resume: true
+# bool
+resume_before_setup: false
+# bool
+save: true
+# bool
+val_on_start: true
+# bool
+test_on_start: true
+# str | None
+out_crit: null
+# float
+out_default: -1.0
+# str | list[str]
+val_metrics_keys: []
+# str | list[str]
+ign_weights: []
+# bool
+enable_dspeed: true
+
+testing:
+  # list[str]
+  # Can contains: "best", "last", "none", "swa"
+  run: [best]
+
+  # Note: this param is ignored if "swa" is not in testing.run
+  swa:
+    _target_: "pytorch_lightning.callbacks.StochasticWeightAveraging"
+    # int | float
+    swa_epoch_start: 0.8
+    # float | List[float] | None
+    swa_lrs: null
+    # int
+    annealing_epochs: 10
+    # str: "cos", "linear"
+    annealing_strategy: "cos"

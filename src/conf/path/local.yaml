@@ -1,0 +1,26 @@
+# @package path
+
+# Local default paths
+
+# Cache directory
+cache: "${oc.env:HOME}/.cache"
+# Default data directory
+data: "data"
+# To redirect gensim data and models
+gensim: null
+# For audiocaps download
+ffmpeg: "ffmpeg"
+# For SPICE & METEOR metrics
+java: "java"
+# Parent log directory (cannot contains environment variables)
+log_root: "logs"
+# Path to micromamba
+micromamba: "micromamba"
+# Global tmp directory
+tmp: "/tmp"
+# To redirect torch models (default: ~/.cache/torch/hub)
+torch_hub: null
+# For audiocaps download
+ytdl: "yt-dlp"
+# For FSD50K download
+zip: "zip"

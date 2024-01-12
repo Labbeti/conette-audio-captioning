@@ -1,0 +1,98 @@
+# Template: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: CoNeTTE training
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: [ main, dev ]
+
+env:
+  CACHE_NUMBER: 0  # increase to reset cache manually
+  DATAROOT: "$HOME/.cache/data"
+  LOGROOT: "logs"
+
+# Cancel workflow if a new push occurs
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python-version: ["3.10"]
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    steps:
+    # --- INSTALLATIONS ---
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v2
+      with:
+        submodules: recursive
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install soundfile
+      run: |
+        # For soundfile dep
+        sudo apt-get install libsndfile1
+
+    - name: Install local packages
+      run: |
+        python -m pip install -e .[train]
+
+    - name: Print install info
+      run: |
+        conette-info
+
+    - name: Prepare spaCy models
+      run: |
+        conette-prepare data=none default=false verbose=2 spacy=true
+
+    - name: Load prepare cache
+      uses: actions/cache@v3
+      id: cache_preparation
+      with:
+        path: |
+          ~/.cache/aac-metrics
+          ~/.cache/conette
+          ~/.cache/data/HDF
+          ~/.cache/huggingface
+          ~/.cache/torch
+          ~/nltk_data
+        key: ${{ runner.os }}-cache_preparation-${{ hashFiles('src/conette/prepare.py') }}
+        restore-keys: |
+          ${{ runner.os }}-cache_preparation
+
+    - name: Prepare data and other models if necessary
+      if: ${{ steps.cache_preparation.outputs.cache-hit != 'true' }}
+      run: |
+        echo "Prepare data in dataroot '$DATAROOT'"
+        cnext_bl_path="$HOME/.cache/torch/hub/checkpoints/convnext_tiny_465mAP_BL_AC_70kit.pth"
+        conette-prepare data=clotho default=true pann=false pack_to_hdf=true data.clean_archives=true data.subsets=[val] audio_t.src_sr=44100 audio_t.pretrain_path=${cnext_bl_path} post_hdf_name=bl pretag=cnext_bl csum_in_hdf_name=false path.data=$DATAROOT verbose=2
+
+    # --- TESTS ---
+    - name: Train a model
+      run: |
+        target_hdf="clotho_val_resample_mean_convnext_ident_bl.hdf"
+        conette-train pl=conette expt=[clotho_cnext_bl,task_ds_src_camw] dm.train_hdfs=${target_hdf} dm.val_hdfs=${target_hdf} dm.test_hdfs=${target_hdf} dm.predict_hdfs=[] trainer.accelerator=cpu enable_dspeed=false path.data=$DATAROOT verbose=2 trainer=lim2 dm.bsize=3 trainer.max_epochs=1 path.log_root=$LOGROOT
+
+    - name: Run CoNeTTE predict with trained model
+      run: |
+        latest_parent_logdir=`ls -Art "$LOGROOT" | grep train | tail -n 1`
+        latest_logdir=`ls -Art "$LOGROOT/$latest_parent_logdir" | tail -n 1`
+        model_path=$LOGROOT/$latest_parent_logdir/$latest_logdir
+        echo "Predict with $model_path..."
+        conette-predict --audio src/conette/data/sample.wav --model_path "$model_path"

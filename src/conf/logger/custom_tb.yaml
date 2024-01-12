@@ -1,0 +1,8 @@
+# @package logger
+
+_target_: "conette.utils.custom_logger.CustomTensorboardLogger"
+
+save_dir: "${hydra:sweep.dir}/${hydra:sweep.subdir}"
+name: null
+version: ""
+default_hp_metric: true

@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.0] 2024-01-12
+### Added
+- CoNeTTE training source code, with entire data processing.
+- ConvNeXt-trans baseline training source code, with entire data processing.
+- ConvNeXt tag logits to CoNeTTE model outputs during inference.
+
 ## [0.1.4] 2023-11-20
 ### Fixed
 - Fix forbid repetition mode argument.

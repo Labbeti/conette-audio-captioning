@@ -1,0 +1,14 @@
+# @package data
+
+# Common params
+root: "${path.data}"
+bsize: 512
+n_workers: ${slurm.cpus_per_task}
+pin_memory: true
+verbose: ${verbose}
+
+# Other params
+subsets: null
+download: false
+tags_to_str: true
+clean_archives: false

@@ -3,7 +3,7 @@
 
 import logging
 
-from typing import Any, Iterable, Optional, Union
+from typing import Any, Iterable, Optional, TypedDict, Union
 
 import pickle
 import torch
@@ -17,9 +17,19 @@ from conette.huggingface.setup import setup_other_models
 from conette.nn.functional.get import get_device
 from conette.pl_modules.conette import CoNeTTEPLM
 from conette.tokenization.aac_tokenizer import AACTokenizer
+from conette.transforms.audioset_labels import probs_to_labels
 
 
 pylog = logging.getLogger(__name__)
+
+
+class CoNeTTEOutput(TypedDict):
+    cands: list[str]
+    tasks: list[str]
+    preds: Tensor
+    lprobs: Tensor
+    tags: list[list[str]]
+    tags_probs: Tensor
 
 
 class CoNeTTEModel(PreTrainedModel):
@@ -30,8 +40,10 @@ class CoNeTTEModel(PreTrainedModel):
         config: CoNeTTEConfig,
         device: Union[str, torch.device, None] = "auto",
         inference: bool = True,
+        offline: bool = False,
+        model_override: Optional[CoNeTTEPLM] = None,
     ) -> None:
-        setup_other_models()
+        setup_other_models(offline)
 
         if config.tokenizer_state is None:
             tokenizer = AACTokenizer()
@@ -39,36 +51,39 @@ class CoNeTTEModel(PreTrainedModel):
             tokenizer = AACTokenizer.from_txt_state(config.tokenizer_state)
 
         preprocessor = CoNeTTEPreprocessor(verbose=config.verbose)
-        model = CoNeTTEPLM(
-            task_mode=config.task_mode,
-            task_names=config.task_names,
-            gen_test_cands=config.gen_test_cands,
-            label_smoothing=config.label_smoothing,
-            gen_val_cands=config.gen_val_cands,
-            mixup_alpha=config.mixup_alpha,
-            proj_name=config.proj_name,
-            min_pred_size=config.min_pred_size,
-            max_pred_size=config.max_pred_size,
-            beam_size=config.beam_size,
-            nhead=config.nhead,
-            d_model=config.d_model,
-            num_decoder_layers=config.num_decoder_layers,
-            decoder_dropout_p=config.decoder_dropout_p,
-            dim_feedforward=config.dim_feedforward,
-            acti_name=config.acti_name,
-            optim_name=config.optim_name,
-            lr=config.lr,
-            weight_decay=config.weight_decay,
-            betas=config.betas,
-            eps=config.eps,
-            use_custom_wd=config.use_custom_wd,
-            sched_name=config.sched_name,
-            sched_n_steps=config.sched_n_steps,
-            sched_interval=config.sched_interval,
-            sched_freq=config.sched_freq,
-            train_tokenizer=tokenizer,
-            verbose=config.verbose,
-        )
+        if model_override is not None:
+            model = model_override
+        else:
+            model = CoNeTTEPLM(
+                task_mode=config.task_mode,
+                task_names=config.task_names,
+                gen_test_cands=config.gen_test_cands,
+                label_smoothing=config.label_smoothing,
+                gen_val_cands=config.gen_val_cands,
+                mixup_alpha=config.mixup_alpha,
+                proj_name=config.proj_name,
+                min_pred_size=config.min_pred_size,
+                max_pred_size=config.max_pred_size,
+                beam_size=config.beam_size,
+                nhead=config.nhead,
+                d_model=config.d_model,
+                num_decoder_layers=config.num_decoder_layers,
+                decoder_dropout_p=config.decoder_dropout_p,
+                dim_feedforward=config.dim_feedforward,
+                acti_name=config.acti_name,
+                optim_name=config.optim_name,
+                lr=config.lr,
+                weight_decay=config.weight_decay,
+                betas=config.betas,
+                eps=config.eps,
+                use_custom_wd=config.use_custom_wd,
+                sched_name=config.sched_name,
+                sched_n_steps=config.sched_n_steps,
+                sched_interval=config.sched_interval,
+                sched_freq=config.sched_freq,
+                train_tokenizer=tokenizer,
+                verbose=config.verbose,
+            )
 
         super().__init__(config)
         self.config: CoNeTTEConfig
@@ -162,22 +177,27 @@ class CoNeTTEModel(PreTrainedModel):
         sr: Union[None, int, Iterable[int]] = None,
         x_shapes: Union[Tensor, None, list[Size]] = None,
         preprocess: bool = True,
+        threshold: Union[float, Tensor] = 0.3,
         # Beam search options
         task: Union[str, list[str], None] = None,
         beam_size: Optional[int] = None,
         min_pred_size: Optional[int] = None,
         max_pred_size: Optional[int] = None,
         forbid_rep_mode: Optional[str] = None,
-    ) -> dict[str, Any]:
+    ) -> CoNeTTEOutput:
         # Preprocessing (load data + encode features)
         if preprocess:
             batch = self.preprocessor(x, sr, x_shapes)
+            clip_probs = batch.pop("clip_probs")
+            tags = probs_to_labels(clip_probs, threshold, True, self.config.verbose)
         else:
             assert isinstance(x, Tensor) and isinstance(x_shapes, Tensor)
             batch: dict[str, Any] = {
                 "audio": x.to(self.device),
                 "audio_shape": x_shapes.to(self.device),
             }
+            clip_probs = None
+            tags = None
 
         # Add task information to batch
         bsize = len(batch["audio"])
@@ -222,6 +242,10 @@ class CoNeTTEModel(PreTrainedModel):
         outs = self.model(batch, **kwds)
         outs["tasks"] = tasks
 
+        if clip_probs is not None and tags is not None:
+            outs["tags_probs"] = clip_probs
+            outs["tags"] = tags
+
         return outs
 
     def __call__(
@@ -230,17 +254,21 @@ class CoNeTTEModel(PreTrainedModel):
         x: Union[Tensor, str, Iterable[str], Iterable[Tensor]],
         sr: Union[None, int, Iterable[int]] = None,
         x_shapes: Union[Tensor, None, list[Size]] = None,
+        preprocess: bool = True,
+        threshold: Union[float, Tensor] = 0.3,
         # Beam search options
         task: Union[str, list[str], None] = None,
         beam_size: Optional[int] = None,
         min_pred_size: Optional[int] = None,
         max_pred_size: Optional[int] = None,
         forbid_rep_mode: Optional[str] = None,
-    ) -> dict[str, Any]:
+    ) -> CoNeTTEOutput:
         return super().__call__(
             x=x,
             sr=sr,
             x_shapes=x_shapes,
+            preprocess=preprocess,
+            threshold=threshold,
             task=task,
             beam_size=beam_size,
             min_pred_size=min_pred_size,
