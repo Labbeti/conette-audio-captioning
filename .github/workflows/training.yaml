@@ -68,6 +68,7 @@ jobs:
         path: |
           ~/.cache/aac-metrics
           ~/.cache/conette
+          ~/.cache/data/HDF
           ~/.cache/huggingface
           ~/.cache/torch
           ~/nltk_data
