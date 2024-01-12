@@ -17,6 +17,7 @@ from omegaconf import OmegaConf, DictConfig
 
 from conette.nn.functional.get import get_device
 from conette.huggingface.model import CoNeTTEConfig, CoNeTTEModel
+from conette.pl_modules.baseline import BaselinePLM
 from conette.pl_modules.conette import CoNeTTEPLM
 from conette.utils.cmdline import _str_to_opt_str, _str_to_opt_int, _setup_logging
 from conette.utils.csum import csum_module
@@ -148,10 +149,12 @@ def _load_model_from_path(
 
     pl_cfg = cfg.get("pl", {})
     target = pl_cfg.pop("_target_", "unknown")
-    if CoNeTTEPLM.__name__ not in target:
+    if CoNeTTEPLM.__name__ in target:
+        model = CoNeTTEPLM(**pl_cfg)
+    elif BaselinePLM.__name__ in target:
+        model = BaselinePLM(**pl_cfg)
+    else:
         raise NotImplementedError(f"Unsupported pretrained model type '{target}'.")
-
-    model = CoNeTTEPLM(**pl_cfg)
 
     ckpt_data = torch.load(ckpt_fpath, map_location=model.device)
     state_dict = ckpt_data["state_dict"]

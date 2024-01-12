@@ -4,3 +4,4 @@ pytest
 flake8
 black
 ipykernel
+twine

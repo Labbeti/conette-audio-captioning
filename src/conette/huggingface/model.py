@@ -15,6 +15,7 @@ from conette.huggingface.config import CoNeTTEConfig
 from conette.huggingface.preprocessor import CoNeTTEPreprocessor
 from conette.huggingface.setup import setup_other_models
 from conette.nn.functional.get import get_device
+from conette.pl_modules.base import AACLightningModule
 from conette.pl_modules.conette import CoNeTTEPLM
 from conette.tokenization.aac_tokenizer import AACTokenizer
 from conette.transforms.audioset_labels import probs_to_labels
@@ -41,7 +42,7 @@ class CoNeTTEModel(PreTrainedModel):
         device: Union[str, torch.device, None] = "auto",
         inference: bool = True,
         offline: bool = False,
-        model_override: Optional[CoNeTTEPLM] = None,
+        model_override: Optional[AACLightningModule] = None,
     ) -> None:
         setup_other_models(offline)
 

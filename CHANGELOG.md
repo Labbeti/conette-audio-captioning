@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] 2024-01-12
+### Added
+- `conette-predict` now support CNext-trans (baseline) model.
+
 ## [0.2.0] 2024-01-12
 ### Added
 - CoNeTTE training source code, with entire data processing.
