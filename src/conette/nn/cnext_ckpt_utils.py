@@ -10,8 +10,6 @@ import torch
 
 from torch import Tensor
 
-from conette.transforms.audioset_labels import load_audioset_mapping
-
 
 pylog = logging.getLogger(__name__)
 
@@ -108,72 +106,3 @@ def cnext_download_ckpt(model_name: str, verbose: int = 0) -> None:
     fpath = cnext_get_ckpt_path(model_name)
     url = CNEXT_PRETRAINED_URLS[model_name]["url"]
     torch.hub.download_url_to_file(url, fpath, progress=verbose >= 1)
-
-
-def probs_to_binarized(
-    probs: Tensor,
-    threshold: Union[float, Tensor],
-) -> Tensor:
-    if probs.ndim != 2:
-        raise ValueError(
-            f"Invalid argument probs. (expected a batch of probabilities of shape (N, n_classes))."
-        )
-    nb_classes = probs.shape[1]
-
-    if isinstance(threshold, Tensor) and threshold.ndim == 1:
-        threshold = threshold.item()
-
-    if isinstance(threshold, (float, int)):
-        threshold = torch.full(
-            (nb_classes,), threshold, dtype=torch.float, device=probs.device
-        )
-    else:
-        if threshold.shape[1] != nb_classes:
-            raise ValueError("Invalid argument threshold.")
-        threshold = threshold.to(device=probs.device)
-
-    binarized = probs >= threshold
-    return binarized
-
-
-def binarized_to_indices(
-    binarized: Tensor,
-) -> list[list[int]]:
-    preds = []
-    for binarized_i in binarized:
-        preds_i = torch.where(binarized_i)[0].tolist()
-        preds.append(preds_i)
-    return preds
-
-
-def probs_to_indices(
-    probs: Tensor,
-    threshold: Union[float, Tensor],
-) -> list[list[int]]:
-    binarized = probs_to_binarized(probs, threshold)
-    preds = binarized_to_indices(binarized)
-    return preds
-
-
-def probs_to_labels(
-    probs: Tensor,
-    threshold: Union[float, Tensor],
-    audioset_indices_fpath: str,
-) -> list[list[str]]:
-    indices = probs_to_indices(probs, threshold)
-    labels = indices_to_labels(indices, audioset_indices_fpath)
-    return labels
-
-
-def indices_to_labels(
-    indices: Union[list[list[int]], list[Tensor]],
-    audioset_indices_fpath: str,
-) -> list[list[str]]:
-    name_to_idx = load_audioset_mapping()
-    idx_to_name = {idx: name for name, idx in name_to_idx.items()}
-
-    labels = []
-    for indices_i in indices:
-        names = [idx_to_name[idx] for idx in indices_i]  # type: ignore
-        labels.append(names)
-    return labels
