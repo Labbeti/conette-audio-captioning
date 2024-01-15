@@ -319,9 +319,17 @@ class BaselinePLM(AACLightningModule):
         outs = self.decode_audio(encoder_outs, decode_method, **kwargs)
 
         if decode_method == "generate":
-            preds, lprobs, _mult_preds, _mult_lprobs = outs
+            preds, lprobs, mult_preds, mult_lprobs = outs
             cands = self.decode_text(preds)
-            return {"cands": cands, "preds": preds, "lprobs": lprobs}
+            mult_cands = self.decode_text(mult_preds)
+            return {
+                "cands": cands,
+                "preds": preds,
+                "lprobs": lprobs,
+                "mult_cands": mult_cands,
+                "mult_preds": mult_preds,
+                "mult_lprobs": mult_lprobs,
+            }
         else:
             return outs
 
