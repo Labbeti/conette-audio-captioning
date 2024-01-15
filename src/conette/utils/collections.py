@@ -47,7 +47,7 @@ def all_ne(it: Iterable[T], ne_fn: Optional[Callable[[T, T], bool]] = None) -> b
 
 
 def list_dict_to_dict_list(
-    lst: Sequence[dict[str, T]],
+    lst: Sequence[Mapping[str, T]],
     default_val: U = None,
     error_on_missing_key: bool = False,
 ) -> dict[str, list[Union[T, U]]]:
@@ -84,7 +84,7 @@ def list_dict_to_dict_list(
     return out
 
 
-def dict_list_to_list_dict(dic: dict[str, list[T]]) -> list[dict[str, T]]:
+def dict_list_to_list_dict(dic: Mapping[str, Sequence[T]]) -> list[dict[str, T]]:
     """Convert dict of lists with same sizes to list of dicts.
 
     Example 1
