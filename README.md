@@ -83,8 +83,8 @@ This model checkpoint has been trained with focus on the Clotho dataset, but it 
 ## Train a model
 ### Requirements
 - Intended for Ubuntu 20.04 only. Requires **java** < 1.13, **ffmpeg**, **yt-dlp**, and **zip** commands.
-- Minimal recommanded GPU: GPU V100-32G.
-- WavCaps dataset might requires more than 2 TB of disk storage.
+- Recommanded GPU: NVIDIA V100 with 32GB VRAM.
+- WavCaps dataset might requires more than 2 TB of disk storage. Other datasets requires less than 50 GB.
 
 ### Installation
 By default, **only the inference requirements are installed for conette**. To install training requirements you need to use the following command:
