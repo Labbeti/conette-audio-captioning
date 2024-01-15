@@ -123,17 +123,16 @@ def _load_hf_model(
     return hf_model
 
 
-def _load_model_from_path(
+def _check_model_path(
     model_path: str,
-    device: Union[str, torch.device, None],
-    verbose: int,
-) -> CoNeTTEModel:
-    if verbose >= 1:
-        pylog.info(f"Initilizing model from '{model_path}'...")
-
+) -> None:
     cfg_fpath = osp.join(model_path, "hydra", "config.yaml")
     ckpt_fpath = osp.join(model_path, "checkpoints", "best.ckpt")
 
+    if not osp.isdir(model_path):
+        raise FileNotFoundError(
+            f"Cannot find model_path directory. ({model_path} is not a directory)"
+        )
     if not osp.isfile(cfg_fpath):
         raise FileNotFoundError(
             f"Cannot find config file in model_path directory. ({cfg_fpath} is not a file)"
@@ -143,6 +142,17 @@ def _load_model_from_path(
             f"Cannot find checkpoint file in model_path directory. ({ckpt_fpath} is not a file)"
         )
 
+
+def _load_model_from_path(
+    model_path: str,
+    device: Union[str, torch.device, None],
+    verbose: int,
+) -> CoNeTTEModel:
+    _check_model_path(model_path)
+    if verbose >= 1:
+        pylog.info(f"Initilizing model from '{model_path}'...")
+
+    cfg_fpath = osp.join(model_path, "hydra", "config.yaml")
     with open(cfg_fpath, "r") as file:
         raw_cfg = yaml.safe_load(file)
     cfg: DictConfig = OmegaConf.create(raw_cfg)  # type: ignore
@@ -156,6 +166,7 @@ def _load_model_from_path(
     else:
         raise NotImplementedError(f"Unsupported pretrained model type '{target}'.")
 
+    ckpt_fpath = osp.join(model_path, "checkpoints", "best.ckpt")
     ckpt_data = torch.load(ckpt_fpath, map_location=model.device)
     state_dict = ckpt_data["state_dict"]
     model.load_state_dict(state_dict, strict=True)
@@ -189,7 +200,7 @@ def main_predict() -> None:
             f"Invalid arguments {args.model_name=} and {args.model_path=}. (expected at one str value)"
         )
 
-    hf_model.eval_and_detach()
+    hf_model.eval_and_disable_grad()
 
     if args.verbose >= 2:
         enc_csum = csum_module(hf_model.preprocessor.encoder, with_names=False)

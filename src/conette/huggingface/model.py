@@ -4,6 +4,7 @@
 import logging
 
 from typing import Any, Iterable, Optional, TypedDict, Union
+from typing_extensions import NotRequired
 
 import pickle
 import torch
@@ -26,11 +27,14 @@ pylog = logging.getLogger(__name__)
 
 class CoNeTTEOutput(TypedDict):
     cands: list[str]
-    tasks: list[str]
     preds: Tensor
     lprobs: Tensor
-    tags: list[list[str]]
-    tags_probs: Tensor
+    mult_cands: list[list[str]]
+    mult_preds: Tensor
+    mult_lprobs: Tensor
+    tasks: list[str]
+    tags: NotRequired[list[list[str]]]
+    tags_probs: NotRequired[Tensor]
 
 
 class CoNeTTEModel(PreTrainedModel):
@@ -46,15 +50,15 @@ class CoNeTTEModel(PreTrainedModel):
     ) -> None:
         setup_other_models(offline)
 
-        if config.tokenizer_state is None:
-            tokenizer = AACTokenizer()
-        else:
-            tokenizer = AACTokenizer.from_txt_state(config.tokenizer_state)
-
         preprocessor = CoNeTTEPreprocessor(verbose=config.verbose)
         if model_override is not None:
             model = model_override
         else:
+            if config.tokenizer_state is None:
+                tokenizer = AACTokenizer()
+            else:
+                tokenizer = AACTokenizer.from_txt_state(config.tokenizer_state)
+
             model = CoNeTTEPLM(
                 task_mode=config.task_mode,
                 task_names=config.task_names,
@@ -97,7 +101,7 @@ class CoNeTTEModel(PreTrainedModel):
         self.to(device=device)  # type: ignore
 
         if inference:
-            self.eval_and_detach()
+            self.eval_and_disable_grad()
 
     @property
     def default_task(self) -> str:
@@ -107,10 +111,14 @@ class CoNeTTEModel(PreTrainedModel):
     def tasks(self) -> list[str]:
         return list(self.config.task_names)
 
-    def eval_and_detach(self) -> None:
-        self.eval()
+    def train_and_enable_grad(self, mode: bool = True) -> "CoNeTTEModel":
+        self.train(mode)
         for p in self.parameters():
-            p.requires_grad_(False)
+            p.requires_grad_(mode)
+        return self
+
+    def eval_and_disable_grad(self, mode: bool = True) -> "CoNeTTEModel":
+        return self.train_and_enable_grad(not mode)
 
     def _pre_hook_load_state_dict(
         self,
