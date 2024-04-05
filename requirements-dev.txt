@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-pytest
-flake8
-black
-ipykernel
-twine
+pytest==7.1.2
+flake8==4.0.1
+black==23.12.1
+ipykernel==6.9.1
+twine==4.0.1
