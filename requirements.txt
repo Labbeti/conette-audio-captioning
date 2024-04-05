@@ -11,3 +11,4 @@ spacy==3.7.2
 tensorboard==2.15.1
 transformers==4.30.2
 omegaconf==2.3.0
+torchoutil[extras]==0.2.2
