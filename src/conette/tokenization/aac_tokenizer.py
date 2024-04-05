@@ -13,6 +13,7 @@ import torch
 import yaml
 
 from torch import nn, Tensor
+from torchoutil.nn.functional import get_device
 
 from conette.tokenization.normalizers import (
     CleanDoubleSpaces,
@@ -452,10 +453,7 @@ class AACTokenizer(nn.Module, TokenizerWrapper):
                 for sentence in tokenized_sentences
             ]
             if out_type in ("Tensor", "pt"):
-                if device == "auto":
-                    device = "cuda" if torch.cuda.is_available() else "cpu"
-                if isinstance(device, str):
-                    device = torch.device(device)
+                device = get_device(device)
 
                 if len(tokenized_sentences) == 0 or all(
                     len(sentence) == len(tokenized_sentences[0])

@@ -26,7 +26,7 @@ def build_pann_model(
     :param model_name: PANN model name. (case sensitive)
     :param pretrained: If True, load pretrained weights. defaults to True.
     :param model_kwargs: Optional keywords arguments passed to PANN model initializer. defaults to None.
-    :param device: Output device of the model. defaults to "auto".
+    :param device: Output device of the model. defaults to "cuda_if_available".
     :param offline: If True, disable automatic checkpoint downloading. defaults to False.
     :param verbose: Verbose level during model build. defaults to 0.
     :param strict_load: If True, check if checkpoint entirely corresponds to the initialized model. defaults to True.

@@ -6,7 +6,7 @@ src_sr: ???
 tgt_sr: 32000
 mean_dim: 0
 
-device: "auto"
+device: "cuda_if_available"
 transpose_frame_embs: true
 only_frame_embs: false
 pretrain_path: ???

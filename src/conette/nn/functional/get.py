@@ -33,7 +33,7 @@ def get_activation_fn(name: str) -> Callable[[Tensor], Tensor]:
 
 
 def get_device_name(
-    device_name: Union[str, torch.device, None] = "auto",
+    device_name: Union[str, torch.device, None] = "cuda_if_available",
 ) -> Optional[str]:
     device = get_device(device)
     if isinstance(device_name, torch.device):

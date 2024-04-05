@@ -62,7 +62,7 @@ def get_predict_args() -> Namespace:
         "--device",
         type=str,
         help="Torch device used to run the model.",
-        default="auto",
+        default="cuda_if_available",
     )
     parser.add_argument(
         "--token",
