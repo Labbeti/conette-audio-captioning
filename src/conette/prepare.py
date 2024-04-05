@@ -18,7 +18,6 @@ import random
 import subprocess
 import sys
 import time
-
 from subprocess import CalledProcessError
 from typing import Any
 
@@ -28,37 +27,34 @@ import spacy
 import torch
 import torchaudio
 import yaml
-
-from hydra.core.hydra_config import HydraConfig
-from omegaconf import DictConfig
-from torch import nn
-from torchaudio.backend.common import AudioMetaData
-
-from aac_datasets.datasets.audiocaps import AudioCaps, AudioCapsCard, _AUDIOCAPS_LINKS
+from aac_datasets.datasets.audiocaps import _AUDIOCAPS_LINKS, AudioCaps, AudioCapsCard
 from aac_datasets.datasets.clotho import Clotho, ClothoCard
 from aac_datasets.datasets.macs import MACS, MACSCard
 from aac_datasets.datasets.wavcaps import WavCaps
 from aac_metrics.download import download_metrics as download_aac_metrics
+from hydra.core.hydra_config import HydraConfig
+from omegaconf import DictConfig
+from torch import nn
+from torchaudio.backend.common import AudioMetaData
 from torchoutil.utils.data.dataset import TransformWrapper
 from torchoutil.utils.hdf import HDFDataset, pack_to_hdf
 
 from conette.callbacks.stats_saver import save_to_dir
-from conette.nn.ckpt import PANN_REGISTER, CNEXT_REGISTER
 from conette.datamodules.common import get_hdf_fpaths
 from conette.datasets.typing import AACDatasetLike
 from conette.datasets.utils import (
-    AACSubset,
     AACSelectColumnsWrapper,
+    AACSubset,
     load_audio_metadata,
 )
+from conette.nn.ckpt import CNEXT_REGISTER, PANN_REGISTER
 from conette.nn.functional.misc import count_params
+from conette.train import setup_run, teardown_run
 from conette.transforms.utils import DictTransform
 from conette.utils.collections import unzip
 from conette.utils.csum import csum_any
 from conette.utils.disk_cache import disk_cache
-from conette.utils.hydra import setup_resolvers, get_subrun_path
-from conette.train import setup_run, teardown_run
-
+from conette.utils.hydra import get_subrun_path, setup_resolvers
 
 pylog = logging.getLogger(__name__)
 
@@ -85,7 +81,7 @@ def download_models(cfg: DictConfig) -> None:
         SPACY_MODELS = ("en_core_web_sm", "fr_core_news_sm", "xx_ent_wiki_sm")
         for model_name in SPACY_MODELS:
             try:
-                _model = spacy.load(model_name)
+                spacy.load(model_name)
                 pylog.info(f"Model '{model_name}' for spacy is already downloaded.")
             except OSError:
                 command = [sys.executable, "-m", "spacy", "download", model_name]
@@ -481,8 +477,8 @@ def pack_dsets_to_hdf(cfg: DictConfig, dsets: dict[str, Any]) -> None:
                 overwrite=cfg.overwrite_hdf,
                 metadata=str(metadata),
                 verbose=cfg.verbose,
-                loader_bsize=cfg.data.bsize,
-                loader_n_workers=cfg.data.n_workers,
+                batch_size=cfg.data.bsize,
+                num_workers=cfg.data.n_workers,
             )
             hdf_dset.open()
         else:
