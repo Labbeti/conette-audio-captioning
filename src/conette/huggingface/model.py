@@ -10,13 +10,13 @@ import pickle
 import torch
 
 from torch import Size, Tensor
+from torchoutil.nn.functional.get import get_device
+from torchoutil.nn.functional.multilabel import probs_to_names
 from transformers import PreTrainedModel
 
 from conette.huggingface.config import CoNeTTEConfig
 from conette.huggingface.preprocessor import CoNeTTEPreprocessor
 from conette.huggingface.setup import setup_other_models
-from conette.nn.functional.get import get_device
-from conette.nn.functional.multilabel import probs_to_names
 from conette.pl_modules.base import AACLightningModule
 from conette.pl_modules.conette import CoNeTTEPLM
 from conette.tokenization.aac_tokenizer import AACTokenizer
@@ -44,7 +44,7 @@ class CoNeTTEModel(PreTrainedModel):
     def __init__(
         self,
         config: CoNeTTEConfig,
-        device: Union[str, torch.device, None] = "auto",
+        device: Union[str, torch.device, None] = "cuda_if_available",
         inference: bool = True,
         offline: bool = False,
         model_override: Optional[AACLightningModule] = None,

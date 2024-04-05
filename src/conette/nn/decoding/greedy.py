@@ -8,10 +8,12 @@ from typing import Any, Optional
 import torch
 
 from torch import Tensor
+from torchoutil.nn.functional import (
+    indices_to_multihot,
+    generate_square_subsequent_mask,
+)
 
 from conette.nn.decoding.common import AACDecoder
-from conette.nn.functional.label import ints_to_multihots
-from conette.nn.functional.mask import generate_square_subsequent_mask
 
 
 @torch.no_grad()
@@ -68,7 +70,7 @@ def greedy_search(
     )
     global_logits_out[:, pad_id, :] = 0
 
-    caps_in_sq_mask = generate_square_subsequent_mask(max_pred_size, device)
+    caps_in_sq_mask = generate_square_subsequent_mask(max_pred_size, device=device)
     if forbid_rep_mask is None:
         forbid_rep_mask = torch.zeros((vocab_size,), **bkwds)
     use_forbid_rep = forbid_rep_mask.eq(True).any()
@@ -98,7 +100,7 @@ def greedy_search(
 
         if use_forbid_rep:
             prev_preds = preds[:, : i + 1]
-            prev_preds_ohot = ints_to_multihots(prev_preds, vocab_size, **bkwds)
+            prev_preds_ohot = indices_to_multihot(prev_preds, vocab_size, **bkwds)
             prev_preds_ohot = prev_preds_ohot.logical_and_(
                 forbid_rep_mask.unsqueeze(dim=0)
             )

@@ -4,12 +4,9 @@
 from typing import Optional
 
 from torch import Tensor
+from torchoutil.nn.functional import generate_square_subsequent_mask, tensor_to_pad_mask
 
 from conette.nn.decoding.common import AACDecoder
-from conette.nn.functional.mask import (
-    generate_square_subsequent_mask,
-    tensor_to_pad_mask,
-)
 
 
 def teacher_forcing(
@@ -52,7 +49,9 @@ def teacher_forcing(
 
     if caps_in_sq_mask is None:
         caps_size = caps_in.shape[1]
-        caps_in_sq_mask = generate_square_subsequent_mask(caps_size, caps_in.device)
+        caps_in_sq_mask = generate_square_subsequent_mask(
+            caps_size, device=caps_in.device
+        )
 
     if not caps_in.is_floating_point():
         caps_in = caps_in.permute(1, 0)

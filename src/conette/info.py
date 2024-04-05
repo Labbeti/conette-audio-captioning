@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytorch_lightning
 import torch
+import torchoutil
 import yaml
 
 import conette
@@ -29,6 +30,7 @@ def get_install_info() -> dict[str, str]:
         "architecture": platform.architecture()[0],
         "torch": str(torch.__version__),
         "lightning": pytorch_lightning.__version__,  # type: ignore
+        "torchoutil": torchoutil.__version__,
         "package_path": get_package_repository_path(),
         "sample_path": get_sample_path(),
     }

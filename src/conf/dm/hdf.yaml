@@ -9,9 +9,9 @@ pin_memory: true
 train_drop_last: false
 verbose: ${verbose}
 
-train_cols: [audio, audio_shape, captions]
-val_cols: [audio, audio_shape, captions]
-test_cols: [audio, audio_shape, captions, dataset, subset, fname, index]
+train_cols: [audio, audio_shape, captions, dataset, subset, source]
+val_cols: [audio, audio_shape, captions, dataset, subset, source]
+test_cols: [audio, audio_shape, captions, dataset, subset, source, fname, index]
 
 train_hdfs: ???
 val_hdfs: ???

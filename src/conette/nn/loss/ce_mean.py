@@ -4,8 +4,7 @@
 from typing import Iterable, Optional, Union
 
 from torch import nn, Tensor
-
-from conette.nn.functional.mask import masked_mean
+from torchoutil.nn.functional.mask import masked_mean
 
 
 class CrossEntropyLossMean(nn.CrossEntropyLoss):

@@ -9,14 +9,14 @@ from typing import Any, Optional, Union
 import torch
 
 from torch import nn, Tensor
-
-from conette.nn.decoding.common import AACDecoder
-from conette.nn.functional.label import ints_to_multihots
-from conette.nn.functional.mask import (
+from torchoutil.nn.functional import (
+    indices_to_multihot,
     generate_square_subsequent_mask,
     tensor_to_lengths,
+    repeat_interleave_nd,
 )
-from conette.nn.functional.repeat import repeat_interleave_nd
+
+from conette.nn.decoding.common import AACDecoder
 
 
 pylog = logging.getLogger(__name__)
@@ -106,7 +106,7 @@ def generate(
     global_avg_lprobs = torch.zeros((bsize * beam_size,), **fkwds)
 
     arange = torch.arange(bsize, **ikwds)
-    caps_in_sq_mask = generate_square_subsequent_mask(max_pred_size, device)
+    caps_in_sq_mask = generate_square_subsequent_mask(max_pred_size, device=device)
     if forbid_rep_mask is None:
         forbid_rep_mask = torch.zeros((vocab_size,), **bkwds)
     use_forbid_rep = forbid_rep_mask.eq(True).any().item()
@@ -149,7 +149,9 @@ def generate(
             if use_forbid_rep:
                 prev_preds = preds[mask_ij, : i + 1]
                 # prev_preds shape: (beam_size_ij, i+1)
-                prev_preds_mult_hot = ints_to_multihots(prev_preds, vocab_size, **bkwds)
+                prev_preds_mult_hot = indices_to_multihot(
+                    prev_preds, vocab_size, **bkwds
+                )
                 # prev_preds_ohot shape: (beam_size_ij, vocab_size)
                 prev_preds_mult_hot = prev_preds_mult_hot.logical_and_(
                     forbid_rep_mask.unsqueeze(dim=0)

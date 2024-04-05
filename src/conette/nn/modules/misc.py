@@ -10,6 +10,7 @@ from typing import Any, Callable, Iterable, Mapping, Optional
 import torch
 
 from torch import nn, Tensor
+from torchoutil.nn.modules import AsTensor
 
 
 class AmplitudeToLog(nn.Module):
@@ -68,20 +69,6 @@ class Print(nn.Module):
             x = self._preprocess(x)
         print(f"{self._prefix}{x=}")
         return x_out
-
-
-class AsTensor(nn.Module):
-    def __init__(self, **kwargs) -> None:
-        super().__init__()
-        self.kwargs = kwargs
-
-    def forward(self, inp: list, *args, **kwargs) -> Tensor:
-        kwargs = self.kwargs | kwargs
-        return torch.as_tensor(inp, *args, **kwargs)
-
-    def extra_repr(self) -> str:
-        kwargs_str = ",".join(f"{k}={v}" for k, v in self.kwargs.items())
-        return f"kwargs=dict({kwargs_str})"
 
 
 class ParallelDict(nn.ModuleDict):

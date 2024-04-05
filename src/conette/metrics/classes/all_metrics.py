@@ -34,7 +34,7 @@ class AllMetrics(Evaluate):
     def __init__(
         self,
         preprocess: bool = True,
-        device: Union[str, torch.device, None] = "auto",
+        device: Union[str, torch.device, None] = "cuda_if_available",
         cache_path: str = "~/.cache",
         java_path: str = "java",
         tmp_path: str = tempfile.gettempdir(),

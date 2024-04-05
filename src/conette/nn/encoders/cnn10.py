@@ -16,9 +16,9 @@ from torch import Tensor
 from torchlibrosa.stft import Spectrogram, LogmelFilterBank
 from torchlibrosa.augmentation import SpecAugmentation
 
+from conette.nn.ckpt import PANN_REGISTER
 from conette.nn.pann_utils.models import init_bn, init_layer, do_mixup
 from conette.nn.pann_utils.models import ConvBlock
-from conette.nn.pann_utils.ckpt import pann_load_state_dict
 
 
 pylog = logging.getLogger(__name__)
@@ -208,7 +208,7 @@ class Cnn10(nn.Module):
         exclude_spectro_params: bool = False,
     ) -> None:
         device = self.bn0.weight.device
-        state_dict = pann_load_state_dict("Cnn10", device, offline=False)
+        state_dict = PANN_REGISTER.load_state_dict("Cnn10", device, offline=False)
 
         if exclude_spectro_params:
             state_dict = {

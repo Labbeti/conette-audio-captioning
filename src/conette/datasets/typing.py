@@ -7,20 +7,7 @@ from typing import (
     runtime_checkable,
 )
 
-
-@runtime_checkable
-class DatasetLike(Protocol):
-    def __getitem__(self, idx: int) -> Any:
-        raise NotImplementedError("Protocal abstract method.")
-
-
-@runtime_checkable
-class SizedDatasetLike(Protocol):
-    def __getitem__(self, idx: int) -> Any:
-        raise NotImplementedError("Protocal abstract method.")
-
-    def __len__(self) -> int:
-        raise NotImplementedError("Protocal abstract method.")
+from torchoutil.utils.data.dataset import SizedDatasetLike  # noqa: E402
 
 
 @runtime_checkable

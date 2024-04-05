@@ -28,6 +28,7 @@ import tqdm
 from torch import Tensor
 from torch.utils.data.dataset import Dataset
 from torchaudio.backend.common import AudioMetaData
+from torchoutil.utils.data.dataset import SizedDatasetLike
 
 from conette.datasets.typing import AACDatasetLike, SizedDatasetLike
 from conette.utils.disk_cache import disk_cache
@@ -58,16 +59,6 @@ def _process_idx(
         return list(idx)
     else:
         raise TypeError(f"Invalid argument type {type(idx)=}.")
-
-
-class EmptyDataset(Generic[T], Dataset[T]):
-    def __getitem__(self, *args, **kwargs) -> None:
-        raise NotImplementedError(
-            f"Invalid call of getitem for {self.__class__.__name__}."
-        )
-
-    def __len__(self) -> int:
-        return 0
 
 
 class LambdaDataset(Generic[T], Dataset[T]):
@@ -298,61 +289,6 @@ class AACConcat(Wrapper[tuple[AACDatasetLike, ...]]):
 
     def __len__(self) -> int:
         return sum(map(len, self._source))
-
-
-class TransformWrapper(Wrapper):
-    def __init__(
-        self,
-        dataset: SizedDatasetLike,
-        transforms: Union[Callable, Iterable[Callable], None],
-        index: Union[None, int, str] = None,
-        default_kwargs: Optional[dict[str, Any]] = None,
-    ) -> None:
-        """Wrap a dataset method `getitem` with a transform."""
-        if transforms is None:
-            transforms = []
-        elif isinstance(transforms, Callable):
-            transforms = [transforms]
-        else:
-            transforms = list(transforms)
-
-        if default_kwargs is None:
-            default_kwargs = {}
-        super().__init__(dataset)
-        self._transforms = transforms
-        self._index = index
-        self._default_kwargs = default_kwargs
-
-    def apply_transform(self, item: Any) -> Any:
-        for tfm in self._transforms:
-            item = tfm(item, **self._default_kwargs)
-        return item
-
-    def __getitem__(self, idx: Any) -> Any:
-        item = self._source.__getitem__(idx)
-        if self._index is None:
-            return self.apply_transform(item)
-
-        elif isinstance(item, MutableMapping):
-            item[self._index] = self.apply_transform(
-                item[self._index], **self._default_kwargs
-            )
-            return item
-
-        elif isinstance(item, Iterable):
-            return tuple(
-                (
-                    self.apply_transform(sub_item, **self._default_kwargs)
-                    if i == self._index
-                    else sub_item
-                )
-                for i, sub_item in enumerate(item)
-            )
-
-        else:
-            raise TypeError(
-                f"Invalid item type {type(item)}. (expected dict or iterable)"
-            )
 
 
 class CacheWrap(Wrapper):

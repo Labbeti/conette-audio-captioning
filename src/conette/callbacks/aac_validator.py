@@ -22,7 +22,7 @@ class AACValidator(Callback):
         self,
         monitors: Union[str, Iterable[str]],
         metrics_keys: Union[str, Iterable[str]] = (),
-        computation_device: Union[str, torch.device, None] = "auto",
+        computation_device: Union[str, torch.device, None] = "cuda_if_available",
         other_device: Union[str, torch.device, None] = "cpu",
         build_on_start: bool = False,
     ) -> None:

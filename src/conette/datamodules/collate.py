@@ -8,11 +8,9 @@ from typing import Any, Iterable, Optional
 import torch
 
 from torch import Tensor
-
-from conette.datasets.hdf.common import SHAPE_SUFFIX
-from conette.nn.functional.misc import can_be_stacked
-from conette.nn.functional.pad import pad_sequence_rec
-from conette.utils.collections import all_eq
+from torchoutil.nn.functional import can_be_stacked, pad_and_stack_rec
+from torchoutil.utils.collections import all_eq
+from torchoutil.utils.hdf.common import SHAPE_SUFFIX
 
 
 pylog = logging.getLogger(__name__)
@@ -99,7 +97,7 @@ class AdvancedCollateDict:
                     batch_dic[key_shape] = shapes
 
                 pad_value = self._pad_values[key]
-                items = pad_sequence_rec(items, pad_value=pad_value)
+                items = pad_and_stack_rec(items, pad_value=pad_value)
 
             elif (
                 not key.endswith(SHAPE_SUFFIX)

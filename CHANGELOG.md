@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.0] UNRELEASED
+### Changed
+- Update dependencies with `torchoutil`, and clean a lot of dead code.
+
+### Fixed
+- Requirements versions specified during installation. 
+
 ## [0.2.2] 2024-01-15
 ### Added
 - Multiple candidates, predictions and probabilities in model outputs.

@@ -7,9 +7,8 @@ import random
 from typing import Tuple, Union
 
 from torch import nn, Tensor
+from torchoutil.nn.modules import CropDim, PadDim
 
-from conette.nn.modules.crop import CropDim
-from conette.nn.modules.pad import PadDim
 from conette.transforms.audio.resample import ResampleNearest
 
 

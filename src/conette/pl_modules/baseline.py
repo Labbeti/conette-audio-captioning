@@ -8,17 +8,17 @@ from typing import Any, Optional
 import torch
 
 from torch import nn, Tensor
+from torchoutil.nn.functional import (
+    randperm_diff,
+    lengths_to_pad_mask,
+    tensor_to_pad_mask,
+)
 
 from conette.nn.decoders.aac_tfmer import AACTransformerDecoder
 from conette.nn.decoding.beam import generate
 from conette.nn.decoding.forcing import teacher_forcing
 from conette.nn.decoding.greedy import greedy_search
 from conette.nn.encoders.ident import FrameIdentEncoder
-from conette.nn.functional.indexes import randperm_diff
-from conette.nn.functional.mask import (
-    lengths_to_pad_mask,
-    tensor_to_pad_mask,
-)
 from conette.nn.loss.ce_mean import CrossEntropyLossMean
 from conette.pl_modules.base import AACLightningModule
 from conette.pl_modules.common import (

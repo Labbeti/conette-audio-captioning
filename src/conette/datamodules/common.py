@@ -17,16 +17,11 @@ import yaml
 from nltk.util import ngrams
 from torch import Generator, Tensor
 from torch.utils.data.dataset import ConcatDataset
-
-from aac_datasets.datasets.audiocaps import AudioCaps
+from torchoutil.utils.data.dataset import TransformWrapper, SizedDatasetLike
+from torchoutil.utils.hdf.dataset import HDFDataset
 
 from conette.tokenization.aac_tokenizer import AACTokenizer
-from conette.datasets.hdf import HDFDataset
-from conette.datasets.typing import SizedDatasetLike
-from conette.datasets.utils import (
-    TransformWrapper,
-    ZipDataset,
-)
+from conette.datasets.utils import ZipDataset
 
 
 pylog = logging.getLogger(__name__)

@@ -14,8 +14,8 @@ from nltk.corpus import stopwords
 from pytorch_lightning import LightningModule
 from torch import nn, Tensor
 from torch.optim import Optimizer
+from torchoutil.nn.modules.tensor import Transpose
 
-from conette.nn.modules.tensor import Transpose
 from conette.nn.functional.get import get_activation_module, get_device
 from conette.optim.optimizers import get_optimizer
 from conette.optim.schedulers import get_scheduler_list

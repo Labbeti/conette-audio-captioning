@@ -17,20 +17,16 @@ from typing import (
 
 import numpy as np
 
+from torchoutil.utils.collections import (
+    all_eq,
+    list_dict_to_dict_list,
+    flat_dict_of_dict,
+)  # noqa: E402
+
 T = TypeVar("T")
 U = TypeVar("U")
 V = TypeVar("V")
 W = TypeVar("W")
-
-
-def all_eq(it: Iterable[T], eq_fn: Optional[Callable[[T, T], bool]] = None) -> bool:
-    """Returns true if all elements in inputs are equal."""
-    it = list(it)
-    first = it[0]
-    if eq_fn is None:
-        return all(first == elt for elt in it)
-    else:
-        return all(eq_fn(first, elt) for elt in it)
 
 
 def all_ne(it: Iterable[T], ne_fn: Optional[Callable[[T, T], bool]] = None) -> bool:
@@ -44,44 +40,6 @@ def all_ne(it: Iterable[T], ne_fn: Optional[Callable[[T, T], bool]] = None) -> b
         return all(
             ne_fn(it[i], it[j]) for i in range(len(it)) for j in range(i + 1, len(it))
         )
-
-
-def list_dict_to_dict_list(
-    lst: Sequence[Mapping[str, T]],
-    default_val: U = None,
-    error_on_missing_key: bool = False,
-) -> dict[str, list[Union[T, U]]]:
-    """Convert a list of dicts to a dict of lists.
-
-    Example 1
-    ----------
-    >>> lst = [{'a': 1, 'b': 2}, {'a': 4, 'b': 3, 'c': 5}]
-    >>> output = list_dict_to_dict_list(lst, default_val=0)
-    {'a': [1, 4], 'b': [2, 3], 'c': [0, 5]}
-    """
-    if len(lst) == 0:
-        return {}
-
-    if error_on_missing_key:
-        keys = set(lst[0])
-        for dic in lst:
-            if keys != set(dic.keys()):
-                raise ValueError(
-                    f"Invalid dict keys for list_dict_to_dict_list. (found {keys} and {dic.keys()})"
-                )
-
-    keys = {}
-    for dic in lst:
-        keys = keys | dict.fromkeys(dic.keys())
-
-    out = {
-        key: [
-            lst[i][key] if key in lst[i].keys() else default_val
-            for i in range(len(lst))
-        ]
-        for key in keys
-    }
-    return out
 
 
 def dict_list_to_list_dict(dic: Mapping[str, Sequence[T]]) -> list[dict[str, T]]:
@@ -98,41 +56,6 @@ def dict_list_to_list_dict(dic: Mapping[str, Sequence[T]]) -> list[dict[str, T]]
     assert all_eq(map(len, dic.values()))
     length = len(next(iter(dic.values())))
     return [{k: v[i] for k, v in dic.items()} for i in range(length)]
-
-
-def flat_dict_of_dict(
-    nested_dic: Mapping[str, Any],
-    sep: str = ".",
-    flat_iterables: bool = False,
-) -> dict[str, Any]:
-    """Flat a nested dictionary.
-    Example
-    ----------
-    ```
-    >>> dic = {
-    ...     "a": 1,
-    ...     "b": {
-    ...         "a": 2,
-    ...         "b": 10,
-    ...     },
-    ... }
-    >>> flat_dict(dic)
-    ... {"a": 1, "b.a": 2, "b.b": 10}
-    ```
-    """
-    output = {}
-    for k, v in nested_dic.items():
-        if isinstance(v, Mapping) and all(isinstance(kv, str) for kv in v.keys()):
-            v = flat_dict_of_dict(v, sep, flat_iterables)
-            output |= {f"{k}{sep}{kv}": vv for kv, vv in v.items()}
-        elif flat_iterables and isinstance(v, Iterable) and not isinstance(v, str):
-            output |= {
-                f"{k}{sep}{i}": flat_dict_of_dict(vv, sep, flat_iterables)
-                for i, vv in enumerate(v)
-            }
-        else:
-            output[k] = v
-    return output
 
 
 def unflat_dict_of_dict(dic: Mapping[str, Any], sep: str = ".") -> dict[str, Any]:

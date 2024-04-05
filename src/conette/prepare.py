@@ -32,7 +32,6 @@ import yaml
 from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig
 from torch import nn
-from torch.hub import download_url_to_file
 from torchaudio.backend.common import AudioMetaData
 
 from aac_datasets.datasets.audiocaps import AudioCaps, AudioCapsCard, _AUDIOCAPS_LINKS
@@ -40,20 +39,19 @@ from aac_datasets.datasets.clotho import Clotho, ClothoCard
 from aac_datasets.datasets.macs import MACS, MACSCard
 from aac_datasets.datasets.wavcaps import WavCaps
 from aac_metrics.download import download_metrics as download_aac_metrics
+from torchoutil.utils.data.dataset import TransformWrapper
+from torchoutil.utils.hdf import HDFDataset, pack_to_hdf
 
 from conette.callbacks.stats_saver import save_to_dir
+from conette.nn.ckpt import PANN_REGISTER, CNEXT_REGISTER
 from conette.datamodules.common import get_hdf_fpaths
-from conette.datasets.hdf import HDFDataset, pack_to_hdf
 from conette.datasets.typing import AACDatasetLike
 from conette.datasets.utils import (
     AACSubset,
     AACSelectColumnsWrapper,
-    TransformWrapper,
     load_audio_metadata,
 )
 from conette.nn.functional.misc import count_params
-from conette.nn.cnext_ckpt_utils import CNEXT_PRETRAINED_URLS
-from conette.nn.pann_utils.hub import PANN_PRETRAINED_URLS
 from conette.transforms.utils import DictTransform
 from conette.utils.collections import unzip
 from conette.utils.csum import csum_any
@@ -104,8 +102,6 @@ def download_models(cfg: DictConfig) -> None:
                     )
 
     if str(cfg.pann).lower() != "none":
-        ckpt_dir = osp.join(torch.hub.get_dir(), "checkpoints")
-        os.makedirs(ckpt_dir, exist_ok=True)
 
         def can_download(name: str, pattern: Any) -> bool:
             if pattern == "all":
@@ -121,46 +117,26 @@ def download_models(cfg: DictConfig) -> None:
                     f"Invalid cfg.pann argument. Must be a string, a list of strings, a bool or an int, found {pattern.__class__.__name__}."
                 )
 
-        urls = {
-            name: model_info
-            for name, model_info in PANN_PRETRAINED_URLS.items()
-            if can_download(name, cfg.pann)
-        }
+        register = PANN_REGISTER
+        model_names = [
+            model_name
+            for model_name in register.model_names
+            if can_download(model_name, cfg.pann)
+        ]
 
-        for i, (name, model_info) in enumerate(urls.items()):
-            fpath = osp.join(ckpt_dir, model_info["fname"])
-
-            if osp.isfile(fpath):
-                pylog.info(
-                    f"Model '{name}' already downloaded in '{fpath}'. ({i+1}/{len(urls)})"
-                )
-            else:
-                pylog.info(
-                    f"Start downloading pre-trained PANN model '{name}' ({i+1}/{len(urls)})..."
-                )
-                download_url_to_file(
-                    model_info["url"], fpath, progress=cfg.verbose >= 1
-                )
-                pylog.info(f"Model '{name}' downloaded in '{fpath}'.")
+        for i, model_name in enumerate(model_names):
+            pylog.info(
+                f"Start downloading pre-trained PANN model '{model_name}' ({i+1}/{len(model_names)})..."
+            )
+            register.download_ckpt(model_name, verbose=cfg.verbose)
 
     if cfg.cnext:
-        ckpt_dpath = osp.join(torch.hub.get_dir(), "checkpoints")
-        urls = CNEXT_PRETRAINED_URLS
-
-        for i, (name, info) in enumerate(urls.items()):
-            url = info["url"]
-            fname = info["fname"]
-            fpath = osp.join(ckpt_dpath, fname)
-
-            if osp.isfile(fpath):
-                pylog.info(
-                    f"Model '{name}' already downloaded in '{fpath}'. ({i+1}/{len(urls)})"
-                )
-            else:
-                pylog.info(
-                    f"Start downloading pre-trained CNext model '{name}' ({i+1}/{len(urls)})..."
-                )
-                download_url_to_file(url, fpath, progress=cfg.verbose >= 1)
+        register = CNEXT_REGISTER
+        for i, model_name in enumerate(register.model_names):
+            pylog.info(
+                f"Start downloading pre-trained CNext model '{model_name}' ({i+1}/{len(register.model_names)})..."
+            )
+            register.download_ckpt(model_name, verbose=cfg.verbose)
 
 
 def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
