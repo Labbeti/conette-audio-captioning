@@ -4,37 +4,25 @@
 import logging
 import os.path as osp
 import pickle
-
 from pathlib import Path
 from typing import Any, Optional, Union
 
 import torch
 import yaml
-
 from nnAudio.features import Gammatonegram
-from torch import nn, Tensor
+from torch import Tensor, nn
 from torchaudio.transforms import Resample
-from torchlibrosa.stft import Spectrogram, LogmelFilterBank
-from torchoutil.nn.modules.tensor import (
-    Mean,
-    Permute,
-    Squeeze,
-    TensorTo,
-    Unsqueeze,
-)
+from torchlibrosa.stft import LogmelFilterBank, Spectrogram
+from torchoutil.nn.modules.tensor import Mean, Permute, Squeeze, TensorTo, Unsqueeze
 
-from conette.nn.ckpt import PANN_REGISTER
-from conette.nn.encoders.convnext import convnext_tiny
+from conette.nn.ckpt import CNEXT_REGISTER, PANN_REGISTER
 from conette.nn.encoders.cnn10 import Cnn10
-from conette.nn.encoders.cnn14_decisionlevel_att import Cnn14_DecisionLevelAtt
 from conette.nn.encoders.cnn14 import Cnn14
+from conette.nn.encoders.cnn14_decisionlevel_att import Cnn14_DecisionLevelAtt
+from conette.nn.encoders.convnext import convnext_tiny
 from conette.nn.functional.get import get_device
-from conette.nn.modules.misc import (
-    Lambda,
-    Standardize,
-)
+from conette.nn.modules.misc import Lambda, Standardize
 from conette.transforms.audio.spec_aug import SpecAugment
-
 
 pylog = logging.getLogger(__name__)
 
@@ -284,8 +272,10 @@ def get_resample_mean_convnext(
         return_frame_outputs=True,
     )
 
-    data = torch.load(pretrain_path, map_location=torch.device("cpu"))
-    state_dict = data["model"]
+    cpu_device = torch.device("cpu")
+    state_dict = CNEXT_REGISTER.load_state_dict(
+        pretrain_path, device=cpu_device, offline=False
+    )
     encoder.load_state_dict(state_dict, strict=False)
 
     for p in encoder.parameters():

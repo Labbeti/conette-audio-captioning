@@ -50,7 +50,7 @@ from conette.datasets.utils import (
 from conette.nn.ckpt import CNEXT_REGISTER, PANN_REGISTER
 from conette.nn.functional.misc import count_params
 from conette.train import setup_run, teardown_run
-from conette.transforms.utils import DictTransform
+from conette.transforms.utils import PreSaveTransform
 from conette.utils.collections import unzip
 from conette.utils.csum import csum_any
 from conette.utils.disk_cache import disk_cache
@@ -468,7 +468,11 @@ def pack_dsets_to_hdf(cfg: DictConfig, dsets: dict[str, Any]) -> None:
             if cfg.verbose >= 1:
                 pylog.debug(yaml.dump({"Metadata": metadata}))
 
-            pre_save_transform = DictTransform(pre_save_transforms)
+            pre_save_transform = PreSaveTransform(pre_save_transforms)
+
+            num_workers = cfg.data.n_workers
+            if num_workers is None:
+                num_workers = "auto"
 
             hdf_dset = pack_to_hdf(
                 dset,
@@ -478,7 +482,7 @@ def pack_dsets_to_hdf(cfg: DictConfig, dsets: dict[str, Any]) -> None:
                 metadata=str(metadata),
                 verbose=cfg.verbose,
                 batch_size=cfg.data.bsize,
-                num_workers=cfg.data.n_workers,
+                num_workers=num_workers,
             )
             hdf_dset.open()
         else:
