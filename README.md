@@ -15,7 +15,7 @@ CoNeTTE is an audio captioning system, which generate a short textual descriptio
 
 ### Installation
 ```bash
-python -m pip install conette
+python -m pip install conette[test]
 ```
 
 ### Usage with python

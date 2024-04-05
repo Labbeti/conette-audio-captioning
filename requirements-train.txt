@@ -36,4 +36,3 @@ hydra_colorlog
 aac-datasets~=0.4.0
 aac-metrics~=0.5.3
 deepspeed==0.9.5
-intel_extension_for_pytorch
