@@ -1,13 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from typing import (
-    Any,
-    Protocol,
-    runtime_checkable,
-)
-
-from torchoutil.utils.data.dataset import SizedDatasetLike  # noqa: E402
+from typing import Any, Callable, Protocol, runtime_checkable
 
 
 @runtime_checkable
@@ -17,18 +11,15 @@ class AACDatasetLike(Protocol):
     Methods signatures:
         - column_names: () -> list[str]
         - at: (int, str) -> Any
-        - __getitem__: (int, str) -> Any
+        - __getitem__: (Any) -> Any
         - __len__: () -> int
     """
 
+    at: Callable[[Any, Any], Any]
+    __getitem__: Callable[[Any], Any]
+
     @property
     def column_names(self) -> list[str]:
-        raise NotImplementedError("Protocal abstract method.")
-
-    def at(self, idx: Any, column: Any) -> Any:
-        raise NotImplementedError("Protocal abstract method.")
-
-    def __getitem__(self, idx: Any) -> Any:
         raise NotImplementedError("Protocal abstract method.")
 
     def __len__(self) -> int:
