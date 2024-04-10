@@ -5,7 +5,6 @@ import logging
 import math
 import os.path as osp
 import time
-
 from functools import cache
 from typing import (
     Any,
@@ -13,7 +12,6 @@ from typing import (
     Generic,
     Iterable,
     Mapping,
-    MutableMapping,
     Optional,
     Sequence,
     Sized,
@@ -24,17 +22,15 @@ from typing import (
 import torch
 import torchaudio
 import tqdm
-
 from torch import Tensor
 from torch.utils.data.dataset import Dataset
 from torchaudio.backend.common import AudioMetaData
 from torchoutil.utils.data.dataset import SizedDatasetLike
 
-from conette.datasets.typing import AACDatasetLike, SizedDatasetLike
+from conette.datasets.typing import AACDatasetLike
 from conette.utils.disk_cache import disk_cache
 from conette.utils.log_utils import warn_once
 from conette.utils.misc import pass_filter
-
 
 pylog = logging.getLogger(__name__)
 T = TypeVar("T")
