@@ -9,4 +9,4 @@ mean_dim: 0
 device: "cuda_if_available"
 transpose_frame_embs: true
 only_frame_embs: false
-pretrain_path: ???
+pretrain_path: "cnext_bl"

@@ -247,14 +247,15 @@ def get_resample_mean_convnext(
     device: Union[str, torch.device, None] = "cuda_if_available",
     transpose_frame_embs: bool = True,
     only_frame_embs: bool = True,
-    pretrain_path: Optional[str] = None,
+    pretrain_path: Union[str, Path] = "cnext_bl",
+    strict: bool = True,
 ) -> nn.Sequential:
     if not isinstance(src_sr, int):
         error_message = _get_error_message(src_sr)
         pylog.error(error_message)
         raise ValueError(error_message)
 
-    if not isinstance(pretrain_path, str):
+    if not isinstance(pretrain_path, (str, Path)):
         raise ValueError(
             f"Invalid argument type {type(pretrain_path)=}. (expected str)"
         )
@@ -274,9 +275,11 @@ def get_resample_mean_convnext(
 
     cpu_device = torch.device("cpu")
     state_dict = CNEXT_REGISTER.load_state_dict(
-        pretrain_path, device=cpu_device, offline=False
+        pretrain_path,
+        device=cpu_device,
+        offline=False,
     )
-    encoder.load_state_dict(state_dict, strict=False)
+    encoder.load_state_dict(state_dict, strict=strict)
 
     for p in encoder.parameters():
         p.requires_grad_(False)
