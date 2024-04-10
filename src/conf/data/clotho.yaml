@@ -8,7 +8,7 @@ pin_memory: true
 verbose: ${verbose}
 
 # Other params
-subsets: null
+subsets: [dev,val,eval]
 version: "v2.1"
 download: false
 clean_archives: false
