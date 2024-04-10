@@ -11,6 +11,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 os.environ["TRANSFORMERS_OFFLINE"] = "FALSE"
 os.environ["HF_HUB_OFFLINE"] = "FALSE"
 
+import copy
 import logging
 import math
 import os.path as osp
@@ -27,7 +28,7 @@ import spacy
 import torch
 import torchaudio
 import yaml
-from aac_datasets.datasets.audiocaps import _AUDIOCAPS_LINKS, AudioCaps, AudioCapsCard
+from aac_datasets.datasets.audiocaps import AudioCaps, AudioCapsCard
 from aac_datasets.datasets.clotho import Clotho, ClothoCard
 from aac_datasets.datasets.macs import MACS, MACSCard
 from aac_datasets.datasets.wavcaps import WavCaps
@@ -155,31 +156,6 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
         else:
             subsets = cfg.data.subsets
 
-        if cfg.data.audiocaps_caps_fix_fpath is not None:
-            if "train" not in subsets:
-                pylog.error(
-                    f"Invalid combinaison of arguments {cfg.data.audiocaps_caps_fix_fpath=} with {subsets=}."
-                )
-            else:
-                subsets = list(subsets)
-                subsets.remove("train")
-                new_subset = osp.basename(cfg.data.audiocaps_caps_fix_fpath)[:-4]
-                subsets.append(new_subset)
-
-                AudioCaps.SUBSETS = AudioCaps.SUBSETS + (new_subset,)  # type: ignore
-                _AUDIOCAPS_LINKS.update(
-                    {
-                        new_subset: {
-                            "captions": {
-                                "url": None,
-                                "fname": osp.basename(
-                                    cfg.data.audiocaps_caps_fix_fpath
-                                ),
-                            },
-                        },
-                    }
-                )
-
         for subset in subsets:
             dsets[subset] = AudioCaps(
                 dataroot,
@@ -227,8 +203,16 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
             )
 
         if cfg.data.tags_to_str:
+
+            class TagToStr(nn.Module):
+                def forward(self, item: dict[str, Any]) -> dict[str, Any]:
+                    item = copy.copy(item)
+                    item["tags"] = str(item["tags"])
+                    return item
+
+            transform = TagToStr()
             dsets = {
-                subset: TransformWrapper(dset, str, "tags")
+                subset: TransformWrapper(dset, transform)
                 for subset, dset in dsets.items()
             }
 
@@ -259,7 +243,7 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
             for subset in subsets
         }
 
-    elif dataname in ("none",):
+    elif dataname in ("none", None, "null"):
         dsets = {}
 
     else:
@@ -314,7 +298,9 @@ def filter_dsets(
             if cfg.verbose >= 2:
                 pylog.debug(f"Loading durations from {len(ds)} audio files...")
             meta_lst = disk_cache(
-                load_audio_metadata, fpaths, cache_path=cfg.path.cache
+                load_audio_metadata,
+                fpaths,
+                cache_path=cfg.path.cache,
             )
             meta_dic[subset] = list(meta_lst.values())
 
@@ -372,7 +358,7 @@ def filter_dsets(
                     f"Exclude {n_excluded}/{prev_size} files with sample_rate != {cfg.datafilter.sr} Hz in {subset=}."
                 )
 
-    dsets = {subset: AACSubset(ds, indexes_dic[subset]) for subset, ds in dsets.items()}
+    dsets = {subset: AACSubset(ds, indexes_dic[subset]) for subset, ds in dsets.items()}  # type: ignore
     return dsets
 
 
@@ -484,7 +470,6 @@ def pack_dsets_to_hdf(cfg: DictConfig, dsets: dict[str, Any]) -> None:
                 batch_size=cfg.data.bsize,
                 num_workers=num_workers,
             )
-            hdf_dset.open()
         else:
             if cfg.verbose >= 1:
                 pylog.info(
