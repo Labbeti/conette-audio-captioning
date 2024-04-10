@@ -5,4 +5,5 @@ Labbeti/conette/
 *tmp/
 dist/
 logs/
-data*/
+data/
+data_tmp*/
