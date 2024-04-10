@@ -20,9 +20,7 @@ dm:
   - audiocaps_test_resample_mean_convnext_ident_bl.hdf
   - clotho_val_resample_mean_convnext_ident_bl.hdf
   - clotho_eval_resample_mean_convnext_ident_bl.hdf
-  predict_hdfs:
-  - clotho_test_resample_mean_convnext_ident_bl.hdf
-  - clotho_analysis_resample_mean_convnext_ident_bl.hdf
+  predict_hdfs: []
 
   main_hdf_balanced: [audiocaps_train_v6_resample_mean_convnext_ident_bl.hdf, clotho_dev_resample_mean_convnext_ident_bl.hdf]
 

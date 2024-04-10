@@ -13,9 +13,7 @@ dm:
   - audiocaps_test_resample_mean_cnn14_ident_bl.hdf
   - clotho_val_resample_mean_cnn14_ident_bl.hdf
   - clotho_eval_resample_mean_cnn14_ident_bl.hdf
-  predict_hdfs:
-  - clotho_test_resample_mean_cnn14_ident_bl.hdf
-  - clotho_analysis_resample_mean_cnn14_ident_bl.hdf
+  predict_hdfs: []
 
 pl:
   proj_name: "lin2048"
