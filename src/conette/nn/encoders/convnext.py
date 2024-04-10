@@ -1,20 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from typing import Iterable, Optional
+import logging
+from typing import Any, Iterable, Optional
 
 import torch
-
-from torch import nn, Tensor
+from torch import Tensor, nn
 from torch.nn.parameter import Parameter
-from torchlibrosa.stft import Spectrogram, LogmelFilterBank
 from torchlibrosa.augmentation import SpecAugmentation
+from torchlibrosa.stft import LogmelFilterBank, Spectrogram
 
 from conette.nn.functional.init import trunc_normal_
 from conette.nn.modules.drop import DropPath
 from conette.nn.modules.norm import LayerNorm
-from conette.transforms.mixup import pann_mixup
 from conette.transforms.audio.speed_perturb import SpeedPerturbation
+from conette.transforms.mixup import pann_mixup
+
+pylog = logging.getLogger(__name__)
 
 
 class ConvNeXtBlock(nn.Module):
@@ -30,7 +32,10 @@ class ConvNeXtBlock(nn.Module):
     """
 
     def __init__(
-        self, dim: int, drop_path: float = 0.0, layer_scale_init_value: float = 1e-6
+        self,
+        dim: int,
+        drop_path: float = 0.0,
+        layer_scale_init_value: float = 1e-6,
     ) -> None:
         super().__init__()
         self.dwconv = nn.Conv2d(
@@ -49,6 +54,10 @@ class ConvNeXtBlock(nn.Module):
         )
         self.drop_path = DropPath(drop_path) if drop_path > 0.0 else nn.Identity()
 
+        self._register_load_state_dict_pre_hook(
+            self._pre_hook_load_state_dict,
+        )
+
     def forward(self, x: Tensor) -> Tensor:
         input_ = x
         x = self.dwconv(x)
@@ -63,6 +72,34 @@ class ConvNeXtBlock(nn.Module):
 
         x = input_ + self.drop_path(x)
         return x
+
+    def _pre_hook_load_state_dict(
+        self,
+        state_dict: dict[str, Tensor],
+        prefix,
+        local_metadata,
+        strict,
+        *args,
+        **kwargs,
+    ) -> Any:
+        keys = list(state_dict.keys())
+        num_fixes = 0
+        for key in keys:
+            if "gamma" not in key:
+                continue
+
+            new_key = key.replace("gamma", "scale_layer")
+            if new_key in state_dict:
+                raise RuntimeError(
+                    f"Invalid state_dict conversion. (found {key} and {new_key} at the same time)"
+                )
+            num_fixes += 1
+            state_dict[new_key] = state_dict.pop(key)
+
+        if num_fixes > 0:
+            pylog.debug(
+                f"{num_fixes} keys has been modified during loading state dict."
+            )
 
 
 class ConvNeXt(nn.Module):
