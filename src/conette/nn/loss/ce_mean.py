@@ -3,7 +3,7 @@
 
 from typing import Iterable, Optional, Union
 
-from torch import nn, Tensor
+from torch import Tensor, nn
 from torchoutil.nn.functional.mask import masked_mean
 
 
@@ -18,6 +18,7 @@ class CrossEntropyLossMean(nn.CrossEntropyLoss):
         """CrossEntropyLoss with dim option to average specific dimension(s) in output."""
         if isinstance(dim, Iterable):
             dim = tuple(dim)
+
         super().__init__(
             weight=weight,
             ignore_index=ignore_index,

@@ -2,15 +2,12 @@
 # -*- coding: utf-8 -*-
 
 import inspect
-import tqdm
-
 from dataclasses import asdict, astuple
 from typing import Any, Callable, Iterable, Mapping, Optional
 
 import torch
-
-from torch import nn, Tensor
-from torchoutil.nn.modules import AsTensor
+import tqdm
+from torch import Tensor, nn
 
 
 class AmplitudeToLog(nn.Module):
