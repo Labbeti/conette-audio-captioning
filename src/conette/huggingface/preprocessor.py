@@ -2,12 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
-from typing import Any, Iterable, TypeGuard, Union
+from typing import Any, Iterable, Union
 
 import torch
 import torchaudio
-
 from torch import Size, Tensor, nn
 from torchaudio.functional import resample
 from torchoutil.utils.collections import all_eq
@@ -15,7 +13,7 @@ from torchoutil.utils.collections import all_eq
 from conette.nn.encoders.convnext import convnext_tiny
 from conette.nn.functional.pad import pad_and_stack
 from conette.utils.collections import unzip
-
+from conette.utils.type_checks import is_iter_str, is_iter_tensor, is_list_tensor
 
 pylog = logging.getLogger(__name__)
 
@@ -88,7 +86,7 @@ class CoNeTTEPreprocessor(nn.Module):
         x_shapes: Union[Tensor, None, list[Size]] = None,
     ) -> tuple[Tensor, Tensor]:
         # LOAD
-        if _is_iter_str(x):
+        if is_iter_str(x):
             if isinstance(x, str):
                 x = [x]
             gen = (self._load(xi) for xi in x)
@@ -115,7 +113,7 @@ class CoNeTTEPreprocessor(nn.Module):
             else:
                 sr = list(sr)
 
-        assert _is_list_tensor(x) or isinstance(x, Tensor), f"{type(x)=}"
+        assert is_list_tensor(x) or isinstance(x, Tensor), f"{type(x)=}"
 
         if len(sr) == 1 and len(x) != len(sr):
             sr = sr * len(x)
@@ -124,12 +122,12 @@ class CoNeTTEPreprocessor(nn.Module):
             pylog.debug(f"Found {sr=}.")
 
         assert len(x) == len(sr) and len(x) > 0
-        assert _is_iter_tensor(x) or isinstance(x, Tensor)
+        assert is_iter_tensor(x) or isinstance(x, Tensor)
 
         # MOVE TO DEVICE
         if isinstance(x, Tensor):
             x = x.to(device=self.device)
-        elif _is_iter_tensor(x):
+        elif is_iter_tensor(x):
             x = [xi.to(device=self.device) for xi in x]
 
         # RESAMPLE + MEAN
@@ -154,15 +152,3 @@ class CoNeTTEPreprocessor(nn.Module):
         x = pad_and_stack(x)
 
         return x, x_shapes
-
-
-def _is_iter_str(x: Any) -> TypeGuard[Iterable[str]]:
-    return isinstance(x, Iterable) and all(isinstance(xi, str) for xi in x)
-
-
-def _is_list_tensor(x: Any) -> TypeGuard[list[Tensor]]:
-    return isinstance(x, list) and all(isinstance(xi, Tensor) for xi in x)
-
-
-def _is_iter_tensor(x: Any) -> TypeGuard[Iterable[Tensor]]:
-    return isinstance(x, Iterable) and all(isinstance(xi, Tensor) for xi in x)

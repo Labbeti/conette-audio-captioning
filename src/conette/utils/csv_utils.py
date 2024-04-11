@@ -3,11 +3,12 @@
 
 import csv
 import os.path as osp
-
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Union
 
-from conette.utils.collections import dict_list_to_list_dict, list_dict_to_dict_list
+from torchoutil.utils.collections import list_dict_to_dict_list
+
+from conette.utils.collections import dict_list_to_list_dict
 
 
 def load_csv_dict(

@@ -26,6 +26,7 @@ from conette.utils.csum import csum_any
 
 pylog = logging.getLogger(__name__)
 
+
 DEFAULT_TRAIN_COLS = ("audio", "audio_shape", "captions")
 DEFAULT_VAL_COLS = ("audio", "audio_shape", "captions")
 DEFAULT_TEST_COLS = (

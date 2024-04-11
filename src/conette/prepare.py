@@ -218,7 +218,10 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
 
     elif dataname == "hdf":
         hdf_fpaths = get_hdf_fpaths(
-            cfg.data.name, cfg.data.subsets, dataroot, cfg.data.hdf_suffix
+            cfg.data.name,
+            cfg.data.subsets,
+            dataroot,
+            cfg.data.hdf_suffix,
         )
         dsets = {}
         for subset, hdf_fpath in hdf_fpaths.items():
