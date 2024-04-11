@@ -2,15 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
 from typing import Any, Optional
 
 import torch
-
-from torch import nn, Tensor
+from torch import Tensor, nn
 from torchoutil.nn.functional import (
-    randperm_diff,
     lengths_to_pad_mask,
+    randperm_diff,
     tensor_to_pad_mask,
 )
 
@@ -22,15 +20,14 @@ from conette.nn.encoders.ident import FrameIdentEncoder
 from conette.nn.loss.ce_mean import CrossEntropyLossMean
 from conette.pl_modules.base import AACLightningModule
 from conette.pl_modules.common import (
-    build_proj_lin,
-    get_forbid_rep_mask,
+    TestBatch,
     TrainBatch,
     ValBatch,
-    TestBatch,
+    build_proj_lin,
+    get_forbid_rep_mask,
 )
 from conette.tokenization.aac_tokenizer import AACTokenizer
 from conette.transforms.mixup import sample_lambda
-
 
 pylog = logging.getLogger(__name__)
 
@@ -103,21 +100,21 @@ class BaselinePLM(AACLightningModule):
                     f"Set {self.hp.max_pred_size=}. (with tokenizer max={tok_max_sent_size})"
                 )
 
-        self.train_criterion = nn.CrossEntropyLoss(
+        train_criterion = nn.CrossEntropyLoss(
             ignore_index=self.pad_id,
             label_smoothing=self.hp.label_smoothing,
         )
-        self.val_criterion = CrossEntropyLossMean(ignore_index=self.pad_id, dim=1)
-        self.encoder = FrameIdentEncoder()
+        val_criterion = CrossEntropyLossMean(ignore_index=self.pad_id, dim=1)
+        encoder = FrameIdentEncoder()
 
         if self.hp.proj_name == "lin2048":
-            self.projection = build_proj_lin(2048, self.hp.d_model, False)
+            projection = build_proj_lin(2048, self.hp.d_model, False)
         elif self.hp.proj_name == "lin768":
-            self.projection = build_proj_lin(768, self.hp.d_model, False)
+            projection = build_proj_lin(768, self.hp.d_model, False)
         else:
             raise ValueError(f"Invalid argument {self.hp.proj_name=}.")
 
-        self.decoder = AACTransformerDecoder(
+        decoder = AACTransformerDecoder(
             vocab_size=self.tokenizer.get_vocab_size(),
             bos_id=self.bos_id,
             eos_id=self.eos_id,
@@ -129,13 +126,18 @@ class BaselinePLM(AACLightningModule):
             nhead=self.hp.nhead,
             num_decoder_layers=self.hp.num_decoder_layers,
         )
-
         forbid_rep_mask = get_forbid_rep_mask(
             "content_words",
             self.tokenizer,
             self.device,
             self.hp.verbose,
         )
+
+        self.train_criterion = train_criterion
+        self.val_criterion = val_criterion
+        self.encoder = encoder
+        self.projection = projection
+        self.decoder = decoder
 
         self.forbid_rep_mask: Optional[Tensor]
         self.register_buffer("forbid_rep_mask", forbid_rep_mask)
