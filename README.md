@@ -34,7 +34,7 @@ conette-prepare data=none default=true pack_to_hdf=false csum_in_hdf_name=false 
 
 Then download the 4 datasets used to train CoNeTTE :
 ```bash
-common_args="data.download=true pack_to_hdf=true audio_t=resample_mean_convnext audio_t.pretrain_path=cnext_bl_75 post_hdf_name=bl_75 pretag=cnext_bl_75"
+common_args="data.download=true pack_to_hdf=true audio_t=resample_mean_convnext audio_t.pretrain_path=cnext_bl_75 post_hdf_name=bl pretag=cnext_bl_75"
 
 conette-prepare data=audiocaps audio_t.src_sr=32000 ${common_args}
 conette-prepare data=clotho audio_t.src_sr=44100 ${common_args}
@@ -58,7 +58,8 @@ CoNeTTE on AC+CL+MA+WC, specialized for AC (~3 hours on 1 GPU V100-32G)
 conette-train expt=[camw_cnext_bl_for_a,task_ds_src_camw] pl=conette
 ```
 
-**About reproducibility** : any training with AC data cannot be reproduced because a part of this data is deleted from the YouTube source, and I cannot share my own audio files.
+Note 1: any training using AC data cannot be exactly reproduced because a part of this data is deleted from the YouTube source, and I cannot share my own audio files.
+Note 2: paper results are averaged scores over 5 seeds (1234-1238). The default training only uses seed 1234.
 
 ## Inference only (without training)
 
@@ -152,4 +153,4 @@ The preprint version of the paper describing CoNeTTE is available on arxiv: http
 
 ## Contact
 Maintainer:
-- Etienne Labbé "Labbeti": labbeti.pub@gmail.com
+- [Étienne Labbé](https://labbeti.github.io/) "Labbeti": labbeti.pub@gmail.com
