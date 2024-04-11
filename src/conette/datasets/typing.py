@@ -15,8 +15,8 @@ class AACDatasetLike(Protocol):
         - __len__: () -> int
     """
 
-    at: Callable[[Any, Any], Any]
-    __getitem__: Callable[[Any], Any]
+    at: Callable[..., Any]
+    __getitem__: Callable[..., Any]
 
     @property
     def column_names(self) -> list[str]:
