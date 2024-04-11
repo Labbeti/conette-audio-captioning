@@ -297,6 +297,7 @@ def filter_dsets(
             fpaths = ds[:, "fpath"]
             if cfg.verbose >= 2:
                 pylog.debug(f"Loading durations from {len(ds)} audio files...")
+
             meta_lst = disk_cache(
                 load_audio_metadata,
                 fpaths,

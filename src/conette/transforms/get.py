@@ -247,7 +247,7 @@ def get_resample_mean_convnext(
     device: Union[str, torch.device, None] = "cuda_if_available",
     transpose_frame_embs: bool = True,
     only_frame_embs: bool = True,
-    pretrain_path: Union[str, Path] = "cnext_bl",
+    pretrain_path: Union[str, Path] = "cnext_bl_75",
     strict: bool = True,
 ) -> nn.Sequential:
     if not isinstance(src_sr, int):
