@@ -4,7 +4,6 @@
 import logging
 import math
 import os.path as osp
-import time
 from functools import cache
 from typing import (
     Any,
@@ -13,7 +12,6 @@ from typing import (
     Iterable,
     Mapping,
     Optional,
-    Sequence,
     Sized,
     TypeVar,
     Union,
@@ -663,88 +661,6 @@ def intersect_lists(lst_of_lst: list[list[T]]) -> list[T]:
         if len(out) == 0:
             break
     return out
-
-
-class Cacher(Wrapper):
-    def __init__(
-        self,
-        source: AACDatasetLike,
-        cache_keys: Optional[dict[str, str]] = None,
-    ) -> None:
-        super().__init__(source)
-
-        if cache_keys is None:
-            cache_keys = {}
-        if not all(v in ("get_raw", "get") for v in cache_keys.values()):
-            raise ValueError
-
-        null_value = "NULL"
-
-        self._cache_keys = cache_keys
-        self._caches = {
-            k: [null_value for _ in range(len(source))] for k in cache_keys.keys()
-        }
-        self._null_value = null_value
-
-    def at(self, idx: int, column: str) -> Any:
-        return self._get_cache(idx, column, "get_field")
-
-    def _get_cache(self, idx: int, column: str, type_: str) -> Any:
-        if self._cache_keys.get(column) == type_:
-            cached_value = self._caches[column][idx]
-            if cached_value != self._null_value:
-                return cached_value
-            else:
-                value = self._source.at(idx, column)
-                self._caches[column][idx] = value
-                return value
-        else:
-            value = self._source.at(idx, column)
-            return value
-
-
-class DatasetList(Dataset[T]):
-    def __init__(
-        self,
-        items: Iterable[T],
-        transform: Optional[Callable[[T], Any]] = None,
-    ) -> None:
-        if not isinstance(items, Sequence):
-            items = list(items)
-
-        super().__init__()
-        self._items = items
-        self._transform = transform
-
-    def __getitem__(self, idx: int) -> Any:
-        item = self._items[idx]
-        if self._transform is not None:
-            item = self._transform(item)
-        return item
-
-    def __len__(self) -> int:
-        return len(self._items)
-
-
-class DebugTracker(Wrapper):
-    def __init__(self, source: SizedDatasetLike) -> None:
-        super().__init__(source)
-        self._delta_sum = 0.0
-        self._delta_count = 0
-
-    def __getitem__(self, idx: int) -> Any:
-        start = time.perf_counter()
-        item = super().__getitem__(idx)
-        end = time.perf_counter()
-        self._delta_sum += end - start
-        self._delta_count += 1
-        return item
-
-    def get_average(self) -> float:
-        if self._delta_count == 0:
-            return 0.0
-        else:
-            return self._delta_sum / self._delta_count
 
 
 class AACSelectColumnsWrapper(Wrapper[AACDatasetLike]):
