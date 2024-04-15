@@ -34,7 +34,7 @@ conette-prepare data=none default=true pack_to_hdf=false csum_in_hdf_name=false 
 
 Then download the 4 datasets used to train CoNeTTE :
 ```bash
-common_args="data.download=true pack_to_hdf=true audio_t=resample_mean_convnext audio_t.pretrain_path=cnext_bl_75 post_hdf_name=bl pretag=cnext_bl_75"
+common_args="data.download=true pack_to_hdf=true audio_t=resample_mean_convnext audio_t.pretrain_path=cnext_bl_70 post_hdf_name=bl pretag=cnext_bl_70"
 
 conette-prepare data=audiocaps audio_t.src_sr=32000 ${common_args}
 conette-prepare data=clotho audio_t.src_sr=44100 ${common_args}
