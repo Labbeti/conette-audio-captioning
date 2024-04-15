@@ -19,12 +19,13 @@ CNEXT_REGISTER = ModelCheckpointRegister(
             "hash": "0688ae503f5893be0b6b71cb92f8b428",
             "fname": "convnext_tiny_465mAP_BL_AC_70kit.pth",
         },
-        "cnext_bl_75": {
-            "architecture": "ConvNeXt",
-            "url": "TODO",
-            "hash": "TODO",
-            "fname": "convnext_tiny_465mAP_BL_AC_75kit.pth",
-        },
+        # TODO: update URL
+        # "cnext_bl_75": {
+        #     "architecture": "ConvNeXt",
+        #     "url": "TODO",
+        #     "hash": "TODO",
+        #     "fname": "convnext_tiny_465mAP_BL_AC_75kit.pth",
+        # },
     },
     state_dict_key="model",
 )
