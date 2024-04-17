@@ -15,7 +15,7 @@ from torchaudio.transforms import Resample
 from torchlibrosa.stft import LogmelFilterBank, Spectrogram
 from torchoutil.nn.modules.tensor import Mean, Permute, Squeeze, TensorTo, Unsqueeze
 
-from conette.nn.ckpt import CNEXT_REGISTER, PANN_REGISTER
+from conette.nn.ckpt import CNEXT_REGISTRY, PANN_REGISTRY
 from conette.nn.encoders.cnn10 import Cnn10
 from conette.nn.encoders.cnn14 import Cnn14
 from conette.nn.encoders.cnn14_decisionlevel_att import Cnn14_DecisionLevelAtt
@@ -92,7 +92,7 @@ def get_resample_mean_cnn10(
         p.requires_grad_(False)
     encoder.eval()
 
-    state_dict = PANN_REGISTER.load_state_dict("Cnn10", "cpu", offline=False)
+    state_dict = PANN_REGISTRY.load_state_dict("Cnn10", device="cpu", offline=False)
     encoder.load_state_dict(state_dict)
 
     encoder = encoder.to(device)
@@ -183,7 +183,7 @@ def get_resample_mean_cnn14(
     device: Union[str, torch.device, None] = "cuda_if_available",
     transpose_frame_embs: bool = True,
     only_frame_embs: bool = True,
-    pretrain_path: Optional[str] = None,
+    pretrain_path: str = "Cnn14",
 ) -> nn.Sequential:
     if not isinstance(src_sr, int):
         error_message = _get_error_message(src_sr)
@@ -202,10 +202,7 @@ def get_resample_mean_cnn14(
         return_frame_outputs=True,
     )
 
-    if pretrain_path is None:
-        state_dict = PANN_REGISTER.load_state_dict("Cnn14", device, offline=False)
-    else:
-        state_dict = PANN_REGISTER.load_state_dict(pretrain_path, device)
+    state_dict = PANN_REGISTRY.load_state_dict(pretrain_path, device=device)
     encoder.load_state_dict(state_dict)
 
     for p in encoder.parameters():
@@ -247,7 +244,7 @@ def get_resample_mean_convnext(
     device: Union[str, torch.device, None] = "cuda_if_available",
     transpose_frame_embs: bool = True,
     only_frame_embs: bool = True,
-    pretrain_path: Union[str, Path] = "cnext_bl_70",
+    pretrain_path: Union[str, Path] = "cnext_bl_75",
     strict: bool = True,
 ) -> nn.Sequential:
     if not isinstance(src_sr, int):
@@ -274,7 +271,7 @@ def get_resample_mean_convnext(
     )
 
     cpu_device = torch.device("cpu")
-    state_dict = CNEXT_REGISTER.load_state_dict(
+    state_dict = CNEXT_REGISTRY.load_state_dict(
         pretrain_path,
         device=cpu_device,
         offline=False,

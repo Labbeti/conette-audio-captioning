@@ -4,19 +4,18 @@
 from typing import Optional
 
 import torch
-
-from torch import nn, Tensor
+from torch import Tensor, nn
 from torch.nn import functional as F
-from torchlibrosa.stft import Spectrogram, LogmelFilterBank
 from torchlibrosa.augmentation import SpecAugmentation
+from torchlibrosa.stft import LogmelFilterBank, Spectrogram
 
-from conette.nn.ckpt import PANN_REGISTER
+from conette.nn.ckpt import PANN_REGISTRY
+from conette.nn.pann_utils.models import AttBlock, ConvBlock, init_bn, init_layer
 from conette.nn.pann_utils.pytorch_utils import (
     do_mixup,
     interpolate,
     pad_framewise_output,
 )
-from conette.nn.pann_utils.models import AttBlock, ConvBlock, init_bn, init_layer
 from conette.transforms.audio.cutoutspec import CutOutSpec
 from conette.transforms.mixup import Mixup, sample_lambda
 
@@ -123,7 +122,7 @@ class Cnn14_DecisionLevelAtt(nn.Module):
 
     def load_pretrained_weights(self, strict: bool = False) -> None:
         device = self.fc1.weight.device
-        state_dict = PANN_REGISTER.load_state_dict(
+        state_dict = PANN_REGISTRY.load_state_dict(
             "Cnn14_DecisionLevelAtt", device, True
         )
         self.load_state_dict(state_dict, strict=strict)

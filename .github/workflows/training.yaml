@@ -80,7 +80,7 @@ jobs:
       if: ${{ steps.cache_preparation.outputs.cache-hit != 'true' }}
       run: |
         echo "Prepare data in dataroot '$DATAROOT'"
-        cnext_bl_path="cnext_bl_70"
+        cnext_bl_path="cnext_bl_75"
         conette-prepare data=clotho default=true pann=false pack_to_hdf=true data.clean_archives=true data.subsets=[val] audio_t.src_sr=44100 audio_t.pretrain_path=${cnext_bl_path} post_hdf_name=bl pretag=cnext_bl csum_in_hdf_name=false path.data=$DATAROOT verbose=2
 
     # --- TESTS ---

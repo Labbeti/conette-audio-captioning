@@ -4,11 +4,10 @@
 from typing import Any, Optional, Union
 
 import torch
-
 from torch import nn
 from torchoutil.nn.functional import get_device
 
-from conette.nn.ckpt import PANN_REGISTER
+from conette.nn.ckpt import PANN_REGISTRY
 from conette.nn.pann_utils import models
 
 
@@ -32,9 +31,9 @@ def build_pann_model(
     :param strict_load: If True, check if checkpoint entirely corresponds to the initialized model. defaults to True.
     :returns: The PANN model built as nn.Module.
     """
-    if model_name not in PANN_REGISTER.model_names:
+    if model_name not in PANN_REGISTRY.names:
         raise ValueError(
-            f"Invalid argument {model_name=}. (expected one of {tuple(PANN_REGISTER.model_names)})"
+            f"Invalid argument {model_name=}. (expected one of {tuple(PANN_REGISTRY.names)})"
         )
 
     if model_kwargs is None:
@@ -47,7 +46,7 @@ def build_pann_model(
     model: nn.Module = classtype(**model_kwargs)
 
     if pretrained:
-        state_dict = PANN_REGISTER.load_state_dict(
+        state_dict = PANN_REGISTRY.load_state_dict(
             model_name, offline=offline, verbose=verbose
         )
         model.load_state_dict(state_dict, strict=strict_load)

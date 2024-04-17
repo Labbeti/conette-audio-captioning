@@ -4,22 +4,18 @@
 # BASED ON Cnn10 class from https://github.com/qiuqiangkong/audioset_tagging_cnn/blob/master/pytorch/models.py#L484
 
 import logging
-
 from typing import Any, Optional
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import yaml
-
 from torch import Tensor
-from torchlibrosa.stft import Spectrogram, LogmelFilterBank
 from torchlibrosa.augmentation import SpecAugmentation
+from torchlibrosa.stft import LogmelFilterBank, Spectrogram
 
-from conette.nn.ckpt import PANN_REGISTER
-from conette.nn.pann_utils.models import init_bn, init_layer, do_mixup
-from conette.nn.pann_utils.models import ConvBlock
-
+from conette.nn.ckpt import PANN_REGISTRY
+from conette.nn.pann_utils.models import ConvBlock, do_mixup, init_bn, init_layer
 
 pylog = logging.getLogger(__name__)
 
@@ -208,7 +204,7 @@ class Cnn10(nn.Module):
         exclude_spectro_params: bool = False,
     ) -> None:
         device = self.bn0.weight.device
-        state_dict = PANN_REGISTER.load_state_dict("Cnn10", device, offline=False)
+        state_dict = PANN_REGISTRY.load_state_dict("Cnn10", device, offline=False)
 
         if exclude_spectro_params:
             state_dict = {

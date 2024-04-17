@@ -48,7 +48,7 @@ from conette.datasets.utils import (
     AACSubset,
     load_audio_metadata,
 )
-from conette.nn.ckpt import CNEXT_REGISTER, PANN_REGISTER
+from conette.nn.ckpt import CNEXT_REGISTRY, PANN_REGISTRY
 from conette.nn.functional.misc import count_params
 from conette.train import setup_run, teardown_run
 from conette.transforms.utils import PreSaveTransform
@@ -114,26 +114,26 @@ def download_models(cfg: DictConfig) -> None:
                     f"Invalid cfg.pann argument. Must be a string, a list of strings, a bool or an int, found {pattern.__class__.__name__}."
                 )
 
-        register = PANN_REGISTER
-        model_names = [
+        register = PANN_REGISTRY
+        names = [
             model_name
-            for model_name in register.model_names
+            for model_name in register.names
             if can_download(model_name, cfg.pann)
         ]
 
-        for i, model_name in enumerate(model_names):
+        for i, model_name in enumerate(names):
             pylog.info(
-                f"Start downloading pre-trained PANN model '{model_name}' ({i+1}/{len(model_names)})..."
+                f"Start downloading pre-trained PANN model '{model_name}' ({i+1}/{len(names)})..."
             )
-            register.download_ckpt(model_name, verbose=cfg.verbose)
+            register.download_file(model_name, verbose=cfg.verbose)
 
     if cfg.cnext:
-        register = CNEXT_REGISTER
-        for i, model_name in enumerate(register.model_names):
+        register = CNEXT_REGISTRY
+        for i, model_name in enumerate(register.names):
             pylog.info(
-                f"Start downloading pre-trained CNext model '{model_name}' ({i+1}/{len(register.model_names)})..."
+                f"Start downloading pre-trained CNext model '{model_name}' ({i+1}/{len(register.names)})..."
             )
-            register.download_ckpt(model_name, verbose=cfg.verbose)
+            register.download_file(model_name, verbose=cfg.verbose)
 
 
 def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
