@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.3.0] UNRELEASED
+## [0.3.0] 2024-04-18
 ### Changed
 - Update dependencies with `torchoutil`, and clean a lot of dead code.
 - Convnext model (BL version) is now automatically selected during HDF preparation. ([#5](https://github.com/Labbeti/conette-audio-captioning/issues/5))
@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - Requirements versions specified during installation. ([#4](https://github.com/Labbeti/conette-audio-captioning/issues/4))
 - Preparation now correctly loads `scale_layers` in ConvNext during preparation. ([#5](https://github.com/Labbeti/conette-audio-captioning/issues/5))
+- ConvNeXt 75 iterations is now loaded instead of ConvNeXt 70 iterations for Conette.
 
 ## [0.2.2] 2024-01-15
 ### Added
