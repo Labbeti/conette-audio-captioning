@@ -13,7 +13,7 @@ from torchoutil.utils.collections import all_eq
 from conette.nn.encoders.convnext import convnext_tiny
 from conette.nn.functional.pad import pad_and_stack
 from conette.utils.collections import unzip
-from conette.utils.type_checks import is_iter_str, is_iter_tensor, is_list_tensor
+from conette.utils.type_checks import is_iter_tensor, is_iterable_str, is_list_tensor
 
 pylog = logging.getLogger(__name__)
 
@@ -86,7 +86,7 @@ class CoNeTTEPreprocessor(nn.Module):
         x_shapes: Union[Tensor, None, list[Size]] = None,
     ) -> tuple[Tensor, Tensor]:
         # LOAD
-        if is_iter_str(x):
+        if is_iterable_str(x, accept_str=True):
             if isinstance(x, str):
                 x = [x]
             gen = (self._load(xi) for xi in x)
