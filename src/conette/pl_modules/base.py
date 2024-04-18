@@ -11,10 +11,10 @@ from pytorch_lightning import LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.utilities.types import _METRIC_COLLECTION
 from torch import Tensor, nn
 from torch.nn.modules.module import _IncompatibleKeys
+from torchoutil.nn.functional import count_parameters
 
 from conette.pl_modules.common import (
     ON_EPOCH_KWARGS,
-    count_params,
     default_configure_optimizers,
     default_get_example,
     has_datamodule,
@@ -271,7 +271,7 @@ class AACLightningModule(LightningModule):
         return csum_module(self, only_trainable=only_trainable)
 
     def count_params(self, only_trainable: bool = False) -> int:
-        return count_params(self, only_trainable)
+        return count_parameters(self, only_trainable=only_trainable)
 
     def has_datamodule(self) -> bool:
         return has_datamodule(self)

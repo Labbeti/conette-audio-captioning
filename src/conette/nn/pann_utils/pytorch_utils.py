@@ -5,7 +5,6 @@ import time
 
 import numpy as np
 import torch
-
 from torch import nn
 
 
@@ -278,7 +277,7 @@ def count_flops(model, audio_length):
     device = device = next(model.parameters()).device
     input = torch.rand(1, audio_length).to(device)
 
-    out = model(input)
+    model(input)
 
     total_flops = (
         sum(list_conv2d)

@@ -37,6 +37,7 @@ from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig
 from torch import nn
 from torchaudio.backend.common import AudioMetaData
+from torchoutil.nn.functional import count_parameters
 from torchoutil.utils.data.dataset import TransformWrapper
 from torchoutil.utils.hdf import HDFDataset, pack_to_hdf
 
@@ -49,7 +50,6 @@ from conette.datasets.utils import (
     load_audio_metadata,
 )
 from conette.nn.ckpt import CNEXT_REGISTRY, PANN_REGISTRY
-from conette.nn.functional.misc import count_params
 from conette.train import setup_run, teardown_run
 from conette.transforms.utils import PreSaveTransform
 from conette.utils.collections import unzip
@@ -412,11 +412,11 @@ def pack_dsets_to_hdf(cfg: DictConfig, dsets: dict[str, Any]) -> None:
         text_tfm = hydra.utils.instantiate(sentence_transform_params)
 
         if isinstance(audio_tfm, nn.Module) and cfg.verbose >= 1:
-            n_params = count_params(audio_tfm, only_trainable=False)
+            n_params = count_parameters(audio_tfm, only_trainable=False)
             pylog.info(f"Nb params in audio transform: {n_params}")
 
         if isinstance(text_tfm, nn.Module) and cfg.verbose >= 1:
-            n_params = count_params(text_tfm, only_trainable=False)
+            n_params = count_parameters(text_tfm, only_trainable=False)
             pylog.info(f"Nb params in text transform: {n_params}")
 
         pre_save_transforms = {

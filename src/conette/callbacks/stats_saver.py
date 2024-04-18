@@ -5,12 +5,10 @@ import csv
 import logging
 import os
 import os.path as osp
-
 from argparse import Namespace
 from typing import Any, Iterable, Optional, Union
 
 import yaml
-
 from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig
 from pytorch_lightning import LightningDataModule, LightningModule, Trainer
@@ -18,15 +16,14 @@ from pytorch_lightning.callbacks.callback import Callback
 from pytorch_lightning.callbacks.checkpoint import Checkpoint
 from pytorch_lightning.core.saving import save_hparams_to_yaml
 from torch import Tensor
+from torchoutil.nn.functional import count_parameters
 
 from conette.callbacks.time import TimeTrackerCallback
 from conette.info import get_install_info
-from conette.nn.functional.misc import count_params
 from conette.tokenization.aac_tokenizer import AACTokenizer
 from conette.utils.csum import csum_module
 from conette.utils.custom_logger import CustomTensorboardLogger
 from conette.utils.misc import get_current_git_hash, save_conda_env, save_micromamba_env
-
 
 pylog = logging.getLogger(__name__)
 
@@ -228,8 +225,8 @@ def save_to_dir(
             pl_module.hparams_initial,
         )
         other_metrics |= {
-            "total_params": count_params(pl_module, only_trainable=False),
-            "train_params": count_params(pl_module, only_trainable=True),
+            "total_params": count_parameters(pl_module, only_trainable=False),
+            "train_params": count_parameters(pl_module, only_trainable=True),
         }
 
     if datamodule is not None:

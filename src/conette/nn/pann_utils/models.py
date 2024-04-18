@@ -2,11 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import torch
-
-from torch import nn, Tensor
+from torch import Tensor, nn
 from torch.nn import functional as F
-from torchlibrosa.stft import Spectrogram, LogmelFilterBank
 from torchlibrosa.augmentation import SpecAugmentation
+from torchlibrosa.stft import LogmelFilterBank, Spectrogram
 
 from conette.nn.pann_utils.pytorch_utils import (
     do_mixup,
@@ -166,8 +165,15 @@ class AttBlock(nn.Module):
 
 class Cnn14(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Cnn14, self).__init__()
 
         window = "hann"
@@ -275,8 +281,15 @@ class Cnn14(nn.Module):
 
 class Cnn14_no_specaug(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Cnn14_no_specaug, self).__init__()
 
         window = "hann"
@@ -373,8 +386,15 @@ class Cnn14_no_specaug(nn.Module):
 
 class Cnn14_no_dropout(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Cnn14_no_dropout, self).__init__()
 
         window = "hann"
@@ -476,8 +496,15 @@ class Cnn14_no_dropout(nn.Module):
 
 class Cnn6(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Cnn6, self).__init__()
 
         window = "hann"
@@ -579,8 +606,15 @@ class Cnn6(nn.Module):
 
 class Cnn10(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Cnn10, self).__init__()
 
         window = "hann"
@@ -941,8 +975,15 @@ class _ResNet(nn.Module):
 
 class ResNet22(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(ResNet22, self).__init__()
 
         window = "hann"
@@ -1047,8 +1088,15 @@ class ResNet22(nn.Module):
 
 class ResNet38(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(ResNet38, self).__init__()
 
         window = "hann"
@@ -1153,8 +1201,15 @@ class ResNet38(nn.Module):
 
 class ResNet54(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(ResNet54, self).__init__()
 
         window = "hann"
@@ -1259,8 +1314,15 @@ class ResNet54(nn.Module):
 
 class Cnn14_emb512(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Cnn14_emb512, self).__init__()
 
         window = "hann"
@@ -1368,8 +1430,15 @@ class Cnn14_emb512(nn.Module):
 
 class Cnn14_emb128(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Cnn14_emb128, self).__init__()
 
         window = "hann"
@@ -1477,8 +1546,15 @@ class Cnn14_emb128(nn.Module):
 
 class Cnn14_emb32(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Cnn14_emb32, self).__init__()
 
         window = "hann"
@@ -1586,8 +1662,15 @@ class Cnn14_emb32(nn.Module):
 
 class MobileNetV1(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(MobileNetV1, self).__init__()
 
         window = "hann"
@@ -1779,8 +1862,15 @@ class InvertedResidual(nn.Module):
 
 class MobileNetV2(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(MobileNetV2, self).__init__()
 
         window = "hann"
@@ -1960,16 +2050,16 @@ class LeeNetConvBlock(nn.Module):
 
 class LeeNet11(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(LeeNet11, self).__init__()
-
-        window = "hann"
-        center = True
-        pad_mode = "reflect"
-        ref = 1.0
-        amin = 1e-10
-        top_db = None
 
         self.conv_block1 = LeeNetConvBlock(1, 64, 3, 3)
         self.conv_block2 = LeeNetConvBlock(64, 64, 3, 1)
@@ -2066,16 +2156,16 @@ class LeeNetConvBlock2(nn.Module):
 
 class LeeNet24(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(LeeNet24, self).__init__()
-
-        window = "hann"
-        center = True
-        pad_mode = "reflect"
-        ref = 1.0
-        amin = 1e-10
-        top_db = None
 
         self.conv_block1 = LeeNetConvBlock2(1, 64, 3, 3)
         self.conv_block2 = LeeNetConvBlock2(64, 96, 3, 1)
@@ -2224,16 +2314,16 @@ class DaiNetResBlock(nn.Module):
 
 class DaiNet19(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(DaiNet19, self).__init__()
-
-        window = "hann"
-        center = True
-        pad_mode = "reflect"
-        ref = 1.0
-        amin = 1e-10
-        top_db = None
 
         self.conv0 = nn.Conv1d(
             in_channels=1,
@@ -2485,16 +2575,16 @@ class _ResNetWav1d(nn.Module):
 
 class Res1dNet31(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Res1dNet31, self).__init__()
-
-        window = "hann"
-        center = True
-        pad_mode = "reflect"
-        ref = 1.0
-        amin = 1e-10
-        top_db = None
 
         self.conv0 = nn.Conv1d(
             in_channels=1,
@@ -2547,16 +2637,16 @@ class Res1dNet31(nn.Module):
 
 class Res1dNet51(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Res1dNet51, self).__init__()
-
-        window = "hann"
-        center = True
-        pad_mode = "reflect"
-        ref = 1.0
-        amin = 1e-10
-        top_db = None
 
         self.conv0 = nn.Conv1d(
             in_channels=1,
@@ -2652,16 +2742,16 @@ class ConvPreWavBlock(nn.Module):
 
 class Wavegram_Cnn14(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Wavegram_Cnn14, self).__init__()
-
-        window = "hann"
-        center = True
-        pad_mode = "reflect"
-        ref = 1.0
-        amin = 1e-10
-        top_db = None
 
         self.pre_conv0 = nn.Conv1d(
             in_channels=1,
@@ -2751,8 +2841,15 @@ class Wavegram_Cnn14(nn.Module):
 
 class Wavegram_Logmel_Cnn14(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Wavegram_Logmel_Cnn14, self).__init__()
 
         window = "hann"
@@ -2890,8 +2987,15 @@ class Wavegram_Logmel_Cnn14(nn.Module):
 
 class Wavegram_Logmel128_Cnn14(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Wavegram_Logmel128_Cnn14, self).__init__()
 
         window = "hann"
@@ -3029,8 +3133,15 @@ class Wavegram_Logmel128_Cnn14(nn.Module):
 
 class Cnn14_16k(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Cnn14_16k, self).__init__()
 
         assert sample_rate == 16000
@@ -3145,8 +3256,15 @@ class Cnn14_16k(nn.Module):
 
 class Cnn14_8k(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Cnn14_8k, self).__init__()
 
         assert sample_rate == 8000
@@ -3261,8 +3379,15 @@ class Cnn14_8k(nn.Module):
 
 class Cnn14_mixup_time_domain(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Cnn14_mixup_time_domain, self).__init__()
 
         window = "hann"
@@ -3372,8 +3497,15 @@ class Cnn14_mixup_time_domain(nn.Module):
 
 class Cnn14_mel32(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Cnn14_mel32, self).__init__()
 
         window = "hann"
@@ -3481,8 +3613,15 @@ class Cnn14_mel32(nn.Module):
 
 class Cnn14_mel128(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Cnn14_mel128, self).__init__()
 
         window = "hann"
@@ -3591,8 +3730,15 @@ class Cnn14_mel128(nn.Module):
 ############
 class Cnn14_DecisionLevelMax(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Cnn14_DecisionLevelMax, self).__init__()
 
         window = "hann"
@@ -3712,8 +3858,15 @@ class Cnn14_DecisionLevelMax(nn.Module):
 
 class Cnn14_DecisionLevelAvg(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Cnn14_DecisionLevelAvg, self).__init__()
 
         window = "hann"
@@ -3837,8 +3990,15 @@ class Cnn14_DecisionLevelAvg(nn.Module):
 
 class Cnn14_DecisionLevelAtt(nn.Module):
     def __init__(
-        self, sample_rate, window_size, hop_size, mel_bins, fmin, fmax, classes_num
-    ):
+        self,
+        sample_rate: int,
+        window_size: int,
+        hop_size: int,
+        mel_bins: int,
+        fmin: float,
+        fmax: float,
+        classes_num: int,
+    ) -> None:
         super(Cnn14_DecisionLevelAtt, self).__init__()
 
         window = "hann"

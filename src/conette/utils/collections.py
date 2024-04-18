@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import re
-
 from typing import (
     Any,
     Callable,
@@ -16,12 +15,7 @@ from typing import (
 )
 
 import numpy as np
-
-from torchoutil.utils.collections import (
-    all_eq,
-    list_dict_to_dict_list,
-    flat_dict_of_dict,
-)  # noqa: E402
+from torchoutil.utils.collections import all_eq
 
 T = TypeVar("T")
 U = TypeVar("U")
