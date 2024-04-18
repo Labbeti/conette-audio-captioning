@@ -5,7 +5,6 @@ import logging
 import os
 import os.path as osp
 import pickle
-
 from functools import cache
 from logging import FileHandler
 from pathlib import Path
@@ -15,10 +14,9 @@ from hydra.core.hydra_config import HydraConfig
 from hydra.types import RunMode
 from omegaconf import DictConfig, OmegaConf
 from omegaconf.errors import ConfigAttributeError
+from torchoutil.utils.collections import flat_dict_of_dict
 
-from conette.utils.collections import flat_dict_of_dict
 from conette.utils.yaml_utils import load_yaml
-
 
 pylog = logging.getLogger(__name__)
 
@@ -217,8 +215,8 @@ def _get_tag_or_subtag(
         else:
             value = OmegaConf.select(_root_, key, default="NOTFOUND")
             if value == "NOTFOUND":
-                dic = OmegaConf.to_container(_root_)
-                flatten = flat_dict_of_dict(dic)  # type: ignore
+                dic: dict[str, Any] = OmegaConf.to_container(_root_)  # type: ignore
+                flatten = flat_dict_of_dict(dic)
                 matches = [k for k in flatten.keys() if k.endswith(key)]
 
                 if len(matches) == 1:
