@@ -35,7 +35,6 @@ from pytorch_lightning.callbacks import (
 )
 from transformers import logging as tfmers_logging
 
-import conette
 from conette.callbacks.aac_evaluator import AACEvaluator
 from conette.callbacks.aac_validator import AACValidator
 from conette.callbacks.debug import PrintDebug
@@ -46,7 +45,7 @@ from conette.callbacks.stats_saver import StatsSaver
 from conette.tokenization.aac_tokenizer import AACTokenizer
 from conette.utils.custom_logger import CustomTensorboardLogger
 from conette.utils.hydra import CustomFileHandler, get_subrun_path, setup_resolvers
-from conette.utils.log_utils import set_loglevel
+from conette.utils.log_utils import setup_logging_level
 from conette.utils.misc import copy_slurm_logs, reset_seed
 
 # Note: this function must be called globally
@@ -97,8 +96,8 @@ def setup_run(cfg: DictConfig) -> None:
         other_level = logging.ERROR
         tfmers_logging.set_verbosity_error()
 
-    set_loglevel(("sentence_transformers",), other_level)
-    set_loglevel((conette,), pkg_level)
+    setup_logging_level("sentence_transformers", other_level)
+    setup_logging_level("conette", pkg_level)
     pylog.setLevel(pkg_level)
 
     # Redirect PyTorch lightning outputs to a file
