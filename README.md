@@ -9,7 +9,7 @@
 
 </div>
 
-CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file. The architecture and training are explained in the corresponding [paper](https://arxiv.org/pdf/2309.00454.pdf). The model has been developped by me ([Étienne Labbé](https://labbeti.github.io/)) during my PhD. A simple interface to test CoNeTTE is available on [HuggingFace website](https://huggingface.co/spaces/Labbeti/conette).
+CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file. The architecture and training are explained in the [corresponding paper](https://arxiv.org/pdf/2309.00454.pdf). The model has been developped by me ([Étienne Labbé](https://labbeti.github.io/)) during my PhD. A simple interface to test CoNeTTE is available on [HuggingFace website](https://huggingface.co/spaces/Labbeti/conette).
 
 ## Training
 ### Requirements
@@ -121,8 +121,8 @@ The model has been trained on AudioCaps (AC), Clotho (CL), MACS (MA) and WavCaps
 
 | Test data | SPIDEr (%) | SPIDEr-FL (%) | FENSE (%) | Vocab | Outputs | Scores |
 | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
-| AC-test | 44.14 | 43.98 | 60.81 | 309 | [Link](https://github.com/Labbeti/conette-audio-captioning/blob/main/results/conette/outputs_audiocaps_test.csv) | [Link](https://github.com/Labbeti/conette-audio-captioning/blob/main/results/conette/scores_audiocaps_test.yaml) |
-| CL-eval | 30.97 | 30.87 | 51.72 | 636 | [Link](https://github.com/Labbeti/conette-audio-captioning/blob/main/results/conette/outputs_clotho_eval.csv) | [Link](https://github.com/Labbeti/conette-audio-captioning/blob/main/results/conette/scores_clotho_eval.yaml) |
+| AC-test | 44.14 | 43.98 | 60.81 | 309 | [Link](https://github.com/Labbeti/conette-audio-captioning/blob/main/results/detailed_outputs/outputs_audiocaps_test.csv) | [Link](https://github.com/Labbeti/conette-audio-captioning/blob/main/results/detailed_outputs/scores_audiocaps_test.yaml) |
+| CL-eval | 30.97 | 30.87 | 51.72 | 636 | [Link](https://github.com/Labbeti/conette-audio-captioning/blob/main/results/detailed_outputs/outputs_clotho_eval.csv) | [Link](https://github.com/Labbeti/conette-audio-captioning/blob/main/results/detailed_outputs/scores_clotho_eval.yaml) |
 
 This model checkpoint has been trained with focus on the Clotho dataset, but it can also reach a good performance on AudioCaps with the "audiocaps" task.
 
@@ -134,7 +134,7 @@ This model checkpoint has been trained with focus on the Clotho dataset, but it 
 The preprint version of the paper describing CoNeTTE is available on arxiv: https://arxiv.org/pdf/2309.00454.pdf
 
 ```bibtex
-@misc{labbé2023conette,
+@misc{labbe2023conette,
 	title        = {CoNeTTE: An efficient Audio Captioning system leveraging multiple datasets with Task Embedding},
 	author       = {Étienne Labbé and Thomas Pellegrini and Julien Pinquier},
 	year         = 2023,
