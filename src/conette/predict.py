@@ -4,24 +4,22 @@
 import csv
 import logging
 import os.path as osp
-
 from argparse import ArgumentParser, Namespace
 from typing import Optional, Union
 
 import torch
 import transformers
 import yaml
-
 from lightning_fabric.utilities.seed import seed_everything
-from omegaconf import OmegaConf, DictConfig
+from omegaconf import DictConfig, OmegaConf
 
-from conette.nn.functional.get import get_device
 from conette.huggingface.model import CoNeTTEConfig, CoNeTTEModel
+from conette.nn.functional.get import get_device
 from conette.pl_modules.baseline import BaselinePLM
 from conette.pl_modules.conette import CoNeTTEPLM
-from conette.utils.cmdline import _str_to_opt_str, _str_to_opt_int, _setup_logging
+from conette.utils.cmdline import _str_to_opt_int, _str_to_opt_str
 from conette.utils.csum import csum_module
-
+from conette.utils.log_utils import setup_logging_verbose
 
 pylog = logging.getLogger(__name__)
 
@@ -62,7 +60,7 @@ def get_predict_args() -> Namespace:
         "--device",
         type=str,
         help="Torch device used to run the model.",
-        default="auto",
+        default="cuda_if_available",
     )
     parser.add_argument(
         "--token",
@@ -183,7 +181,7 @@ def _load_model_from_path(
 def main_predict() -> None:
     """Main entrypoint for CoNeTTE predict."""
     args = get_predict_args()
-    _setup_logging("conette", verbose=args.verbose, set_format=False)
+    setup_logging_verbose("conette", verbose=args.verbose, fmt=None)
     seed_everything(args.seed)
 
     fpaths = list(args.audio)

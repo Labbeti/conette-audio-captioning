@@ -11,4 +11,3 @@ verbose: ${verbose}
 subsets: null
 with_tags: true
 download: false
-audiocaps_caps_fix_fpath: null

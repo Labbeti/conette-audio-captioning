@@ -2,25 +2,23 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
-from typing import Any, Iterable, Optional, TypedDict, Union
-from typing_extensions import NotRequired
-
 import pickle
-import torch
+from typing import Any, Iterable, Optional, TypedDict, Union
 
+import torch
 from torch import Size, Tensor
+from torchoutil.nn.functional.get import get_device
+from torchoutil.nn.functional.multilabel import probs_to_names
 from transformers import PreTrainedModel
+from typing_extensions import NotRequired
 
 from conette.huggingface.config import CoNeTTEConfig
 from conette.huggingface.preprocessor import CoNeTTEPreprocessor
 from conette.huggingface.setup import setup_other_models
-from conette.nn.functional.get import get_device
 from conette.pl_modules.base import AACLightningModule
 from conette.pl_modules.conette import CoNeTTEPLM
 from conette.tokenization.aac_tokenizer import AACTokenizer
-from conette.transforms.audioset_labels import probs_to_labels
-
+from conette.transforms.audioset_mapping import load_audioset_idx_to_name
 
 pylog = logging.getLogger(__name__)
 
@@ -43,7 +41,7 @@ class CoNeTTEModel(PreTrainedModel):
     def __init__(
         self,
         config: CoNeTTEConfig,
-        device: Union[str, torch.device, None] = "auto",
+        device: Union[str, torch.device, None] = "cuda_if_available",
         inference: bool = True,
         offline: bool = False,
         model_override: Optional[AACLightningModule] = None,
@@ -90,10 +88,15 @@ class CoNeTTEModel(PreTrainedModel):
                 verbose=config.verbose,
             )
 
+        audioset_idx_to_name = load_audioset_idx_to_name(
+            offline=offline, verbose=config.verbose
+        )
+
         super().__init__(config)
         self.config: CoNeTTEConfig
         self.preprocessor = preprocessor
         self.model = model
+        self.audioset_idx_to_name = audioset_idx_to_name
 
         self._register_load_state_dict_pre_hook(self._pre_hook_load_state_dict)
 
@@ -198,7 +201,7 @@ class CoNeTTEModel(PreTrainedModel):
         if preprocess:
             batch = self.preprocessor(x, sr, x_shapes)
             clip_probs = batch.pop("clip_probs")
-            tags = probs_to_labels(clip_probs, threshold, True, self.config.verbose)
+            tags = probs_to_names(clip_probs, threshold, self.audioset_idx_to_name)
         else:
             assert isinstance(x, Tensor) and isinstance(x_shapes, Tensor)
             batch: dict[str, Any] = {

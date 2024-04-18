@@ -2,34 +2,31 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
 from typing import Any, Iterable, Optional
 
 import torch
-
-from torch import nn, Tensor
+from torch import Tensor, nn
+from torchoutil.nn.functional import (
+    lengths_to_pad_mask,
+    randperm_diff,
+    tensor_to_pad_mask,
+)
 
 from conette.nn.decoders.aac_tfmer import AACTransformerDecoder
 from conette.nn.decoding.beam import generate
 from conette.nn.decoding.forcing import teacher_forcing
 from conette.nn.encoders.ident import FrameIdentEncoder
-from conette.nn.functional.indexes import randperm_diff
-from conette.nn.functional.mask import (
-    lengths_to_pad_mask,
-    tensor_to_pad_mask,
-)
 from conette.nn.loss.ce_mean import CrossEntropyLossMean
 from conette.pl_modules.base import AACLightningModule
 from conette.pl_modules.common import (
-    build_proj_lin,
-    get_forbid_rep_mask,
+    TestBatch,
     TrainBatch,
     ValBatch,
-    TestBatch,
+    build_proj_lin,
+    get_forbid_rep_mask,
 )
 from conette.tokenization.aac_tokenizer import AACTokenizer
 from conette.transforms.mixup import sample_lambda
-
 
 pylog = logging.getLogger(__name__)
 
@@ -106,7 +103,9 @@ class CoNeTTEPLM(AACLightningModule):
         # Add task emb tokens
         task_name_to_token_id = {}
         task_id_to_token_id = torch.zeros(
-            (len(self.hp.task_names),), dtype=torch.long, device=self.tch_device
+            (len(self.hp.task_names),),
+            dtype=torch.long,
+            device=self.tch_device,
         )
 
         if self.hp.task_mode == "none":

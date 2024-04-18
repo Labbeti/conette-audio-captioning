@@ -16,14 +16,12 @@ import math
 import os.path as osp
 import sys
 import time
-
 from typing import Callable, Optional, Union
 
 import colorlog
 import hydra
 import torch
 import yaml
-
 from hydra.utils import instantiate
 from lightning_fabric.plugins.environments import LightningEnvironment
 from omegaconf import DictConfig, OmegaConf
@@ -37,21 +35,18 @@ from pytorch_lightning.callbacks import (
 )
 from transformers import logging as tfmers_logging
 
-import conette
-
 from conette.callbacks.aac_evaluator import AACEvaluator
 from conette.callbacks.aac_validator import AACValidator
 from conette.callbacks.debug import PrintDebug
 from conette.callbacks.deepspeed import DeepSpeedCallback
-from conette.callbacks.log import LogGCCallback, LogLRCallback, LogGradNorm, LogRngState
+from conette.callbacks.log import LogGCCallback, LogGradNorm, LogLRCallback, LogRngState
 from conette.callbacks.resume import ResumeCallback
 from conette.callbacks.stats_saver import StatsSaver
 from conette.tokenization.aac_tokenizer import AACTokenizer
 from conette.utils.custom_logger import CustomTensorboardLogger
-from conette.utils.hydra import setup_resolvers, get_subrun_path, CustomFileHandler
-from conette.utils.log_utils import set_loglevel
+from conette.utils.hydra import CustomFileHandler, get_subrun_path, setup_resolvers
+from conette.utils.log_utils import setup_logging_level
 from conette.utils.misc import copy_slurm_logs, reset_seed
-
 
 # Note: this function must be called globally
 setup_resolvers()
@@ -101,8 +96,8 @@ def setup_run(cfg: DictConfig) -> None:
         other_level = logging.ERROR
         tfmers_logging.set_verbosity_error()
 
-    set_loglevel(("sentence_transformers",), other_level)
-    set_loglevel((conette,), pkg_level)
+    setup_logging_level("sentence_transformers", other_level)
+    setup_logging_level("conette", pkg_level)
     pylog.setLevel(pkg_level)
 
     # Redirect PyTorch lightning outputs to a file
@@ -327,6 +322,7 @@ def test_after_fit(
                 pylog.info(
                     f"Test using best model file '{osp.basename(ckpt.best_model_path)}'..."
                 )
+
             ckpt_data = torch.load(
                 ckpt.best_model_path,
                 map_location=pl_module.device,

@@ -49,9 +49,9 @@ jobs:
 
     - name: Install local packages
       run: |
-        python -m pip install -e .[dev]
+        python -m pip install -e .[test,dev]
 
-    # --- TESTS ---  
+    # --- TESTS ---
     - name: Check format with Black
       run: |
         python -m black --check --diff src

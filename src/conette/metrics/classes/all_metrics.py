@@ -4,28 +4,24 @@
 import logging
 import tempfile
 import time
-
 from typing import Iterable, Optional, Union
 
 import torch
-
-from torch import Tensor
-from torch.nn.parameter import Parameter
-
 from aac_metrics.classes.bert_score_mrefs import BERTScoreMRefs
 from aac_metrics.classes.bleu import BLEU
-from aac_metrics.classes.meteor import METEOR
-from aac_metrics.classes.rouge_l import ROUGEL
 from aac_metrics.classes.evaluate import Evaluate
 from aac_metrics.classes.fense import FENSE
+from aac_metrics.classes.meteor import METEOR
+from aac_metrics.classes.rouge_l import ROUGEL
 from aac_metrics.classes.spider import SPIDEr
 from aac_metrics.functional.spider_fl import _spider_fl_from_outputs
+from torch import Tensor
+from torch.nn.parameter import Parameter
 
 from conette.metrics.classes.diversity import Diversity
 from conette.metrics.classes.new_words import NewWords
 from conette.metrics.classes.text_stats import TextStats
 from conette.nn.functional.get import get_device
-
 
 pylog = logging.getLogger(__name__)
 
@@ -34,7 +30,7 @@ class AllMetrics(Evaluate):
     def __init__(
         self,
         preprocess: bool = True,
-        device: Union[str, torch.device, None] = "auto",
+        device: Union[str, torch.device, None] = "cuda_if_available",
         cache_path: str = "~/.cache",
         java_path: str = "java",
         tmp_path: str = tempfile.gettempdir(),

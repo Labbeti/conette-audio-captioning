@@ -4,23 +4,20 @@
 """Common functions and arguments used in my PyTorch Lightning Modules."""
 
 import logging
-
 from typing import Any, Iterator, Mapping, Optional, TypedDict, Union
 
 import torch
 import yaml
-
 from nltk.corpus import stopwords
 from pytorch_lightning import LightningModule
-from torch import nn, Tensor
+from torch import Tensor, nn
 from torch.optim import Optimizer
+from torchoutil.nn.modules.tensor import Transpose
 
-from conette.nn.modules.tensor import Transpose
 from conette.nn.functional.get import get_activation_module, get_device
 from conette.optim.optimizers import get_optimizer
 from conette.optim.schedulers import get_scheduler_list
 from conette.tokenization.aac_tokenizer import AACTokenizer
-
 
 pylog = logging.getLogger(__name__)
 
@@ -57,14 +54,6 @@ class TestBatch(TypedDict):
     subset: str
     fname: str
     source: Optional[str]
-
-
-def count_params(model: nn.Module, only_trainable: bool = False) -> int:
-    return sum(
-        param.numel()
-        for param in model.parameters()
-        if not only_trainable or param.requires_grad
-    )
 
 
 def build_proj_lin(

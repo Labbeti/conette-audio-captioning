@@ -3,18 +3,15 @@
 
 import logging
 import sys
-
 from typing import Union
 
 import torch
 import tqdm
-
-from torch import Tensor
-
 from aac_metrics.classes.base import AACMetric
 from aac_metrics.utils.tokenization import preprocess_mult_sents
-from conette.metrics.classes.all_metrics import AllMetrics
+from torch import Tensor
 
+from conette.metrics.classes.all_metrics import AllMetrics
 
 pylog = logging.getLogger(__name__)
 MODES = ("random", "columns")

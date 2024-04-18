@@ -8,5 +8,5 @@ mean_dim: 0
 window_size: 1024
 hop_size: 320
 mel_bins: 64
-device: "auto"
+device: "cuda_if_available"
 transpose_frame_embs: true

@@ -11,6 +11,7 @@ os.environ["TOKENIZERS_PARALLELISM"] = "false"
 os.environ["TRANSFORMERS_OFFLINE"] = "FALSE"
 os.environ["HF_HUB_OFFLINE"] = "FALSE"
 
+import copy
 import logging
 import math
 import os.path as osp
@@ -18,7 +19,6 @@ import random
 import subprocess
 import sys
 import time
-
 from subprocess import CalledProcessError
 from typing import Any
 
@@ -28,39 +28,34 @@ import spacy
 import torch
 import torchaudio
 import yaml
-
-from hydra.core.hydra_config import HydraConfig
-from omegaconf import DictConfig
-from torch import nn
-from torch.hub import download_url_to_file
-from torchaudio.backend.common import AudioMetaData
-
-from aac_datasets.datasets.audiocaps import AudioCaps, AudioCapsCard, _AUDIOCAPS_LINKS
+from aac_datasets.datasets.audiocaps import AudioCaps, AudioCapsCard
 from aac_datasets.datasets.clotho import Clotho, ClothoCard
 from aac_datasets.datasets.macs import MACS, MACSCard
 from aac_datasets.datasets.wavcaps import WavCaps
 from aac_metrics.download import download_metrics as download_aac_metrics
+from hydra.core.hydra_config import HydraConfig
+from omegaconf import DictConfig
+from torch import nn
+from torchaudio.backend.common import AudioMetaData
+from torchoutil.nn.functional import count_parameters
+from torchoutil.utils.data.dataset import TransformWrapper
+from torchoutil.utils.hdf import HDFDataset, pack_to_hdf
 
 from conette.callbacks.stats_saver import save_to_dir
 from conette.datamodules.common import get_hdf_fpaths
-from conette.datasets.hdf import HDFDataset, pack_to_hdf
 from conette.datasets.typing import AACDatasetLike
 from conette.datasets.utils import (
-    AACSubset,
     AACSelectColumnsWrapper,
-    TransformWrapper,
+    AACSubset,
     load_audio_metadata,
 )
-from conette.nn.functional.misc import count_params
-from conette.nn.cnext_ckpt_utils import CNEXT_PRETRAINED_URLS
-from conette.nn.pann_utils.hub import PANN_PRETRAINED_URLS
-from conette.transforms.utils import DictTransform
+from conette.nn.ckpt import CNEXT_REGISTRY, PANN_REGISTRY
+from conette.train import setup_run, teardown_run
+from conette.transforms.utils import PreSaveTransform
 from conette.utils.collections import unzip
 from conette.utils.csum import csum_any
 from conette.utils.disk_cache import disk_cache
-from conette.utils.hydra import setup_resolvers, get_subrun_path
-from conette.train import setup_run, teardown_run
-
+from conette.utils.hydra import get_subrun_path, setup_resolvers
 
 pylog = logging.getLogger(__name__)
 
@@ -87,7 +82,7 @@ def download_models(cfg: DictConfig) -> None:
         SPACY_MODELS = ("en_core_web_sm", "fr_core_news_sm", "xx_ent_wiki_sm")
         for model_name in SPACY_MODELS:
             try:
-                _model = spacy.load(model_name)
+                spacy.load(model_name)
                 pylog.info(f"Model '{model_name}' for spacy is already downloaded.")
             except OSError:
                 command = [sys.executable, "-m", "spacy", "download", model_name]
@@ -104,8 +99,6 @@ def download_models(cfg: DictConfig) -> None:
                     )
 
     if str(cfg.pann).lower() != "none":
-        ckpt_dir = osp.join(torch.hub.get_dir(), "checkpoints")
-        os.makedirs(ckpt_dir, exist_ok=True)
 
         def can_download(name: str, pattern: Any) -> bool:
             if pattern == "all":
@@ -121,46 +114,26 @@ def download_models(cfg: DictConfig) -> None:
                     f"Invalid cfg.pann argument. Must be a string, a list of strings, a bool or an int, found {pattern.__class__.__name__}."
                 )
 
-        urls = {
-            name: model_info
-            for name, model_info in PANN_PRETRAINED_URLS.items()
-            if can_download(name, cfg.pann)
-        }
+        register = PANN_REGISTRY
+        names = [
+            model_name
+            for model_name in register.names
+            if can_download(model_name, cfg.pann)
+        ]
 
-        for i, (name, model_info) in enumerate(urls.items()):
-            fpath = osp.join(ckpt_dir, model_info["fname"])
-
-            if osp.isfile(fpath):
-                pylog.info(
-                    f"Model '{name}' already downloaded in '{fpath}'. ({i+1}/{len(urls)})"
-                )
-            else:
-                pylog.info(
-                    f"Start downloading pre-trained PANN model '{name}' ({i+1}/{len(urls)})..."
-                )
-                download_url_to_file(
-                    model_info["url"], fpath, progress=cfg.verbose >= 1
-                )
-                pylog.info(f"Model '{name}' downloaded in '{fpath}'.")
+        for i, model_name in enumerate(names):
+            pylog.info(
+                f"Start downloading pre-trained PANN model '{model_name}' ({i+1}/{len(names)})..."
+            )
+            register.download_file(model_name, verbose=cfg.verbose)
 
     if cfg.cnext:
-        ckpt_dpath = osp.join(torch.hub.get_dir(), "checkpoints")
-        urls = CNEXT_PRETRAINED_URLS
-
-        for i, (name, info) in enumerate(urls.items()):
-            url = info["url"]
-            fname = info["fname"]
-            fpath = osp.join(ckpt_dpath, fname)
-
-            if osp.isfile(fpath):
-                pylog.info(
-                    f"Model '{name}' already downloaded in '{fpath}'. ({i+1}/{len(urls)})"
-                )
-            else:
-                pylog.info(
-                    f"Start downloading pre-trained CNext model '{name}' ({i+1}/{len(urls)})..."
-                )
-                download_url_to_file(url, fpath, progress=cfg.verbose >= 1)
+        register = CNEXT_REGISTRY
+        for i, model_name in enumerate(register.names):
+            pylog.info(
+                f"Start downloading pre-trained CNext model '{model_name}' ({i+1}/{len(register.names)})..."
+            )
+            register.download_file(model_name, verbose=cfg.verbose)
 
 
 def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
@@ -182,31 +155,6 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
             subsets = AudioCapsCard.SUBSETS
         else:
             subsets = cfg.data.subsets
-
-        if cfg.data.audiocaps_caps_fix_fpath is not None:
-            if "train" not in subsets:
-                pylog.error(
-                    f"Invalid combinaison of arguments {cfg.data.audiocaps_caps_fix_fpath=} with {subsets=}."
-                )
-            else:
-                subsets = list(subsets)
-                subsets.remove("train")
-                new_subset = osp.basename(cfg.data.audiocaps_caps_fix_fpath)[:-4]
-                subsets.append(new_subset)
-
-                AudioCaps.SUBSETS = AudioCaps.SUBSETS + (new_subset,)  # type: ignore
-                _AUDIOCAPS_LINKS.update(
-                    {
-                        new_subset: {
-                            "captions": {
-                                "url": None,
-                                "fname": osp.basename(
-                                    cfg.data.audiocaps_caps_fix_fpath
-                                ),
-                            },
-                        },
-                    }
-                )
 
         for subset in subsets:
             dsets[subset] = AudioCaps(
@@ -255,14 +203,25 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
             )
 
         if cfg.data.tags_to_str:
+
+            class TagToStr(nn.Module):
+                def forward(self, item: dict[str, Any]) -> dict[str, Any]:
+                    item = copy.copy(item)
+                    item["tags"] = str(item["tags"])
+                    return item
+
+            transform = TagToStr()
             dsets = {
-                subset: TransformWrapper(dset, str, "tags")
+                subset: TransformWrapper(dset, transform)
                 for subset, dset in dsets.items()
             }
 
     elif dataname == "hdf":
         hdf_fpaths = get_hdf_fpaths(
-            cfg.data.name, cfg.data.subsets, dataroot, cfg.data.hdf_suffix
+            cfg.data.name,
+            cfg.data.subsets,
+            dataroot,
+            cfg.data.hdf_suffix,
         )
         dsets = {}
         for subset, hdf_fpath in hdf_fpaths.items():
@@ -287,7 +246,7 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
             for subset in subsets
         }
 
-    elif dataname in ("none",):
+    elif dataname in ("none", None, "null"):
         dsets = {}
 
     else:
@@ -341,8 +300,11 @@ def filter_dsets(
             fpaths = ds[:, "fpath"]
             if cfg.verbose >= 2:
                 pylog.debug(f"Loading durations from {len(ds)} audio files...")
+
             meta_lst = disk_cache(
-                load_audio_metadata, fpaths, cache_path=cfg.path.cache
+                load_audio_metadata,
+                fpaths,
+                cache_path=cfg.path.cache,
             )
             meta_dic[subset] = list(meta_lst.values())
 
@@ -400,7 +362,7 @@ def filter_dsets(
                     f"Exclude {n_excluded}/{prev_size} files with sample_rate != {cfg.datafilter.sr} Hz in {subset=}."
                 )
 
-    dsets = {subset: AACSubset(ds, indexes_dic[subset]) for subset, ds in dsets.items()}
+    dsets = {subset: AACSubset(ds, indexes_dic[subset]) for subset, ds in dsets.items()}  # type: ignore
     return dsets
 
 
@@ -450,11 +412,11 @@ def pack_dsets_to_hdf(cfg: DictConfig, dsets: dict[str, Any]) -> None:
         text_tfm = hydra.utils.instantiate(sentence_transform_params)
 
         if isinstance(audio_tfm, nn.Module) and cfg.verbose >= 1:
-            n_params = count_params(audio_tfm, only_trainable=False)
+            n_params = count_parameters(audio_tfm, only_trainable=False)
             pylog.info(f"Nb params in audio transform: {n_params}")
 
         if isinstance(text_tfm, nn.Module) and cfg.verbose >= 1:
-            n_params = count_params(text_tfm, only_trainable=False)
+            n_params = count_parameters(text_tfm, only_trainable=False)
             pylog.info(f"Nb params in text transform: {n_params}")
 
         pre_save_transforms = {
@@ -496,7 +458,11 @@ def pack_dsets_to_hdf(cfg: DictConfig, dsets: dict[str, Any]) -> None:
             if cfg.verbose >= 1:
                 pylog.debug(yaml.dump({"Metadata": metadata}))
 
-            pre_save_transform = DictTransform(pre_save_transforms)
+            pre_save_transform = PreSaveTransform(pre_save_transforms)
+
+            num_workers = cfg.data.n_workers
+            if num_workers is None:
+                num_workers = "auto"
 
             hdf_dset = pack_to_hdf(
                 dset,
@@ -505,10 +471,9 @@ def pack_dsets_to_hdf(cfg: DictConfig, dsets: dict[str, Any]) -> None:
                 overwrite=cfg.overwrite_hdf,
                 metadata=str(metadata),
                 verbose=cfg.verbose,
-                loader_bsize=cfg.data.bsize,
-                loader_n_workers=cfg.data.n_workers,
+                batch_size=cfg.data.bsize,
+                num_workers=num_workers,
             )
-            hdf_dset.open()
         else:
             if cfg.verbose >= 1:
                 pylog.info(

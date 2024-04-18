@@ -4,13 +4,11 @@
 from typing import Any, Iterable, Optional, Union
 
 import torch
-
+from aac_metrics.classes.cider_d import CIDErD
+from aac_metrics.classes.fense import FENSE
 from pytorch_lightning import LightningModule
 from pytorch_lightning.callbacks.callback import Callback
 from torch import nn
-
-from aac_metrics.classes.cider_d import CIDErD
-from aac_metrics.classes.fense import FENSE
 
 from conette.metrics.classes.diversity import Diversity
 from conette.metrics.classes.text_stats import TextStats
@@ -22,7 +20,7 @@ class AACValidator(Callback):
         self,
         monitors: Union[str, Iterable[str]],
         metrics_keys: Union[str, Iterable[str]] = (),
-        computation_device: Union[str, torch.device, None] = "auto",
+        computation_device: Union[str, torch.device, None] = "cuda_if_available",
         other_device: Union[str, torch.device, None] = "cpu",
         build_on_start: bool = False,
     ) -> None:

@@ -3,33 +3,29 @@
 
 import logging
 import os.path as osp
-
 from typing import Iterable, Optional, Union
 
 import tqdm
-
 from torch import nn
 from torch.utils.data.dataloader import DataLoader
+from torchoutil.utils.data.dataloader import get_auto_num_cpus
+from torchoutil.utils.data.dataset import TransformWrapper
+from torchoutil.utils.hdf import HDFDataset
 
 from conette.datamodules.aac_dm import AACDataModule
 from conette.datamodules.collate import AdvancedCollateDict
-from conette.datamodules.common import (
-    OnlineEncodeCaptionsTransform,
-    get_auto_num_cpus,
-)
-from conette.datasets.hdf import HDFDataset
+from conette.datamodules.common import OnlineEncodeCaptionsTransform
 from conette.datasets.utils import (
     AACConcat,
     AACDuplicate,
     AACSelectColumnsWrapper,
-    TransformWrapper,
     WrapperSampler,
 )
 from conette.tokenization.aac_tokenizer import AACTokenizer
 from conette.utils.csum import csum_any
 
-
 pylog = logging.getLogger(__name__)
+
 
 DEFAULT_TRAIN_COLS = ("audio", "audio_shape", "captions")
 DEFAULT_VAL_COLS = ("audio", "audio_shape", "captions")
@@ -199,6 +195,7 @@ class HDFDataModule(AACDataModule):
             HDFDataset(
                 osp.join(self.hp.root, "HDF", fname),
                 keep_padding=keep_padding,
+                return_added_columns=True,
             )
             for fname in self.hp.train_hdfs
         ]
@@ -206,6 +203,7 @@ class HDFDataModule(AACDataModule):
             HDFDataset(
                 osp.join(self.hp.root, "HDF", fname),
                 keep_padding=keep_padding,
+                return_added_columns=True,
             )
             for fname in self.hp.val_hdfs
         ]
@@ -381,6 +379,7 @@ class HDFDataModule(AACDataModule):
             fname: HDFDataset(
                 osp.join(self.hp.root, "HDF", fname),
                 keep_padding=keep_padding,
+                return_added_columns=True,
             )
             for fname in self.hp.test_hdfs
         }
@@ -424,6 +423,7 @@ class HDFDataModule(AACDataModule):
             fname: HDFDataset(
                 osp.join(self.hp.root, "HDF", fname),
                 keep_padding=keep_padding,
+                return_added_columns=True,
             )
             for fname in self.hp.predict_hdfs
         }

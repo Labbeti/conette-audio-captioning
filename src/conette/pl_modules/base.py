@@ -2,30 +2,27 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
 from abc import abstractmethod
 from argparse import Namespace
 from typing import Any, Callable, ClassVar, Iterable, Mapping, Optional, Union
 
 import torch
-
-from pytorch_lightning import LightningModule, LightningDataModule, Trainer
+from pytorch_lightning import LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.utilities.types import _METRIC_COLLECTION
-from torch import nn, Tensor
+from torch import Tensor, nn
 from torch.nn.modules.module import _IncompatibleKeys
+from torchoutil.nn.functional import count_parameters
 
 from conette.pl_modules.common import (
-    count_params,
-    default_get_example,
+    ON_EPOCH_KWARGS,
     default_configure_optimizers,
+    default_get_example,
     has_datamodule,
     has_trainer,
-    ON_EPOCH_KWARGS,
 )
 from conette.tokenization.aac_tokenizer import AACTokenizer
 from conette.utils.csum import csum_module
 from conette.utils.log_utils import warn_once
-
 
 pylog = logging.getLogger(__name__)
 
@@ -116,7 +113,11 @@ class AACLightningModule(LightningModule):
 
     @abstractmethod
     def encode_audio(
-        self, audio: Tensor, audio_shape: Tensor, *args, **kwargs
+        self,
+        audio: Tensor,
+        audio_shape: Tensor,
+        *args,
+        **kwargs,
     ) -> dict[str, Tensor]:
         raise NotImplementedError("Abstract method.")
 
@@ -270,7 +271,7 @@ class AACLightningModule(LightningModule):
         return csum_module(self, only_trainable=only_trainable)
 
     def count_params(self, only_trainable: bool = False) -> int:
-        return count_params(self, only_trainable)
+        return count_parameters(self, only_trainable=only_trainable)
 
     def has_datamodule(self) -> bool:
         return has_datamodule(self)

@@ -13,9 +13,7 @@ dm:
   - audiocaps_test_resample_mean_cnn10_ident.hdf
   - clotho_val_resample_mean_cnn10_ident.hdf
   - clotho_eval_resample_mean_cnn10_ident.hdf
-  predict_hdfs:
-  - clotho_test_resample_mean_cnn10_ident.hdf
-  - clotho_analysis_resample_mean_cnn10_ident.hdf
+  predict_hdfs: []
 
 pl:
   proj_name: "lin512"

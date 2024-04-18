@@ -1,11 +1,33 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import copy
 from typing import Any, Callable, Iterable, Mapping, Optional
 
-from torch import Tensor
+from torch import Tensor, nn
 
 from conette.utils.misc import pass_filter
+
+
+class PreSaveTransform(nn.ModuleDict):
+    def __init__(self, transforms: dict[str, nn.Module]) -> None:
+        super().__init__(transforms)
+
+    def forward(self, item: dict[str, Any]) -> dict[str, Any]:
+        item = copy.copy(item)
+        for name, tfm in self.items():
+            value = item[name]
+            value = tfm(value)
+            if not isinstance(value, dict):
+                item[name] = value
+            else:
+                item.pop(name)
+                for subname, subvalue in value.items():
+                    if subname == "":
+                        item[name] = subvalue
+                    else:
+                        item[subname] = subvalue
+        return item
 
 
 class DictTransform(dict[str, Optional[Callable]]):

@@ -3,13 +3,11 @@
 
 import math
 import random
-
 from typing import Tuple, Union
 
-from torch import nn, Tensor
+from torch import Tensor, nn
+from torchoutil.nn.modules import CropDim, PadDim
 
-from conette.nn.modules.crop import CropDim
-from conette.nn.modules.pad import PadDim
 from conette.transforms.audio.resample import ResampleNearest
 
 
@@ -36,7 +34,7 @@ class SpeedPerturbation(nn.Module):
         :param p: The probability to apply the transform. defaults to 1.0.
         """
         assert 0.0 <= p
-        rates = tuple(rates)  #  type: ignore
+        rates = tuple(rates)  # type: ignore
 
         super().__init__()
         self.rates = rates
@@ -48,8 +46,8 @@ class SpeedPerturbation(nn.Module):
 
         target_length = self.target_length if isinstance(self.target_length, int) else 1
         self.resampler = ResampleNearest(rates, dim=dim)
-        self.pad = PadDim(target_length, align, fill_value, dim, mode="constant")
-        self.crop = CropDim(target_length, align, dim)
+        self.pad = PadDim(target_length, align, fill_value, dim, mode="constant")  # type: ignore
+        self.crop = CropDim(target_length, align, dim)  # type: ignore
 
     # nn.Module methods
     def extra_repr(self) -> str:

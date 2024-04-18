@@ -2,17 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
 from typing import Any
 
 from deepspeed.profiling.flops_profiler import get_model_profile
 from pytorch_lightning import LightningModule
 from pytorch_lightning.callbacks.callback import Callback
 from torch import Tensor
+from torchoutil.nn.functional.others import move_to_rec
 
-from conette.nn.functional.misc import move_to_rec
 from conette.utils.csum import csum_any
-
 
 pylog = logging.getLogger(__name__)
 

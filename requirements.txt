@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
-setuptools
-pyyaml
-torch>=1.10,<2.0
-torchaudio
-torchlibrosa
-pytorch-lightning>=1.7,<2.0
-nltk
-spacy
-tensorboard
-transformers
-omegaconf
+nltk==3.8.1
+omegaconf==2.3.0
+pytorch-lightning==1.9.5
+PyYAML==6.0.1
+setuptools==67.7.2
+spacy==3.7.2
+tensorboard==2.15.1
+torch==1.13.1
+torchaudio==0.13.1
+torchlibrosa==0.1.0
+torchoutil[extras]~=0.3.0
+transformers==4.30.2

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-import inspect
 import logging
 import os
 import os.path as osp
@@ -10,24 +9,14 @@ import re
 import shutil
 import subprocess
 import zipfile
-
 from pathlib import Path
 from subprocess import CalledProcessError
-from typing import (
-    Any,
-    Callable,
-    Iterable,
-    Optional,
-    TypeVar,
-    Union,
-)
+from typing import Any, Callable, Iterable, Optional, TypeVar, Union
 from zipfile import ZipFile
 
 import torch
 import tqdm
-
-from pytorch_lightning.utilities.seed import seed_everything
-
+from lightning_fabric.utilities.seed import seed_everything
 
 pylog = logging.getLogger(__name__)
 T = TypeVar("T")
@@ -71,7 +60,7 @@ def reset_seed(seed: Optional[int]) -> Optional[int]:
 def save_conda_env(fpath: str, conda_path: str = "conda", verbose: int = 1) -> bool:
     try:
         cmd = [conda_path, "env", "export", "-f", fpath]
-        _output = subprocess.check_output(cmd)
+        subprocess.check_output(cmd)
         return True
     except (CalledProcessError, PermissionError, FileNotFoundError) as err:
         if verbose >= 0:
@@ -217,7 +206,7 @@ def copy_slurm_logs(
         "%A": job_id,
     }
     for pattern, value in replaces.items():
-        fpaths = [fpath.replace(pattern, value) for fpath in fpaths]
+        fpaths = [fpath.replace(pattern, value) for fpath in fpaths]  # type: ignore
     fpaths = [fpath for fpath in fpaths if osp.isfile(fpath)]
 
     if len(fpaths) == 0:

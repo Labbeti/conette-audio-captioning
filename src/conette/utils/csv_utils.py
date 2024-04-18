@@ -3,11 +3,12 @@
 
 import csv
 import os.path as osp
-
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Union
 
-from conette.utils.collections import dict_list_to_list_dict, list_dict_to_dict_list
+from torchoutil.utils.collections import list_dict_to_dict_list
+
+from conette.utils.collections import dict_list_to_list_dict
 
 
 def load_csv_dict(
@@ -16,7 +17,7 @@ def load_csv_dict(
     cast: bool = False,
 ) -> dict[str, list[Any]]:
     data = load_csv_list(fpath, has_fieldnames, cast)
-    data = list_dict_to_dict_list(data, None, True)
+    data = list_dict_to_dict_list(data, "same")
     return data
 
 

@@ -4,37 +4,25 @@
 import logging
 import os.path as osp
 import pickle
-
 from pathlib import Path
 from typing import Any, Optional, Union
 
 import torch
 import yaml
-
 from nnAudio.features import Gammatonegram
-from torch import nn, Tensor
+from torch import Tensor, nn
 from torchaudio.transforms import Resample
-from torchlibrosa.stft import Spectrogram, LogmelFilterBank
+from torchlibrosa.stft import LogmelFilterBank, Spectrogram
+from torchoutil.nn.modules.tensor import Mean, Permute, Squeeze, TensorTo, Unsqueeze
 
-from conette.nn.encoders.convnext import convnext_tiny
+from conette.nn.ckpt import CNEXT_REGISTRY, PANN_REGISTRY
 from conette.nn.encoders.cnn10 import Cnn10
-from conette.nn.encoders.cnn14_decisionlevel_att import Cnn14_DecisionLevelAtt
 from conette.nn.encoders.cnn14 import Cnn14
+from conette.nn.encoders.cnn14_decisionlevel_att import Cnn14_DecisionLevelAtt
+from conette.nn.encoders.convnext import convnext_tiny
 from conette.nn.functional.get import get_device
-from conette.nn.modules.misc import (
-    Lambda,
-    Standardize,
-)
-from conette.nn.modules.tensor import (
-    Mean,
-    Permute,
-    Squeeze,
-    TensorTo,
-    Unsqueeze,
-)
-from conette.nn.pann_utils.ckpt import pann_load_state_dict
+from conette.nn.modules.misc import Lambda, Standardize
 from conette.transforms.audio.spec_aug import SpecAugment
-
 
 pylog = logging.getLogger(__name__)
 
@@ -80,7 +68,7 @@ def get_resample_mean_cnn10(
     window_size: int = 1024,
     hop_size: int = 320,
     mel_bins: int = 64,
-    device: Union[str, torch.device, None] = "auto",
+    device: Union[str, torch.device, None] = "cuda_if_available",
     transpose_frame_embs: bool = True,
 ) -> nn.Sequential:
     if not isinstance(src_sr, int):
@@ -104,7 +92,7 @@ def get_resample_mean_cnn10(
         p.requires_grad_(False)
     encoder.eval()
 
-    state_dict = pann_load_state_dict("Cnn10", "cpu", offline=False)
+    state_dict = PANN_REGISTRY.load_state_dict("Cnn10", device="cpu", offline=False)
     encoder.load_state_dict(state_dict)
 
     encoder = encoder.to(device)
@@ -136,7 +124,7 @@ def get_resample_mean_cnn14_att(
     window_size: int = 1024,
     hop_size: int = 320,
     mel_bins: int = 64,
-    device: Union[str, torch.device, None] = "auto",
+    device: Union[str, torch.device, None] = "cuda_if_available",
     transpose_frame_embs: bool = True,
     only_frame_embs: bool = True,
 ) -> nn.Sequential:
@@ -192,10 +180,10 @@ def get_resample_mean_cnn14(
     window_size: int = 1024,
     hop_size: int = 320,
     mel_bins: int = 64,
-    device: Union[str, torch.device, None] = "auto",
+    device: Union[str, torch.device, None] = "cuda_if_available",
     transpose_frame_embs: bool = True,
     only_frame_embs: bool = True,
-    pretrain_path: Optional[str] = None,
+    pretrain_path: str = "Cnn14",
 ) -> nn.Sequential:
     if not isinstance(src_sr, int):
         error_message = _get_error_message(src_sr)
@@ -214,10 +202,7 @@ def get_resample_mean_cnn14(
         return_frame_outputs=True,
     )
 
-    if pretrain_path is None:
-        state_dict = pann_load_state_dict("Cnn14", device, offline=False)
-    else:
-        state_dict = pann_load_state_dict(pretrain_path, device)
+    state_dict = PANN_REGISTRY.load_state_dict(pretrain_path, device=device)
     encoder.load_state_dict(state_dict)
 
     for p in encoder.parameters():
@@ -256,17 +241,18 @@ def get_resample_mean_convnext(
     src_sr: int,
     tgt_sr: int,
     mean_dim: Optional[int] = 0,
-    device: Union[str, torch.device, None] = "auto",
+    device: Union[str, torch.device, None] = "cuda_if_available",
     transpose_frame_embs: bool = True,
     only_frame_embs: bool = True,
-    pretrain_path: Optional[str] = None,
+    pretrain_path: Union[str, Path] = "cnext_bl_75",
+    strict: bool = True,
 ) -> nn.Sequential:
     if not isinstance(src_sr, int):
         error_message = _get_error_message(src_sr)
         pylog.error(error_message)
         raise ValueError(error_message)
 
-    if not isinstance(pretrain_path, str):
+    if not isinstance(pretrain_path, (str, Path)):
         raise ValueError(
             f"Invalid argument type {type(pretrain_path)=}. (expected str)"
         )
@@ -284,9 +270,13 @@ def get_resample_mean_convnext(
         return_frame_outputs=True,
     )
 
-    data = torch.load(pretrain_path, map_location=torch.device("cpu"))
-    state_dict = data["model"]
-    encoder.load_state_dict(state_dict, strict=False)
+    cpu_device = torch.device("cpu")
+    state_dict = CNEXT_REGISTRY.load_state_dict(
+        pretrain_path,
+        device=cpu_device,
+        offline=False,
+    )
+    encoder.load_state_dict(state_dict, strict=strict)
 
     for p in encoder.parameters():
         p.requires_grad_(False)
@@ -336,7 +326,7 @@ def get_resample_mean_spec(
     top_db: Optional[float] = None,
     freeze_parameters: bool = True,
     mean_dim: Optional[int] = 0,
-    device: Union[str, torch.device, None] = "auto",
+    device: Union[str, torch.device, None] = "cuda_if_available",
 ) -> nn.Sequential:
     if not isinstance(src_sr, int):
         error_message = _get_error_message(src_sr)
@@ -457,7 +447,7 @@ def get_resample_spec_mean(
     top_db: Optional[float] = None,
     freeze_parameters: bool = True,
     mean_dim: Optional[int] = 0,
-    device: Union[str, torch.device, None] = "auto",
+    device: Union[str, torch.device, None] = "cuda_if_available",
 ) -> nn.Sequential:
     if not isinstance(src_sr, int):
         error_message = _get_error_message(src_sr)

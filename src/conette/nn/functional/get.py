@@ -4,10 +4,9 @@
 from typing import Callable, Optional, Union
 
 import torch
-
-from torch import nn, Tensor
+from torch import Tensor, nn
 from torch.nn import functional as F
-
+from torchoutil.nn.functional.get import get_device
 
 ACTIVATIONS = ("relu", "gelu")
 
@@ -31,37 +30,10 @@ def get_activation_fn(name: str) -> Callable[[Tensor], Tensor]:
         raise ValueError(f"Invalid argument {name=}. (expected one of {ACTIVATIONS})")
 
 
-def get_device(
-    device: Union[str, torch.device, None] = "auto",
-    safe_auto: bool = True,
-) -> Optional[torch.device]:
-    if device == "auto":
-        device = "cuda" if torch.cuda.is_available() else "cpu"
-
-        if device == "cuda" and safe_auto:
-            try:
-                _ = torch.empty((1,), device=device)
-            except RuntimeError:
-                device = "cpu"
-
-    if isinstance(device, str):
-        device = torch.device(device)
-    return device
-
-
 def get_device_name(
-    device_name: Union[str, torch.device, None] = "auto",
-    safe_auto: bool = True,
+    device_name: Union[str, torch.device, None] = "cuda_if_available",
 ) -> Optional[str]:
-    if device_name == "auto":
-        device_name = "cuda" if torch.cuda.is_available() else "cpu"
-
-        if device_name == "cuda" and safe_auto:
-            try:
-                _ = torch.empty((1,), device=device_name)
-            except RuntimeError:
-                device_name = "cpu"
-
+    device_name = get_device(device_name)
     if isinstance(device_name, torch.device):
         device_name = f"{device_name.type}:{device_name.index}"
     return device_name
