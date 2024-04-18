@@ -17,7 +17,7 @@ def load_csv_dict(
     cast: bool = False,
 ) -> dict[str, list[Any]]:
     data = load_csv_list(fpath, has_fieldnames, cast)
-    data = list_dict_to_dict_list(data, None, True)
+    data = list_dict_to_dict_list(data, "same")
     return data
 
 
