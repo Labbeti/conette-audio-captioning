@@ -1,7 +1,10 @@
 # Detailed paper results
 
-This page contains the detailed results for various AAC metrics of the different models presented in [this paper](https://arxiv.org/pdf/2309.00454.pdf).
-Each score is an average over 5 different seeds. A 95% Confidence interval is computed using student distribution.
+This folder contains more results and outputs from the models presented in [this paper](https://arxiv.org/pdf/2309.00454.pdf).
+You can find here:
+- `detailed_outputs` contains candidates and scores produced by a single CoNeTTE model trained on AC+CL+MA+WC with CL balanced data,
+- `Paper_Distributions.pdf` contains n-grams and POS-TAGs distributions mentionned in the paper.
+- This page contains the detailed results for various AAC metrics on AudioCaps and Clotho. Each score is an average over 5 different seeds, and a 95% Confidence interval is computed using student distribution.
 
 ## Results on AudioCaps testing subset
 
@@ -44,5 +47,4 @@ Each score is an average over 5 different seeds. A 95% Confidence interval is co
 |  CoNeTTE   |    AS-AC    |AC+CL+MA+WC|    AC+CL    |31.04<sub><sup> ±0.36</sub></sup>|51.53<sub><sup> ±0.32</sub></sup>|619.4<sub><sup> ±14.1</sub></sup>|60.57<sub><sup> ±0.50</sub></sup>|39.95<sub><sup> ±0.36</sub></sup>|26.58<sub><sup> ±0.25</sub></sup>|17.25<sub><sup> ±0.27</sub></sup>|39.47<sub><sup> ±0.35</sub></sup>|18.95<sub><sup> ±0.19</sub></sup>|48.46<sub><sup> ±0.60</sub></sup>|13.62<sub><sup> ±0.22</sub></sup>|30.81<sub><sup> ±0.33</sub></sup>|0.77<sub><sup> ±0.27</sub></sup>|51.89<sub><sup> ±0.36</sub></sup>|10.4<sub><sup> ±0.1</sub></sup>|
 
 ## Additional information
-- Candidates and scores produced by a single CoNeTTE model trained on AC+CL+MA+WC with CL balanced data are provided in the `detailed_outputs` subdirectory.
 - Metrics scores are calculated using [aac-metrics package](https://github.com/Labbeti/aac-metrics).
