@@ -204,7 +204,11 @@ class Cnn10(nn.Module):
         exclude_spectro_params: bool = False,
     ) -> None:
         device = self.bn0.weight.device
-        state_dict = PANN_REGISTRY.load_state_dict("Cnn10", device, offline=False)
+        state_dict = PANN_REGISTRY.load_state_dict(
+            "Cnn10",
+            device=device,
+            offline=False,
+        )
 
         if exclude_spectro_params:
             state_dict = {

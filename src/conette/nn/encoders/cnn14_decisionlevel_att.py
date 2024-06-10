@@ -123,7 +123,9 @@ class Cnn14_DecisionLevelAtt(nn.Module):
     def load_pretrained_weights(self, strict: bool = False) -> None:
         device = self.fc1.weight.device
         state_dict = PANN_REGISTRY.load_state_dict(
-            "Cnn14_DecisionLevelAtt", device, True
+            "Cnn14_DecisionLevelAtt",
+            device=device,
+            offline=True,
         )
         self.load_state_dict(state_dict, strict=strict)
 
