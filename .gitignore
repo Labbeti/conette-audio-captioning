@@ -7,3 +7,4 @@ dist/
 logs/
 data/
 data_tmp*/
+.micromamba/
