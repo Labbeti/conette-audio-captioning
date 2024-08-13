@@ -68,6 +68,13 @@ Note 2: paper results are averaged scores over 5 seeds (1234-1238). The default 
 python -m pip install conette[test]
 ```
 
+### Usage with command line
+Simply use the command `conette-predict` with `--audio PATH1 PATH2 ...` option. You can also export results to a CSV file using `--csv_export PATH`.
+
+```bash
+conette-predict --audio "/your/path/to/audio.wav"
+```
+
 ### Usage with python
 ```py
 from conette import CoNeTTEConfig, CoNeTTEModel
@@ -107,13 +114,6 @@ print(candidate)
 outputs = model(path, task="audiocaps")
 candidate = outputs["cands"][0]
 print(candidate)
-```
-
-### Usage with command line
-Simply use the command `conette-predict` with `--audio PATH1 PATH2 ...` option. You can also export results to a CSV file using `--csv_export PATH`.
-
-```bash
-conette-predict --audio "/your/path/to/audio.wav"
 ```
 
 ### Performance
