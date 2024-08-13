@@ -13,7 +13,7 @@ url: https://github.com/Labbeti/conette-audio-captioning
 preferred-citation:
   authors:
     - family-names: Labbé
-      given-names: Etienne
+      given-names: Étienne
       affiliation: IRIT
       orcid: 'https://orcid.org/0000-0002-7219-5463'
     - family-names: Pellegrini
@@ -23,9 +23,10 @@ preferred-citation:
     - family-names: Pinquier
       given-names: Julien
       affiliation: IRIT
-  doi: "10.48550/arXiv.2309.00454" 
-  journal: "arxiv preprint"
+      orcid: https://orcid.org/0000-0003-1556-1284
+  doi: "10.1109/TASLP.2024.3430813"
+  journal: "IEEE/ACM Transactions on Audio, Speech, and Language Processing"
   title: "CoNeTTE: An efficient Audio Captioning system leveraging multiple datasets with Task Embedding"
   type: article
-  url: "https://arxiv.org/abs/2309.00454"
-  year: 2023
+  url: "https://ieeexplore.ieee.org/document/10603439"
+  year: 2024
