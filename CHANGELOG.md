@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.3.2] UNRELEASED
+### Changed
+- Update CITATION.cff file.
+
 ## [0.3.1] 2024-06-10
 ### Fixed
 - Remove duplicated files in `results` folder.
