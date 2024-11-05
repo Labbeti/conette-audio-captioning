@@ -9,7 +9,7 @@
 
 </div>
 
-CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file. The architecture and training are explained in the [corresponding paper on IEEE](https://ieeexplore.ieee.org/document/10603439) (you can also find an older pre-print version on [Arxiv here](https://arxiv.org/pdf/2309.00454.pdf)). The model has been developped by me ([Étienne Labbé](https://labbeti.github.io/) :) ) during my PhD. A simple interface to test CoNeTTE is available on [HuggingFace website](https://huggingface.co/spaces/Labbeti/conette).
+CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file. The architecture and training are explained in the [corresponding paper on IEEE](https://ieeexplore.ieee.org/document/10603439) (you can also find an older pre-print version on [Arxiv here](https://arxiv.org/pdf/2309.00454.pdf)). The model has been developped by me ([Étienne Labbé](https://labbeti.github.io/) :) ) during my PhD. A simple interface to test CoNeTTE is available on the [HuggingFace website](https://huggingface.co/spaces/Labbeti/conette).
 
 ## Training
 ### Requirements
