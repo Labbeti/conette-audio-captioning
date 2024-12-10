@@ -9,7 +9,7 @@
 
 </div>
 
-CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file. The architecture and training are explained in the [corresponding paper on IEEE](https://ieeexplore.ieee.org/document/10603439) (you can also find an older pre-print version on [Arxiv here](https://arxiv.org/pdf/2309.00454.pdf)). The model has been developped by me ([Étienne Labbé](https://labbeti.github.io/) :) ) during my PhD. A simple interface to test CoNeTTE is available on the [HuggingFace website](https://huggingface.co/spaces/Labbeti/conette).
+CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file. The architecture and training are explained in the [corresponding paper on IEEE](https://ieeexplore.ieee.org/document/10603439) (you can also find an older pre-print version on [arXiv here](https://arxiv.org/pdf/2309.00454.pdf)). The model has been developped by me ([Étienne Labbé](https://labbeti.github.io/) :) ) during my PhD. A simple interface to test CoNeTTE is available on the [HuggingFace website](https://huggingface.co/spaces/Labbeti/conette).
 
 ## Training
 ### Requirements
@@ -131,10 +131,27 @@ This model checkpoint has been trained with focus on the Clotho dataset, but it 
 - The model has been trained on audio lasting from **1 to 30 seconds**. It can handle longer audio files, but it might require more memory and give worse results.
 
 ## Citation
-The preprint version of the paper describing CoNeTTE is available on arxiv: https://arxiv.org/pdf/2309.00454.pdf
+The final version of the paper describing CoNeTTE is available on IEEExplore: https://ieeexplore.ieee.org/document/10603439. A preprint version of the paper is also available on arXiv: https://arxiv.org/pdf/2309.00454.pdf.
 
+**Final version recommanded for citation (IEEE):**
 ```bibtex
-@misc{labbe2023conette,
+@article{labbe2023conetteieee,
+	title        = {CoNeTTE: An Efficient Audio Captioning System Leveraging Multiple Datasets With Task Embedding},
+	author       = {Labbé, Étienne and Pellegrini, Thomas and Pinquier, Julien},
+	year         = 2024,
+	journal      = {IEEE/ACM Transactions on Audio, Speech, and Language Processing},
+	volume       = 32,
+	number       = {},
+	pages        = {3785--3794},
+	doi          = {10.1109/TASLP.2024.3430813},
+	url          = {https://ieeexplore.ieee.org/document/10603439},
+	keywords     = {Decoding;Task analysis;Transformers;Training;Convolutional neural networks;Speech processing;Tagging;Audio-language task;automated audio captioning;dataset biases;task embedding;deep learning}
+}
+```
+
+**Preprint version (arXiv):**
+```bibtex
+@misc{labbe2023conettearxiv,
 	title        = {CoNeTTE: An efficient Audio Captioning system leveraging multiple datasets with Task Embedding},
 	author       = {Étienne Labbé and Thomas Pellegrini and Julien Pinquier},
 	year         = 2023,
@@ -148,7 +165,7 @@ The preprint version of the paper describing CoNeTTE is available on arxiv: http
 
 ## Additional information
 - CoNeTTE stands for **Co**nv**Ne**Xt-**T**ransformer with **T**ask **E**mbedding.
-- Model weights are available on HuggingFace: https://huggingface.co/Labbeti/conette
+- Raw model weights are available on HuggingFace: https://huggingface.co/Labbeti/conette
 - The weights of the encoder part of the architecture is based on a ConvNeXt model for audio classification, available here: https://zenodo.org/records/10987498 under the filename "convnext_tiny_465mAP_BL_AC_75kit.pth".
 
 ## Contact
