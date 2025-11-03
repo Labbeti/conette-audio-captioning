@@ -5,7 +5,7 @@ authors = [
 ]
 description = "CoNeTTE is an audio captioning system, which generate a short textual description of the sound events in any audio file."
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.11"
 keywords = ["audio", "deep-learning", "pytorch", "captioning", "audio-captioning"]
 license = {file = "LICENSE"}
 classifiers = [
