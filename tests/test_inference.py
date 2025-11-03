@@ -13,7 +13,9 @@ from conette import CoNeTTEConfig, CoNeTTEModel, get_sample_path
 class TestInference(TestCase):
     def setUp(self) -> None:
         config = CoNeTTEConfig.from_pretrained("Labbeti/conette")
-        model: CoNeTTEModel = CoNeTTEModel.from_pretrained("Labbeti/conette", config=config)  # type: ignore
+        model: CoNeTTEModel = CoNeTTEModel.from_pretrained(
+            "Labbeti/conette", config=config
+        )  # type: ignore
 
         self.config = config
         self.model = model

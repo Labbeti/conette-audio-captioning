@@ -58,6 +58,7 @@ dev = [
     "ipykernel==6.27.1",
     "pre-commit==3.7.0",
     "pytest==7.4.3",
+    "ruff>=0.14.3",
     "twine==4.0.1",
 ]
 train = [

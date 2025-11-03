@@ -539,7 +539,10 @@ class AACTokenizer(nn.Module, TokenizerWrapper):
                         dtype=dtype,
                         device=device,
                     )
-                elif all(isinstance(s, Tensor) and nested_sentences[0].shape == s.shape for s in nested_sentences):  # type: ignore
+                elif all(
+                    isinstance(s, Tensor) and nested_sentences[0].shape == s.shape
+                    for s in nested_sentences
+                ):  # type: ignore
                     nested_sentences = torch.stack(nested_sentences)  # type: ignore
             return nested_sentences
 

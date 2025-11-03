@@ -12,7 +12,9 @@ import spacy
 pylog = logging.getLogger(__name__)
 
 
-def load_or_download_spacy_model(model_name: str, raise_if_cannot_dl: bool = True) -> Any:
+def load_or_download_spacy_model(
+    model_name: str, raise_if_cannot_dl: bool = True
+) -> Any:
     try:
         model = spacy.load(model_name)
         pylog.info(f"Model '{model_name}' for spacy is already downloaded.")

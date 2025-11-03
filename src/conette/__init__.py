@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""CoNeTTE model for Audio Captioning.
-"""
+"""CoNeTTE model for Audio Captioning."""
 
 __name__ = "conette"
 __author__ = "Etienne Labbé (Labbeti)"

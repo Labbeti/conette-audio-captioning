@@ -105,7 +105,7 @@ def download_models(cfg: DictConfig) -> None:
 
         for i, model_name in enumerate(names):
             pylog.info(
-                f"Start downloading pre-trained PANN model '{model_name}' ({i+1}/{len(names)})..."
+                f"Start downloading pre-trained PANN model '{model_name}' ({i + 1}/{len(names)})..."
             )
             register.download_file(model_name, verbose=cfg.verbose)
 
@@ -113,7 +113,7 @@ def download_models(cfg: DictConfig) -> None:
         register = CNEXT_REGISTRY
         for i, model_name in enumerate(register.names):
             pylog.info(
-                f"Start downloading pre-trained CNext model '{model_name}' ({i+1}/{len(register.names)})..."
+                f"Start downloading pre-trained CNext model '{model_name}' ({i + 1}/{len(register.names)})..."
             )
             register.download_file(model_name, verbose=cfg.verbose)
 

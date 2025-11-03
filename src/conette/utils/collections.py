@@ -210,7 +210,7 @@ def unzip(lst: Iterable[tuple[T, U, V]]) -> tuple[list[T], list[U], list[V]]:
 
 @overload
 def unzip(
-    lst: Iterable[tuple[T, U, V, W]]
+    lst: Iterable[tuple[T, U, V, W]],
 ) -> tuple[list[T], list[U], list[V], list[W]]:
     ...
 

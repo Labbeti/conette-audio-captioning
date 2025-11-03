@@ -204,7 +204,10 @@ class DropStripesRatio(nn.Module):
             )
 
         starts = [
-            torch.randint(low=0, high=total_width - size, size=(), generator=self.generator) for size in widths  # type: ignore
+            torch.randint(
+                low=0, high=total_width - size, size=(), generator=self.generator
+            )
+            for size in widths  # type: ignore
         ]
 
         if not self.inplace:
