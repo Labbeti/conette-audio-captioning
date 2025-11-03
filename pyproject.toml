@@ -328,3 +328,11 @@ version = {attr = "conette.__version__"}
 
 [tool.ruff]
 ignore = ["E501", "E402"]
+
+[tool.uv.sources]
+conette = { workspace = true }
+
+[dependency-groups]
+dev = [
+    "conette[train]",
+]
