@@ -16,15 +16,11 @@ import logging
 import math
 import os.path as osp
 import random
-import subprocess
-import sys
 import time
-from subprocess import CalledProcessError
 from typing import Any
 
 import hydra
 import nltk
-import spacy
 import torch
 import torchaudio
 import yaml
@@ -56,6 +52,7 @@ from conette.utils.collections import unzip
 from conette.utils.csum import csum_any
 from conette.utils.disk_cache import disk_cache
 from conette.utils.hydra import get_subrun_path, setup_resolvers
+from conette.utils.spacy import load_or_download_spacy_model
 
 pylog = logging.getLogger(__name__)
 
@@ -81,22 +78,7 @@ def download_models(cfg: DictConfig) -> None:
         # Download spaCy model for AACTokenizer
         SPACY_MODELS = ("en_core_web_sm", "fr_core_news_sm", "xx_ent_wiki_sm")
         for model_name in SPACY_MODELS:
-            try:
-                spacy.load(model_name)
-                pylog.info(f"Model '{model_name}' for spacy is already downloaded.")
-            except OSError:
-                command = [sys.executable, "-m", "spacy", "download", model_name]
-                try:
-                    subprocess.check_call(
-                        command,
-                        stdout=subprocess.DEVNULL,
-                        stderr=subprocess.DEVNULL,
-                    )
-                    pylog.info(f"Model '{model_name}' for spacy has been downloaded.")
-                except (CalledProcessError, PermissionError) as err:  # type: ignore
-                    pylog.error(
-                        f"Cannot download spaCy model '{model_name}' for tokenizer. (command '{command}' with error={err})"
-                    )
+            load_or_download_spacy_model(model_name, raise_if_cannot_dl=False)
 
     if str(cfg.pann).lower() != "none":
 

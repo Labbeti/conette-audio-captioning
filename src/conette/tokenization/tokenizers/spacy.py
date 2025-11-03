@@ -3,11 +3,10 @@
 
 from typing import Any, Iterable
 
-import spacy
-
 from conette.tokenization.constants import SPECIAL_TOKENS
 from conette.tokenization.tokenizers.base import StrTokenizer
 from conette.tokenization.tokenizers.common import build_mappings_and_vocab
+from conette.utils.spacy import load_or_download_spacy_model
 
 
 class SpacyWordTokenizer(StrTokenizer):
@@ -16,10 +15,12 @@ class SpacyWordTokenizer(StrTokenizer):
         model_name: str = "en_core_web_sm",
         special_tokens: Iterable[str] = SPECIAL_TOKENS,
     ) -> None:
+        model = load_or_download_spacy_model(model_name)
+
         super().__init__()
         self._model_name = model_name
         self._special_tokens = special_tokens
-        self._model = spacy.load(model_name)
+        self._model = model
 
     def detokenize_batch(self, sentences: Iterable[Iterable[str]]) -> list[str]:
         decoded_sentences = [" ".join(sentence) for sentence in sentences]
@@ -55,4 +56,4 @@ class SpacyWordTokenizer(StrTokenizer):
     def __setstate__(self, data: dict[str, Any]) -> None:
         self._model_name = data["model_name"]
         self._special_tokens = data.get("special_tokens", SPECIAL_TOKENS)
-        self._model = spacy.load(data["model_name"])
+        self._model = load_or_download_spacy_model(data["model_name"])
