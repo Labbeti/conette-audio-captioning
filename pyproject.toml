@@ -315,6 +315,7 @@ train = [
     "yarl==1.9.4",
     "zipp==3.17.0",
 ]
+test = []
 
 [tool.setuptools.packages.find]
 where = ["src"]  # list of folders that contain the packages (["."] by default)
