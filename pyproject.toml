@@ -7,10 +7,10 @@ description = "CoNeTTE is an audio captioning system, which generate a short tex
 readme = "README.md"
 requires-python = ">=3.10,<3.11"
 keywords = ["audio", "deep-learning", "pytorch", "captioning", "audio-captioning"]
-license = {file = "LICENSE"}
+license-files = ["LICENSE"]  # unsupported by python 3.8, but will be required in 2026
+
 classifiers = [
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Topic :: Scientific/Engineering",
@@ -19,7 +19,6 @@ classifiers = [
 maintainers = [
     {name = "Etienne Labbé (Labbeti)", email = "labbeti.pub@gmail.com"},
 ]
-# dynamic = ["version", "dependencies", "optional-dependencies"]
 dynamic = ["version"]
 dependencies = [
     "nltk==3.8.1",
@@ -324,8 +323,6 @@ include = ["conette*"]  # package names should match these glob patterns (["*"] 
 
 [tool.setuptools.dynamic]
 version = {attr = "conette.__version__"}
-# dependencies = {file = ["requirements.txt"]}
-# optional-dependencies = { dev = { file = ["requirements-dev.txt"] }, train = { file = ["requirements-train.txt"]}, test = { file = []}}
 
 [tool.ruff.lint]
 # F401 : unused imports
