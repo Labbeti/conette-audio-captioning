@@ -2,7 +2,7 @@
 
 # CoNeTTE model for Audio Captioning
 
-[![](<https://img.shields.io/badge/-Python 3.10+-blue?style=for-the-badge&logo=python&logoColor=white>)](https://www.python.org/)
+[![](<https://img.shields.io/badge/-Python 3.10-blue?style=for-the-badge&logo=python&logoColor=white>)](https://www.python.org/)
 [![](<https://img.shields.io/badge/-PyTorch 1.10.1+-ee4c2c?style=for-the-badge&logo=pytorch&logoColor=white>)](https://pytorch.org/get-started/locally/)
 [![](https://img.shields.io/badge/code%20style-black-black.svg?style=for-the-badge&labelColor=gray)](https://black.readthedocs.io/en/stable/)
 [![](https://img.shields.io/github/actions/workflow/status/Labbeti/conette-audio-captioning/inference.yaml?branch=main&style=for-the-badge&logo=github)](https://github.com/Labbeti/conette-audio-captioning/actions)
