@@ -2,9 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
-## [0.3.3] UNRELEASED
+## [0.3.3] 2025-11-04
 ### Changed
-- Contraint python version to be `3.10`.
+- Constraint python version to be `3.10`.
 
 ## [0.3.2] 2024-12-13
 ### Added
