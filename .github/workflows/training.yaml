@@ -47,7 +47,7 @@ jobs:
 
     - name: Install the project
       run: |
-        uv sync --group train --dev
+        uv sync --extra train
 
     - name: Install soundfile
       run: |

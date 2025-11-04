@@ -45,7 +45,7 @@ jobs:
 
     - name: Install the project
       run: |
-        uv sync --group test --dev
+        uv sync --extra dev --extra test
 
     - name: Install soundfile
       run: |
