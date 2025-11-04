@@ -331,11 +331,3 @@ version = {attr = "conette.__version__"}
 # F401 : unused imports
 # E402 : module import not at top of file
 per-file-ignores = { "__init__.py" = ["F401"], "notebooks/**.ipynb" = ["E402"] }
-
-[tool.uv.sources]
-conette = { workspace = true }
-
-[dependency-groups]
-dev = [
-    "conette[train]",
-]

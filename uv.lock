@@ -883,11 +883,6 @@ train = [
     { name = "zipp" },
 ]
 
-[package.dev-dependencies]
-dev = [
-    { name = "conette", extra = ["train"] },
-]
-
 [package.metadata]
 requires-dist = [
     { name = "aac-datasets", marker = "extra == 'train'", specifier = "==0.4.1" },
@@ -1165,9 +1160,6 @@ requires-dist = [
     { name = "zipp", marker = "extra == 'train'", specifier = "==3.17.0" },
 ]
 provides-extras = ["dev", "train", "test"]
-
-[package.metadata.requires-dev]
-dev = [{ name = "conette", extras = ["train"], editable = "." }]
 
 [[package]]
 name = "confection"
