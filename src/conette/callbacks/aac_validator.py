@@ -4,11 +4,13 @@
 from typing import Any, Iterable, Optional, Union
 
 import torch
-from aac_metrics.classes.cider_d import CIDErD
-from aac_metrics.classes.fense import FENSE
+
 from pytorch_lightning import LightningModule
 from pytorch_lightning.callbacks.callback import Callback
 from torch import nn
+
+from aac_metrics.classes.cider_d import CIDErD
+from aac_metrics.classes.fense import FENSE
 
 from conette.metrics.classes.diversity import Diversity
 from conette.metrics.classes.text_stats import TextStats

@@ -32,38 +32,35 @@ jobs:
     steps:
     # --- INSTALLATIONS ---
     - name: Checkout repository and submodules
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         submodules: recursive
 
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+    - name: Install uv and set Python ${{ matrix.python-version }}
+      uses: astral-sh/setup-uv@v5
       with:
         python-version: ${{ matrix.python-version }}
-        cache: 'pip'
+        enable-cache: true
+        cache-dependency-glob: "pyproject.toml"
+
+    - name: Install the project
+      run: |
+        uv sync --extra dev --extra test
 
     - name: Install soundfile
       run: |
         # For soundfile dep
         sudo apt-get install libsndfile1
 
-    - name: Install local packages
-      run: |
-        python -m pip install -e .[test,dev]
-
     # --- TESTS ---
-    - name: Check format with Black
-      run: |
-        python -m black --check --diff src
-
     - name: Print install info
       run: |
-        conette-info
+        uv run conette-info
 
     - name: Run CoNeTTE predict command line
       run: |
-        conette-predict --audio src/conette/data/sample.wav
+        uv run conette-predict --audio src/conette/data/sample.wav
 
     - name: Run CoNeTTE unittests
       run: |
-        python -m pytest -v
+        uv run python -m pytest -v

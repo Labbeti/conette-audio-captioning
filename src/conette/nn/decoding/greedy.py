@@ -2,13 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import math
+
 from typing import Any, Optional
 
 import torch
+
 from torch import Tensor
 from torchoutil.nn.functional import (
-    generate_square_subsequent_mask,
     indices_to_multihot,
+    generate_square_subsequent_mask,
 )
 
 from conette.nn.decoding.common import AACDecoder

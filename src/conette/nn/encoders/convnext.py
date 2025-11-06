@@ -381,7 +381,9 @@ def convnext_tiny(
             else CNEXT_IMAGENET_PRETRAINED_URLS["convnext_tiny_1k"]
         )
         checkpoint = torch.hub.load_state_dict_from_url(
-            url=url, map_location="cpu", check_hash=True  # type: ignore
+            url=url,
+            map_location="cpu",
+            check_hash=True,  # type: ignore
         )
         model.load_state_dict(checkpoint["model"], strict=strict)
 

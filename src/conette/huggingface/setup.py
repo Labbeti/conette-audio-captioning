@@ -4,11 +4,13 @@
 import logging
 import subprocess
 import sys
+
 from subprocess import CalledProcessError
 
 import nltk
 
 from conette.transforms.audioset_mapping import download_audioset_mapping
+
 
 pylog = logging.getLogger(__name__)
 

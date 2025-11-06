@@ -5,12 +5,14 @@ import json
 import logging
 import pickle
 import sys
+
 from functools import cache
 from typing import Any, Iterable, Mapping, Sized, Union
 
 import torch
 import yaml
-from torch import Tensor, nn
+
+from torch import nn, Tensor
 from torchoutil.nn.functional import get_device
 
 from conette.tokenization.normalizers import (
@@ -24,9 +26,12 @@ from conette.tokenization.normalizers import (
     ReplaceRarePuncChars,
     Strip,
 )
-from conette.tokenization.tokenizers.common import is_tokenized_sent_single
-from conette.tokenization.tokenizers.factory import _pre_tokenizer_factory
 from conette.tokenization.tokenizers.wrapper import TokenizerWrapper
+from conette.tokenization.tokenizers.common import is_tokenized_sent_single
+from conette.tokenization.tokenizers.factory import (
+    _pre_tokenizer_factory,
+)
+
 
 pylog = logging.getLogger(__name__)
 
@@ -534,7 +539,10 @@ class AACTokenizer(nn.Module, TokenizerWrapper):
                         dtype=dtype,
                         device=device,
                     )
-                elif all(isinstance(s, Tensor) and nested_sentences[0].shape == s.shape for s in nested_sentences):  # type: ignore
+                elif all(
+                    isinstance(s, Tensor) and nested_sentences[0].shape == s.shape
+                    for s in nested_sentences
+                ):  # type: ignore
                     nested_sentences = torch.stack(nested_sentences)  # type: ignore
             return nested_sentences
 

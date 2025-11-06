@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.0] 2025-11-06
+### Changed
+- BREAKING: Constraint python version to be `3.10` to avoid errors with newer pytorch/huggingface packages.
+
 ## [0.3.2] 2024-12-13
 ### Added
 - Add MIT LICENCE file.

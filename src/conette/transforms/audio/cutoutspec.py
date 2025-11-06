@@ -3,12 +3,10 @@
 
 import math
 import random
-
 from typing import Iterable, Optional, Union
 
 import torch
-
-from torch import nn, Tensor
+from torch import Tensor, nn
 from torch.distributions import Uniform
 
 

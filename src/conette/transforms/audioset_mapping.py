@@ -4,10 +4,12 @@
 import csv
 import os
 import os.path as osp
+
 from pathlib import Path
 from typing import Dict, Union
 
 from torch.hub import download_url_to_file
+
 
 _AUDIOSET_INFOS = {
     "class_labels_indices": {

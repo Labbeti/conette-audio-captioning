@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""CoNeTTE model for Audio Captioning.
-"""
+"""CoNeTTE model for Audio Captioning."""
 
 __name__ = "conette"
 __author__ = "Etienne Labbé (Labbeti)"
@@ -10,7 +9,7 @@ __author_email__ = "labbeti.pub@gmail.com"
 __license__ = "MIT"
 __maintainer__ = "Etienne Labbé (Labbeti)"
 __status__ = "Development"
-__version__ = "0.3.2"
+__version__ = "0.4.0"
 
 
 from pathlib import Path

@@ -285,7 +285,7 @@ class Cnn10(nn.Module):
                 for j, x_shape_ij in enumerate(x_shape_i):
                     if x_shape_ij > x.shape[j + 1]:
                         raise ValueError(
-                            f"Found a shape greater than the dimension of the input. (found {x_shape_ij} > {x.shape[j+1]})"
+                            f"Found a shape greater than the dimension of the input. (found {x_shape_ij} > {x.shape[j + 1]})"
                         )
 
     def forward(

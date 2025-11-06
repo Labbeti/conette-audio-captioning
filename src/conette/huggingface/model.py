@@ -2,15 +2,17 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import pickle
-from typing import Any, Iterable, Optional, TypedDict, Union
 
+from typing import Any, Iterable, Optional, TypedDict, Union
+from typing_extensions import NotRequired
+
+import pickle
 import torch
+
 from torch import Size, Tensor
 from torchoutil.nn.functional.get import get_device
 from torchoutil.nn.functional.multilabel import probs_to_names
 from transformers import PreTrainedModel
-from typing_extensions import NotRequired
 
 from conette.huggingface.config import CoNeTTEConfig
 from conette.huggingface.preprocessor import CoNeTTEPreprocessor
@@ -19,6 +21,7 @@ from conette.pl_modules.base import AACLightningModule
 from conette.pl_modules.conette import CoNeTTEPLM
 from conette.tokenization.aac_tokenizer import AACTokenizer
 from conette.transforms.audioset_mapping import load_audioset_idx_to_name
+
 
 pylog = logging.getLogger(__name__)
 

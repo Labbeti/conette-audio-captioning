@@ -224,7 +224,7 @@ class DiskCache:
 
                 if dc_verbose >= 2:
                     self._print(
-                        f"[HIT_] Outputs loaded from '{osp.basename(fpath)}'. (hits={self.get_n_hits()+1}/{self.get_n_calls()})"
+                        f"[HIT_] Outputs loaded from '{osp.basename(fpath)}'. (hits={self.get_n_hits() + 1}/{self.get_n_calls()})"
                     )
                 return outs, True
         except (FileNotFoundError, json.JSONDecodeError, KeyError, EOFError):

@@ -223,7 +223,7 @@ class AACEvaluator(Callback):
             counter = datasubsets.count(datasubset)
             if counter > 0:
                 old_datasubset = datasubset
-                datasubset = f"{datasubset}_{counter+1}"
+                datasubset = f"{datasubset}_{counter + 1}"
                 pylog.error(
                     f"Found duplicated subset '{old_datasubset}'. Renaming to '{datasubset}'."
                 )

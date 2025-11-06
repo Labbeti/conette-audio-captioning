@@ -3,14 +3,12 @@
 
 import logging
 import math
-
 from typing import Callable, Optional, Union
 
-from torch import nn, Tensor
+from torch import Tensor, nn
 
 from conette.nn.functional.get import get_activation_fn
 from conette.nn.modules.positional_encoding import PositionalEncoding
-
 
 pylog = logging.getLogger(__name__)
 
