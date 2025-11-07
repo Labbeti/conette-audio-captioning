@@ -2,17 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
-from typing import Any, Iterable, Optional, TypedDict, Union
-from typing_extensions import NotRequired
-
 import pickle
-import torch
+from typing import Any, Iterable, Optional, TypedDict, Union
 
+import torch
 from torch import Size, Tensor
 from torchoutil.nn.functional.get import get_device
 from torchoutil.nn.functional.multilabel import probs_to_names
 from transformers import PreTrainedModel
+from typing_extensions import NotRequired
 
 from conette.huggingface.config import CoNeTTEConfig
 from conette.huggingface.preprocessor import CoNeTTEPreprocessor
@@ -21,7 +19,6 @@ from conette.pl_modules.base import AACLightningModule
 from conette.pl_modules.conette import CoNeTTEPLM
 from conette.tokenization.aac_tokenizer import AACTokenizer
 from conette.transforms.audioset_mapping import load_audioset_idx_to_name
-
 
 pylog = logging.getLogger(__name__)
 
@@ -221,18 +218,16 @@ class CoNeTTEModel(PreTrainedModel):
         elif isinstance(task, str):
             tasks = [task] * bsize
         elif len(task) != bsize:
-            raise ValueError(
-                f"Invalid number of tasks with input. (found {len(task)} tasks but {bsize} elements)"
-            )
+            msg = f"Invalid number of tasks with input. (found {len(task)} tasks but {bsize} elements)"
+            raise ValueError(msg)
         else:
             tasks = task
         del task
 
         for task in tasks:
             if task not in self.config.task_names:
-                raise ValueError(
-                    f"Invalid argument {tasks=}. (task {task} is not in {self.config.task_names})"
-                )
+                msg = f"Invalid argument {tasks=}. (task {task} is not in {self.config.task_names})"
+                raise ValueError(msg)
 
         dataset_lst = [self.default_task] * bsize
         source_lst: list[Optional[str]] = [None] * bsize
