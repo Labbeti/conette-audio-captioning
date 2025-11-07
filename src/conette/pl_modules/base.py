@@ -280,15 +280,15 @@ class AACLightningModule(LightningModule):
         return has_trainer(self)
 
     def get_datamodule(self) -> LightningDataModule:
-        assert (
-            self.has_datamodule()
-        ), f"PLM {self.__class__.__name__} does not have datamodule."
+        assert self.has_datamodule(), (
+            f"PLM {self.__class__.__name__} does not have datamodule."
+        )
         return self._trainer.datamodule  # type: ignore
 
     def get_trainer(self) -> Trainer:
-        assert (
-            self.has_trainer()
-        ), f"PLM {self.__class__.__name__} does not have trainer."
+        assert self.has_trainer(), (
+            f"PLM {self.__class__.__name__} does not have trainer."
+        )
         return self._trainer  # type: ignore
 
     def get_tokenizer(self, id_: Union[int, str] = 0) -> AACTokenizer:

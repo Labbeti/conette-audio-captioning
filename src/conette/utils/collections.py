@@ -194,25 +194,21 @@ def sort_dict_with_patterns(
 
 
 @overload
-def unzip(lst: Iterable[tuple[T]]) -> tuple[list[T]]:
-    ...
+def unzip(lst: Iterable[tuple[T]]) -> tuple[list[T]]: ...
 
 
 @overload
-def unzip(lst: Iterable[tuple[T, U]]) -> tuple[list[T], list[U]]:
-    ...
+def unzip(lst: Iterable[tuple[T, U]]) -> tuple[list[T], list[U]]: ...
 
 
 @overload
-def unzip(lst: Iterable[tuple[T, U, V]]) -> tuple[list[T], list[U], list[V]]:
-    ...
+def unzip(lst: Iterable[tuple[T, U, V]]) -> tuple[list[T], list[U], list[V]]: ...
 
 
 @overload
 def unzip(
     lst: Iterable[tuple[T, U, V, W]],
-) -> tuple[list[T], list[U], list[V], list[W]]:
-    ...
+) -> tuple[list[T], list[U], list[V], list[W]]: ...
 
 
 def unzip(lst: Iterable) -> tuple[list, ...]:

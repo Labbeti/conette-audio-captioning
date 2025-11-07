@@ -3,27 +3,26 @@
 
 import logging
 import pickle
-from typing import Any, Iterable, Optional, TypedDict, Union
+from typing import Any, Iterable, Literal, Optional, TypedDict, Union, overload
 
 import torch
 from torch import Size, Tensor
 from torchoutil.nn.functional.get import get_device
 from torchoutil.nn.functional.multilabel import probs_to_names
 from transformers import PreTrainedModel
-from typing_extensions import NotRequired
 
 from conette.huggingface.config import CoNeTTEConfig
 from conette.huggingface.preprocessor import CoNeTTEPreprocessor
 from conette.huggingface.setup import setup_other_models
 from conette.pl_modules.base import AACLightningModule
-from conette.pl_modules.conette import CoNeTTEPLM
+from conette.pl_modules.conette import CoNeTTEPLM, DecodeMethod
 from conette.tokenization.aac_tokenizer import AACTokenizer
 from conette.transforms.audioset_mapping import load_audioset_idx_to_name
 
 pylog = logging.getLogger(__name__)
 
 
-class CoNeTTEOutput(TypedDict):
+class CoNeTTEFullOutput(TypedDict):
     cands: list[str]
     preds: Tensor
     lprobs: Tensor
@@ -31,8 +30,8 @@ class CoNeTTEOutput(TypedDict):
     mult_preds: Tensor
     mult_lprobs: Tensor
     tasks: list[str]
-    tags: NotRequired[list[list[str]]]
-    tags_probs: NotRequired[Tensor]
+    tags: list[list[str]]
+    tags_probs: Tensor
 
 
 class CoNeTTEModel(PreTrainedModel):
@@ -158,11 +157,10 @@ class CoNeTTEModel(PreTrainedModel):
                 self.model.build_model()
                 self.model = self.model.to(device=self.device)
             else:
-                pylog.error(
-                    "Cannot build the model from state_dict. (tokenizer is not fit)"
-                )
+                msg = "Cannot build the model from state_dict. (tokenizer is not fit)"
+                pylog.error(msg)
 
-    def state_dict(self) -> dict[str, Tensor]:
+    def state_dict(self, *args, **kwargs) -> dict[str, Tensor]:
         states = super().state_dict()
         tensor_states = {k: v for k, v in states.items() if isinstance(v, Tensor)}
         non_tensor_states = {
@@ -171,9 +169,8 @@ class CoNeTTEModel(PreTrainedModel):
         del states
 
         if len(non_tensor_states) > 0:
-            pylog.debug(
-                f"Storing into bytes values {tuple(non_tensor_states.keys())}..."
-            )
+            msg = f"Storing into bytes values {tuple(non_tensor_states.keys())}..."
+            pylog.debug(msg)
             non_tensor_states = bytearray(pickle.dumps(non_tensor_states))
             non_tensor_states = torch.frombuffer(non_tensor_states, dtype=torch.uint8)
             tensor_states["_extra_state_"] = non_tensor_states
@@ -181,6 +178,46 @@ class CoNeTTEModel(PreTrainedModel):
         # Enforce contiguous tensors
         tensor_states = {k: v.contiguous() for k, v in tensor_states.items()}
         return tensor_states
+
+    @overload
+    def forward(
+        self,
+        # Inputs
+        x: Union[Tensor, str, Iterable[str], Iterable[Tensor]],
+        sr: Union[None, int, Iterable[int]] = None,
+        x_shapes: Union[Tensor, None, list[Size]] = None,
+        preprocess: Literal[True] = True,
+        threshold: Union[float, Tensor] = 0.3,
+        # Beam search options
+        task: Union[str, list[str], None] = None,
+        beam_size: Optional[int] = None,
+        min_pred_size: Optional[int] = None,
+        max_pred_size: Optional[int] = None,
+        forbid_rep_mode: Optional[str] = None,
+        *,
+        decode_method: DecodeMethod = "generate",
+        audio_classif_only: Literal[False] = False,
+    ) -> CoNeTTEFullOutput: ...
+
+    @overload
+    def forward(
+        self,
+        # Inputs
+        x: Union[Tensor, str, Iterable[str], Iterable[Tensor]],
+        sr: Union[None, int, Iterable[int]] = None,
+        x_shapes: Union[Tensor, None, list[Size]] = None,
+        *,
+        preprocess: bool,
+        threshold: Union[float, Tensor] = 0.3,
+        # Beam search options
+        task: Union[str, list[str], None] = None,
+        beam_size: Optional[int] = None,
+        min_pred_size: Optional[int] = None,
+        max_pred_size: Optional[int] = None,
+        forbid_rep_mode: Optional[str] = None,
+        decode_method: DecodeMethod = "generate",
+        audio_classif_only: bool,
+    ) -> dict[str, Any]: ...
 
     def forward(
         self,
@@ -196,7 +233,10 @@ class CoNeTTEModel(PreTrainedModel):
         min_pred_size: Optional[int] = None,
         max_pred_size: Optional[int] = None,
         forbid_rep_mode: Optional[str] = None,
-    ) -> CoNeTTEOutput:
+        *,
+        decode_method: DecodeMethod = "generate",
+        audio_classif_only: bool = False,
+    ) -> CoNeTTEFullOutput | dict[str, Any]:
         # Preprocessing (load data + encode features)
         if preprocess:
             batch = self.preprocessor(x, sr, x_shapes)
@@ -211,46 +251,50 @@ class CoNeTTEModel(PreTrainedModel):
             clip_probs = None
             tags = None
 
-        # Add task information to batch
-        bsize = len(batch["audio"])
-        if task is None:
-            tasks = [self.default_task] * bsize
-        elif isinstance(task, str):
-            tasks = [task] * bsize
-        elif len(task) != bsize:
-            msg = f"Invalid number of tasks with input. (found {len(task)} tasks but {bsize} elements)"
-            raise ValueError(msg)
+        if audio_classif_only:
+            outs = {}
         else:
-            tasks = task
-        del task
-
-        for task in tasks:
-            if task not in self.config.task_names:
-                msg = f"Invalid argument {tasks=}. (task {task} is not in {self.config.task_names})"
+            # Add task information to batch
+            bsize = len(batch["audio"])
+            if task is None:
+                tasks = [self.default_task] * bsize
+            elif isinstance(task, str):
+                tasks = [task] * bsize
+            elif len(task) != bsize:
+                msg = f"Invalid number of tasks with input. (found {len(task)} tasks but {bsize} elements)"
                 raise ValueError(msg)
+            else:
+                tasks = task
+            del task
 
-        dataset_lst = [self.default_task] * bsize
-        source_lst: list[Optional[str]] = [None] * bsize
+            for task in tasks:
+                if task not in self.config.task_names:
+                    msg = f"Invalid argument {tasks=}. (task {task} is not in {self.config.task_names})"
+                    raise ValueError(msg)
 
-        for i, task in enumerate(tasks):
-            task = task.split("_")
-            dataset_lst[i] = task[0]
-            if len(task) >= 2:
-                source_lst[i] = "_".join(task[1:])
+            dataset_lst = [self.default_task] * bsize
+            source_lst: list[Optional[str]] = [None] * bsize
 
-        batch["dataset"] = dataset_lst
-        batch["source"] = source_lst
+            for i, task in enumerate(tasks):
+                task = task.split("_")
+                dataset_lst[i] = task[0]
+                if len(task) >= 2:
+                    source_lst[i] = "_".join(task[1:])
 
-        # Call model forward
-        kwds = dict(
-            beam_size=beam_size,
-            min_pred_size=min_pred_size,
-            max_pred_size=max_pred_size,
-            forbid_rep_mode=forbid_rep_mode,
-        )
-        kwds = {k: v for k, v in kwds.items() if v is not None}
-        outs = self.model(batch, **kwds)
-        outs["tasks"] = tasks
+            batch["dataset"] = dataset_lst
+            batch["source"] = source_lst
+
+            # Call model forward
+            kwds = dict(
+                beam_size=beam_size,
+                min_pred_size=min_pred_size,
+                max_pred_size=max_pred_size,
+                forbid_rep_mode=forbid_rep_mode,
+                decode_method=decode_method,
+            )
+            kwds = {k: v for k, v in kwds.items() if v is not None}
+            outs = self.model(batch, **kwds)
+            outs["tasks"] = tasks
 
         if clip_probs is not None and tags is not None:
             outs["tags_probs"] = clip_probs
@@ -272,7 +316,10 @@ class CoNeTTEModel(PreTrainedModel):
         min_pred_size: Optional[int] = None,
         max_pred_size: Optional[int] = None,
         forbid_rep_mode: Optional[str] = None,
-    ) -> CoNeTTEOutput:
+        *,
+        decode_method: DecodeMethod = "generate",
+        audio_classif_only: bool = False,
+    ) -> CoNeTTEFullOutput:
         return super().__call__(
             x=x,
             sr=sr,
@@ -284,4 +331,6 @@ class CoNeTTEModel(PreTrainedModel):
             min_pred_size=min_pred_size,
             max_pred_size=max_pred_size,
             forbid_rep_mode=forbid_rep_mode,
+            decode_method=decode_method,
+            audio_classif_only=audio_classif_only,
         )

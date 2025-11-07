@@ -203,8 +203,8 @@ def gen_range(
         0, max(size - cutout_size + 1, 1), (), generator=generator
     )
     cutout_end = cutout_start + cutout_size
-    assert (
-        cutout_end - cutout_start == cutout_size
-    ), f"{cutout_end} - {cutout_start} != {cutout_size}"
+    assert cutout_end - cutout_start == cutout_size, (
+        f"{cutout_end} - {cutout_start} != {cutout_size}"
+    )
 
     return slice(cutout_start, cutout_end)

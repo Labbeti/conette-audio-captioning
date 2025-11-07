@@ -318,12 +318,10 @@ def filter_dsets(
 
             n_excluded = prev_size - len(indexes)
             if cfg.verbose >= 1:
-                pylog.info(
-                    f"Exclude {n_excluded}/{prev_size} files with audio size not in [{min_audio_size}, {max_audio_size}] seconds in {subset=}."
-                )
-                pylog.info(
-                    f"Durations are now in range [{min(durations):.2f}, {max(durations):.2f}] s."
-                )
+                msg = f"Exclude {n_excluded}/{prev_size} files with audio size not in [{min_audio_size}, {max_audio_size}] seconds in {subset=}."
+                pylog.info(msg)
+                msg = f"Durations are now in range [{min(durations):.2f}, {max(durations):.2f}] s."
+                pylog.info(msg)
 
     if use_sr_filt:
         for subset, indexes in indexes_dic.items():

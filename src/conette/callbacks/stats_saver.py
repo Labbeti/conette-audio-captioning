@@ -315,12 +315,12 @@ def save_to_dir(
                 writer.writerows(data)  # type: ignore
 
             other_metrics[f"{name}_vocab_size"] = tokenizer.get_vocab_size()
-            other_metrics[
-                f"{name}_min_sentence_size"
-            ] = tokenizer.get_min_sentence_size()
-            other_metrics[
-                f"{name}_max_sentence_size"
-            ] = tokenizer.get_max_sentence_size()
+            other_metrics[f"{name}_min_sentence_size"] = (
+                tokenizer.get_min_sentence_size()
+            )
+            other_metrics[f"{name}_max_sentence_size"] = (
+                tokenizer.get_max_sentence_size()
+            )
 
     # Remove optional None values
     params = {k: v for k, v in params.items() if v is not None}

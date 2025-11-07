@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable, Literal, Optional
 
 import torch
 from torch import Tensor, nn
@@ -27,6 +27,8 @@ from conette.pl_modules.common import (
 )
 from conette.tokenization.aac_tokenizer import AACTokenizer
 from conette.transforms.mixup import sample_lambda
+
+DecodeMethod = Literal["forcing", "greedy", "generate"]
 
 pylog = logging.getLogger(__name__)
 
@@ -352,12 +354,13 @@ class CoNeTTEPLM(AACLightningModule):
     def forward(
         self,
         batch: dict[str, Any],
-        decode_method: str = "generate",
+        decode_method: DecodeMethod = "generate",
         **kwargs,
     ) -> dict[str, Tensor]:
         audio: Tensor = batch["audio"]
         audio_shape: Tensor = batch["audio_shape"]
         encoder_outs = self.encode_audio(audio, audio_shape)
+
         if decode_method == "forcing" and "captions" in batch:
             kwargs["caps_in"] = batch["captions"][:, :-1]
 
@@ -391,16 +394,14 @@ class CoNeTTEPLM(AACLightningModule):
     ) -> Any:
         if decode_method == "forcing":
             if "caps_in" not in kwargs.keys():
-                raise ValueError(
-                    f"Please provide a 'caps_in' keyword argument with {decode_method=}. (found {tuple(kwargs.keys())})"
-                )
+                msg = f"Please provide a 'caps_in' keyword argument with {decode_method=}. (found {tuple(kwargs.keys())})"
+                raise ValueError(msg)
             if (
                 self.hp.task_mode == ("ds", "ds_src")
                 and kwargs["caps_in"][:, 0].eq(self.bos_id).any()
             ):
-                raise ValueError(
-                    f"BOS was not replaced in input captions for {decode_method=}."
-                )
+                msg = f"BOS was not replaced in input captions for {decode_method=}."
+                raise ValueError(msg)
 
             forcing_hp: dict[str, Any] = {
                 "pad_id": self.pad_id,
@@ -444,9 +445,10 @@ class CoNeTTEPLM(AACLightningModule):
             )
         else:
             DECODE_METHODS = ("forcing", "generate")
-            raise ValueError(
+            msg = (
                 f"Unknown argument {decode_method=}. (expected one of {DECODE_METHODS})"
             )
+            raise ValueError(msg)
         return outs
 
     def encode_audio(self, audio: Tensor, audio_shape: Tensor) -> dict[str, Tensor]:

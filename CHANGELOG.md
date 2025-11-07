@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.4.1] UNRELEASED
+### Added
+- Option `audio_classif_only` to compute forward for audio tagging without AAC model in `CoNeTTEModel`.
+- Option `decode_method` to control the text generation in `CoNeTTEModel`.
+
 ## [0.4.0] 2025-11-06
 ### Changed
 - BREAKING: Constraint python version to be `3.10` to avoid errors with newer pytorch/huggingface packages.

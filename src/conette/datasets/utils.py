@@ -200,9 +200,9 @@ class AACConcat(Wrapper[tuple[AACDatasetLike, ...]]):
             dset_size = len(dset)
             cumsum.append(dset_size + prev_size)
             prev_size += dset_size
-        assert len(cumsum) == 0 or cumsum[-1] == len(
-            self
-        ), f"Found {cumsum[-1]=} != {len(self)=}."
+        assert len(cumsum) == 0 or cumsum[-1] == len(self), (
+            f"Found {cumsum[-1]=} != {len(self)=}."
+        )
 
         self._cumsum = cumsum
 
@@ -347,9 +347,9 @@ class WrapperSampler(Wrapper[AACDatasetLike]):
         return self._source.column_names
 
     def at(self, idx: Any, column: Any) -> Any:
-        assert isinstance(
-            idx, int
-        ), f"WrapperSampler does not support non-integer indexes. (found {idx=})"
+        assert isinstance(idx, int), (
+            f"WrapperSampler does not support non-integer indexes. (found {idx=})"
+        )
         idx = self.indexes[idx]
         return self._source.at(idx, column)
 

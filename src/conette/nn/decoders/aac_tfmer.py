@@ -83,17 +83,17 @@ class AACTransformerDecoder(nn.TransformerDecoder):
         :returns: logits of shape (caps_in_len, bsize, vocab_size)
         """
         assert frame_embs.ndim == 3, f"{frame_embs.shape=}"
-        assert (
-            frame_embs_pad_mask is None or frame_embs_pad_mask.ndim == 2
-        ), f"{frame_embs_pad_mask.shape=}"
+        assert frame_embs_pad_mask is None or frame_embs_pad_mask.ndim == 2, (
+            f"{frame_embs_pad_mask.shape=}"
+        )
         assert caps_in.is_floating_point() or caps_in.ndim == 2, f"{caps_in.shape=}"
         assert not caps_in.is_floating_point() or caps_in.ndim == 3, f"{caps_in.shape=}"
-        assert (
-            caps_in_pad_mask is None or caps_in_pad_mask.ndim == 2
-        ), f"{caps_in_pad_mask.shape=}"
-        assert (
-            caps_in_sq_mask is None or caps_in_sq_mask.ndim == 2
-        ), f"{caps_in_sq_mask.shape=}"
+        assert caps_in_pad_mask is None or caps_in_pad_mask.ndim == 2, (
+            f"{caps_in_pad_mask.shape=}"
+        )
+        assert caps_in_sq_mask is None or caps_in_sq_mask.ndim == 2, (
+            f"{caps_in_sq_mask.shape=}"
+        )
 
         if not caps_in.is_floating_point():
             caps_in = self.emb_layer(caps_in)
