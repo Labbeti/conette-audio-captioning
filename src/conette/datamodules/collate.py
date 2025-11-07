@@ -2,16 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
 from typing import Any, Iterable, Optional
 
 import torch
-
+from pythonwrench.collections import all_eq
 from torch import Tensor
 from torchoutil.nn.functional import can_be_stacked, pad_and_stack_rec
-from torchoutil.utils.collections import all_eq
 from torchoutil.utils.hdf.common import SHAPE_SUFFIX
-
 
 pylog = logging.getLogger(__name__)
 

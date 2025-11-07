@@ -6,13 +6,12 @@ from typing import Any, Iterable, Union
 
 import torch
 import torchaudio
+from pythonwrench.collections import all_eq, unzip
 from torch import Size, Tensor, nn
 from torchaudio.functional import resample
-from torchoutil.utils.collections import all_eq
 
 from conette.nn.encoders.convnext import convnext_tiny
 from conette.nn.functional.pad import pad_and_stack
-from conette.utils.collections import unzip
 from conette.utils.type_checks import is_iter_tensor, is_iterable_str, is_list_tensor
 
 pylog = logging.getLogger(__name__)

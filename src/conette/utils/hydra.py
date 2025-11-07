@@ -14,7 +14,7 @@ from hydra.core.hydra_config import HydraConfig
 from hydra.types import RunMode
 from omegaconf import DictConfig, OmegaConf
 from omegaconf.errors import ConfigAttributeError
-from torchoutil.utils.collections import flat_dict_of_dict
+from pythonwrench.collections import flat_dict_of_dict
 
 from conette.utils.yaml_utils import load_yaml
 

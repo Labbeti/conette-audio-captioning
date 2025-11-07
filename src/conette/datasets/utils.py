@@ -20,6 +20,7 @@ from typing import (
 import torch
 import torchaudio
 import tqdm
+from pythonwrench.warnings import warn_once
 from torch import Tensor
 from torch.utils.data.dataset import Dataset
 from torchaudio.backend.common import AudioMetaData
@@ -27,7 +28,6 @@ from torchoutil.utils.data.dataset import SizedDatasetLike
 
 from conette.datasets.typing import AACDatasetLike
 from conette.utils.disk_cache import disk_cache
-from conette.utils.log_utils import warn_once
 from conette.utils.misc import pass_filter
 
 pylog = logging.getLogger(__name__)

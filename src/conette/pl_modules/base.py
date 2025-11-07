@@ -7,6 +7,7 @@ from argparse import Namespace
 from typing import Any, Callable, ClassVar, Iterable, Mapping, Optional, Union
 
 import torch
+from pythonwrench.warnings import warn_once
 from pytorch_lightning import LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.utilities.types import _METRIC_COLLECTION
 from torch import Tensor, nn
@@ -22,7 +23,6 @@ from conette.pl_modules.common import (
 )
 from conette.tokenization.aac_tokenizer import AACTokenizer
 from conette.utils.csum import csum_module
-from conette.utils.log_utils import warn_once
 
 pylog = logging.getLogger(__name__)
 

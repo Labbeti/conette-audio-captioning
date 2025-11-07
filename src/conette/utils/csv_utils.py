@@ -6,9 +6,7 @@ import os.path as osp
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Union
 
-from torchoutil.utils.collections import list_dict_to_dict_list
-
-from conette.utils.collections import dict_list_to_list_dict
+from pythonwrench.collections import dict_list_to_list_dict, list_dict_to_dict_list
 
 
 def load_csv_dict(

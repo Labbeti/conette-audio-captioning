@@ -13,19 +13,19 @@ import torch
 import yaml
 from aac_metrics.utils.checks import is_mono_sents, is_mult_sents
 from aac_metrics.utils.collections import flat_list, unflat_list
+from pythonwrench.collections import all_eq
+from pythonwrench.warnings import warn_once
 from pytorch_lightning import LightningModule
 from pytorch_lightning.callbacks.callback import Callback
 from pytorch_lightning.loggers import TensorBoardLogger
 from torch import Tensor
 from torch.utils.data.dataloader import DataLoader
-from torchoutil.nn.functional import move_to_rec
-from torchoutil.utils.collections import all_eq
+from torchwrench.nn.functional import move_to_rec
 
 from conette.metrics.classes.all_metrics import AllMetrics
 from conette.tokenization.aac_tokenizer import AACTokenizer
 from conette.utils.custom_logger import CustomTensorboardLogger
 from conette.utils.dcase import export_to_dcase_task6a_csv
-from conette.utils.log_utils import warn_once
 
 pylog = logging.getLogger(__name__)
 
@@ -179,13 +179,15 @@ class AACEvaluator(Callback):
         self,
         trainer,
         pl_module,
-        outputs: dict[str, Any],
+        outputs: Any,
         batch: dict[str, Any],
         batch_idx: int,
         dataloader_idx: int,
     ) -> None:
-        if outputs is None:
-            warn_once("Lightning module has returned None during test epoch.", pylog)
+        if not isinstance(outputs, dict):
+            warn_once(
+                f"Lightning module has returned {outputs} during test epoch. (expected dict)"
+            )
             return None
 
         outputs = move_to_rec(outputs, device=torch.device("cpu"))
