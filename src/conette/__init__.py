@@ -34,6 +34,7 @@ def conette(
 
     if pretrained_model_name_or_path is None:
         config = CoNeTTEConfig(**config_kwds)
+        model_kwds = dict(config=config) | model_kwds
         model = CoNeTTEModel(**model_kwds)
     else:
         config = CoNeTTEConfig.from_pretrained(
