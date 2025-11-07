@@ -12,14 +12,14 @@ import transformers
 import yaml
 from lightning_fabric.utilities.seed import seed_everything
 from omegaconf import DictConfig, OmegaConf
+from pythonwrench.argparse import str_to_optional_int, str_to_optional_str
+from pythonwrench.logging import setup_logging_verbose
 
 from conette.huggingface.model import CoNeTTEConfig, CoNeTTEModel
 from conette.nn.functional.get import get_device
 from conette.pl_modules.baseline import BaselinePLM
 from conette.pl_modules.conette import CoNeTTEPLM
-from conette.utils.cmdline import _str_to_opt_int, _str_to_opt_str
 from conette.utils.csum import csum_module
-from conette.utils.log_utils import setup_logging_verbose
 
 pylog = logging.getLogger(__name__)
 
@@ -39,20 +39,20 @@ def get_predict_args() -> Namespace:
     )
     parser.add_argument(
         "--task",
-        type=_str_to_opt_str,
+        type=str_to_optional_str,
         help="CoNeTTE task embedding input.",
         default=None,
         nargs="+",
     )
     parser.add_argument(
         "--model_name",
-        type=_str_to_opt_str,
+        type=str_to_optional_str,
         help="Model name on huggingface.",
         default="Labbeti/conette",
     )
     parser.add_argument(
         "--model_path",
-        type=_str_to_opt_str,
+        type=str_to_optional_str,
         help="Path to trained model directory.",
         default=None,
     )
@@ -64,19 +64,19 @@ def get_predict_args() -> Namespace:
     )
     parser.add_argument(
         "--token",
-        type=_str_to_opt_str,
+        type=str_to_optional_str,
         help="Optional access token.",
         default=None,
     )
     parser.add_argument(
         "--seed",
-        type=_str_to_opt_int,
+        type=str_to_optional_int,
         help="Random seed value.",
         default=1234,
     )
     parser.add_argument(
         "--csv_export",
-        type=_str_to_opt_str,
+        type=str_to_optional_str,
         help="Path to CSV output file.",
         default=None,
     )

@@ -11,9 +11,9 @@ from torch.utils.data.dataloader import DataLoader
 from torchoutil.utils.data.dataloader import get_auto_num_cpus
 from torchoutil.utils.data.dataset import TransformWrapper
 from torchoutil.utils.hdf import HDFDataset
+from torchwrench.utils.data.collate import AdvancedCollateDict
 
 from conette.datamodules.aac_dm import AACDataModule
-from conette.datamodules.collate import AdvancedCollateDict
 from conette.datamodules.common import OnlineEncodeCaptionsTransform
 from conette.datasets.utils import (
     AACConcat,

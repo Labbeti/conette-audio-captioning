@@ -3,7 +3,6 @@
 
 import logging
 import math
-import os.path as osp
 from functools import cache
 from typing import (
     Any,
@@ -20,6 +19,8 @@ from typing import (
 import torch
 import torchaudio
 import tqdm
+from pythonwrench.collections import filter_iterable
+from pythonwrench.disk_cache import disk_cache_call
 from pythonwrench.warnings import warn_once
 from torch import Tensor
 from torch.utils.data.dataset import Dataset
@@ -27,8 +28,6 @@ from torchaudio.backend.common import AudioMetaData
 from torchoutil.utils.data.dataset import SizedDatasetLike
 
 from conette.datasets.typing import AACDatasetLike
-from conette.utils.disk_cache import disk_cache
-from conette.utils.misc import pass_filter
 
 pylog = logging.getLogger(__name__)
 T = TypeVar("T")
@@ -290,11 +289,11 @@ class CacheWrap(Wrapper):
         super().__init__(dataset)
 
     @cache
-    def __getitem__(self, idx: int) -> tuple:
+    def __getitem__(self, idx: int) -> tuple:  # type: ignore
         return self._source.__getitem__(idx)
 
     @cache
-    def __len__(self) -> int:
+    def __len__(self) -> int:  # type: ignore
         return len(self._source)
 
     def load_items(
@@ -600,7 +599,7 @@ def filter_audio_sizes(
     dset: AACDatasetLike,
     min_audio_size: float = 0.0,
     max_audio_size: float = math.inf,
-    cache_path: Optional[str] = osp.join("~", ".cache"),
+    cache_path: Optional[str] = None,
     verbose: int = 0,
     previous_indexes: Optional[Iterable[int]] = None,
     use_duration_column: bool = False,
@@ -616,7 +615,7 @@ def filter_audio_sizes(
     else:
         fpaths = dset.at(previous_indexes, "fpath")
         if cache_path is not None:
-            infos = disk_cache(load_audio_metadata, fpaths, cache_path=cache_path)
+            infos = disk_cache_call(load_audio_metadata, fpaths, cache_path=cache_path)
         else:
             infos = load_audio_metadata(fpaths)
         durations = [(info.num_frames / info.sample_rate) for info in infos.values()]
@@ -690,14 +689,10 @@ class AACSelectColumnsWrapper(Wrapper[AACDatasetLike]):
             not_found = [name for name in include if name not in source.column_names]
 
         if len(not_found) > 0:
-            warn_once(
-                f"Cannot find {len(not_found)} column(s) {not_found} in {source} dataset. (found only {source.column_names})",
-                pylog,
-            )
+            msg = f"Cannot find {len(not_found)} column(s) {not_found} in {source} dataset. (found only {source.column_names})"
+            warn_once(msg)
 
-        column_names = [
-            name for name in source.column_names if pass_filter(name, include, exclude)
-        ]
+        column_names = filter_iterable(source.column_names, include, exclude)
         if use_default:
             column_names += not_found
         super().__init__(source)
@@ -831,9 +826,7 @@ class PostSelectColumnsWrapper(Wrapper[SizedDatasetLike]):
         include: Optional[Iterable[str]] = None,
         exclude: Optional[Iterable[str]] = None,
     ) -> None:
-        column_names = [
-            name for name in column_names if pass_filter(name, include, exclude)
-        ]
+        column_names = filter_iterable(column_names, include, exclude)
         super().__init__(source)
         self._column_names = column_names
 

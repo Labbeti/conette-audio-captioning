@@ -25,6 +25,7 @@ import yaml
 from hydra.utils import instantiate
 from lightning_fabric.plugins.environments import LightningEnvironment
 from omegaconf import DictConfig, OmegaConf
+from pythonwrench.logging import setup_logging_level
 from pytorch_lightning import LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.callbacks import (
     Callback,
@@ -45,7 +46,6 @@ from conette.callbacks.stats_saver import StatsSaver
 from conette.tokenization.aac_tokenizer import AACTokenizer
 from conette.utils.custom_logger import CustomTensorboardLogger
 from conette.utils.hydra import CustomFileHandler, get_subrun_path, setup_resolvers
-from conette.utils.log_utils import setup_logging_level
 from conette.utils.misc import copy_slurm_logs, reset_seed
 
 # Note: this function must be called globally

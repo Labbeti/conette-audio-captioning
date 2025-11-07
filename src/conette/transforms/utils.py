@@ -4,9 +4,8 @@
 import copy
 from typing import Any, Callable, Iterable, Mapping, Optional
 
+from pythonwrench.collections import contained
 from torch import Tensor, nn
-
-from conette.utils.misc import pass_filter
 
 
 class PreSaveTransform(nn.ModuleDict):
@@ -86,9 +85,7 @@ class SelectColumns:
 
     def __call__(self, item: Mapping[str, Any]) -> dict[str, Any]:
         item = {
-            k: v
-            for k, v in item.items()
-            if pass_filter(k, self._include, self._exclude)
+            k: v for k, v in item.items() if contained(k, self._include, self._exclude)
         }
         return item
 

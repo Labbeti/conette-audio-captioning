@@ -2,14 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
 from typing import Any, Iterable, Iterator, Optional, Union
 
-from torch import nn, Tensor
-from torch.optim import Optimizer, Adam, AdamW, SGD
+from pythonwrench.functools import filter_and_call
+from torch import Tensor, nn
+from torch.optim import SGD, Adam, AdamW, Optimizer
 
 from conette.utils.func_utils import filter_kwargs
-
 
 pylog = logging.getLogger(__name__)
 
@@ -29,9 +28,10 @@ def get_optimizer(
             )
 
     elif use_custom_wd:
-        raise ValueError(
+        msg = (
             f"Invalid argument {parameters.__class__.__name__=} with {use_custom_wd=}."
         )
+        raise ValueError(msg)
 
     classes = (
         Adam,
@@ -40,13 +40,14 @@ def get_optimizer(
     )
     optimizer = None
     for class_ in classes:
-        if optim_name.lower() == class_.__name__.lower():
-            actual_kwargs = filter_kwargs(class_, kwargs)
-            optimizer = class_(parameters, **actual_kwargs)
-            pylog.info(
-                f"Build optimizer {class_.__name__}({', '.join(f'{k}={v}' for k, v in actual_kwargs.items())})."
-            )
-            break
+        if optim_name.lower() != class_.__name__.lower():
+            continue
+
+        actual_kwargs = filter_kwargs(class_, kwargs)
+        optimizer = class_(parameters, **actual_kwargs)
+        msg = f"Build optimizer {class_.__name__}({', '.join(f'{k}={v}' for k, v in actual_kwargs.items())})."
+        pylog.info(msg)
+        break
 
     if optimizer is not None:
         return optimizer

@@ -23,7 +23,7 @@ from conette.info import get_install_info
 from conette.tokenization.aac_tokenizer import AACTokenizer
 from conette.utils.csum import csum_module
 from conette.utils.custom_logger import CustomTensorboardLogger
-from conette.utils.misc import get_current_git_hash, save_conda_env, save_micromamba_env
+from conette.utils.misc import get_githash_full, save_conda_env, save_micromamba_env
 
 pylog = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ class StatsSaver(Callback):
             raise ValueError(f"Invalid argument {on_end=}.")
 
         if git_hash is None:
-            git_hash = get_current_git_hash(default=None)
+            git_hash = get_githash_full(default=None)
 
         super().__init__()
         self._subrun_dir = subrun_path
@@ -171,7 +171,7 @@ def save_to_dir(
         other_metrics = add_metrics
 
     if git_hash is None:
-        git_hash = get_current_git_hash(default=None)
+        git_hash = get_githash_full(default=None)
 
     params |= {
         "git_hash": git_hash,

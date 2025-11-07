@@ -32,6 +32,7 @@ from aac_metrics.download import download_metrics as download_aac_metrics
 from hydra.core.hydra_config import HydraConfig
 from omegaconf import DictConfig
 from pythonwrench.collections import unzip
+from pythonwrench.disk_cache import disk_cache_call
 from torch import nn
 from torchaudio.backend.common import AudioMetaData
 from torchoutil.nn.functional import count_parameters
@@ -50,7 +51,6 @@ from conette.nn.ckpt import CNEXT_REGISTRY, PANN_REGISTRY
 from conette.train import setup_run, teardown_run
 from conette.transforms.utils import PreSaveTransform
 from conette.utils.csum import csum_any
-from conette.utils.disk_cache import disk_cache
 from conette.utils.hydra import get_subrun_path, setup_resolvers
 from conette.utils.spacy import load_or_download_spacy_model
 
@@ -283,7 +283,7 @@ def filter_dsets(
             if cfg.verbose >= 2:
                 pylog.debug(f"Loading durations from {len(ds)} audio files...")
 
-            meta_lst = disk_cache(
+            meta_lst = disk_cache_call(
                 load_audio_metadata,
                 fpaths,
                 cache_path=cfg.path.cache,

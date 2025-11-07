@@ -17,6 +17,8 @@ from zipfile import ZipFile
 import torch
 import tqdm
 from lightning_fabric.utilities.seed import seed_everything
+from pythonwrench.functools import function_alias
+from torchwrench.core.version import get_githash_full
 
 pylog = logging.getLogger(__name__)
 T = TypeVar("T")
@@ -84,24 +86,8 @@ def save_micromamba_env(
         return False
 
 
-def get_current_git_hash(
-    cwd: str = osp.dirname(__file__),
-    default: T = "UNKNOWN",
-) -> Union[str, T]:
-    """
-    Return the current git hash in the current directory.
-
-    :returns: The git hash. If an error occurs, returns 'UNKNOWN'.
-    """
-    try:
-        git_hash = subprocess.check_output("git describe --always".split(" "), cwd=cwd)
-        git_hash = git_hash.decode("UTF-8").replace("\n", "")
-        return git_hash
-    except (CalledProcessError, PermissionError) as err:
-        pylog.warning(
-            f"Cannot get current git hash from {cwd=}. (error message: '{err}')"
-        )
-        return default
+@function_alias(get_githash_full)
+def get_current_git_hash(*args, **kwargs): ...
 
 
 def get_tags_version(cwd: str = osp.dirname(__file__)) -> str:

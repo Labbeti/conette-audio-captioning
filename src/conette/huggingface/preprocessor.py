@@ -7,12 +7,12 @@ from typing import Any, Iterable, Union
 import torch
 import torchaudio
 from pythonwrench.collections import all_eq, unzip
+from pythonwrench.typing import isinstance_generic
 from torch import Size, Tensor, nn
 from torchaudio.functional import resample
 
 from conette.nn.encoders.convnext import convnext_tiny
 from conette.nn.functional.pad import pad_and_stack
-from conette.utils.type_checks import is_iter_tensor, is_iterable_str, is_list_tensor
 
 pylog = logging.getLogger(__name__)
 
@@ -85,7 +85,7 @@ class CoNeTTEPreprocessor(nn.Module):
         x_shapes: Union[Tensor, None, list[Size]] = None,
     ) -> tuple[Tensor, Tensor]:
         # LOAD
-        if is_iterable_str(x, accept_str=True):
+        if isinstance_generic(x, Iterable[str]):
             if isinstance(x, str):
                 x = [x]
             gen = (self._load(xi) for xi in x)
@@ -112,7 +112,9 @@ class CoNeTTEPreprocessor(nn.Module):
             else:
                 sr = list(sr)
 
-        assert is_list_tensor(x) or isinstance(x, Tensor), f"{type(x)=}"
+        assert isinstance_generic(x, list[Tensor]) or isinstance(x, Tensor), (
+            f"{type(x)=}"
+        )
 
         if len(sr) == 1 and len(x) != len(sr):
             sr = sr * len(x)
@@ -121,12 +123,12 @@ class CoNeTTEPreprocessor(nn.Module):
             pylog.debug(f"Found {sr=}.")
 
         assert len(x) == len(sr) and len(x) > 0
-        assert is_iter_tensor(x) or isinstance(x, Tensor)
+        assert isinstance_generic(x, Iterable[Tensor]) or isinstance(x, Tensor)
 
         # MOVE TO DEVICE
         if isinstance(x, Tensor):
             x = x.to(device=self.device)
-        elif is_iter_tensor(x):
+        elif isinstance_generic(x, Iterable[Tensor]):
             x = [xi.to(device=self.device) for xi in x]
 
         # RESAMPLE + MEAN

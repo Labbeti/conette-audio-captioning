@@ -15,8 +15,7 @@ from hydra.types import RunMode
 from omegaconf import DictConfig, OmegaConf
 from omegaconf.errors import ConfigAttributeError
 from pythonwrench.collections import flat_dict_of_dict
-
-from conette.utils.yaml_utils import load_yaml
+from torchwrench.extras.yaml import load_yaml
 
 pylog = logging.getLogger(__name__)
 
