@@ -8,3 +8,4 @@ logs/
 data/
 data_tmp*/
 .micromamba/
+.vscode/
