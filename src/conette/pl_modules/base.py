@@ -176,12 +176,13 @@ class AACLightningModule(LightningModule):
         if len(self.tokenizers) == 0:
             raise ValueError("This module does not have any tokenizers.")
         elif len(self.tokenizers) > 1:
-            warn_once(
+            msg = (
                 f"You are using property '.tokenizer' but this module has {len(self.tokenizers)} tokenizers."
                 f"Please use method .get_tokenizer(.) to get a specific tokenizer by index or name."
-                f"This property will return the first tokenizer by default.",
-                pylog,
+                f"This property will return the first tokenizer by default."
             )
+            warn_once(msg)
+
         tokenizer = next(iter(self.tokenizers.values()))
         return tokenizer  # type: ignore
 
@@ -191,7 +192,7 @@ class AACLightningModule(LightningModule):
         name: str,
         value: _METRIC_COLLECTION,
         prog_bar: bool = False,
-        logger: bool = True,
+        logger: Optional[bool] = True,
         on_step: Optional[bool] = False,  # from None
         on_epoch: Optional[bool] = True,  # from None
         reduce_fx: Union[str, Callable] = "mean",
@@ -224,7 +225,7 @@ class AACLightningModule(LightningModule):
         self,
         dictionary: Mapping[str, _METRIC_COLLECTION],
         prog_bar: bool = False,
-        logger: bool = True,
+        logger: Optional[bool] = True,
         on_step: Optional[bool] = False,  # from None
         on_epoch: Optional[bool] = True,  # from None
         reduce_fx: Union[str, Callable] = "mean",

@@ -185,9 +185,8 @@ class AACEvaluator(Callback):
         dataloader_idx: int,
     ) -> None:
         if not isinstance(outputs, dict):
-            warn_once(
-                f"Lightning module has returned {outputs} during test epoch. (expected dict)"
-            )
+            msg = f"Lightning module has returned {outputs} during test epoch. (expected dict)"
+            warn_once(msg)
             return None
 
         outputs = move_to_rec(outputs, device=torch.device("cpu"))
