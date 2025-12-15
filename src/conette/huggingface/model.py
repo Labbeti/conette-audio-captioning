@@ -10,6 +10,7 @@ from torch import Size, Tensor
 from torchwrench.nn.functional.make import as_device
 from torchwrench.nn.functional.multilabel import probs_to_multinames
 from transformers import PreTrainedModel
+from typing_extensions import NotRequired
 
 from conette.huggingface.config import CoNeTTEConfig
 from conette.huggingface.preprocessor import CoNeTTEPreprocessor
