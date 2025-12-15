@@ -21,16 +21,17 @@ import torchaudio
 import tqdm
 from pythonwrench.collections import filter_iterable
 from pythonwrench.disk_cache import disk_cache_call
+from pythonwrench.typing import SupportsGetitemLen
 from pythonwrench.warnings import warn_once
 from torch import Tensor
 from torch.utils.data.dataset import Dataset
 from torchaudio.backend.common import AudioMetaData
-from torchoutil.utils.data.dataset import SizedDatasetLike
 
 from conette.datasets.typing import AACDatasetLike
 
 pylog = logging.getLogger(__name__)
 T = TypeVar("T")
+U = TypeVar("U")
 
 
 def _process_idx(
@@ -304,7 +305,7 @@ class CacheWrap(Wrapper):
 
 
 class DatasetCycle(Wrapper):
-    def __init__(self, dataset: SizedDatasetLike, target_size: int) -> None:
+    def __init__(self, dataset: SupportsGetitemLen, target_size: int) -> None:
         assert isinstance(dataset, Sized)
         assert len(dataset) <= target_size
         super().__init__(dataset)
@@ -367,8 +368,8 @@ class WrapperSampler(Wrapper[AACDatasetLike]):
         return self.size
 
 
-class Duplicate(Wrapper[SizedDatasetLike]):
-    def __init__(self, source: SizedDatasetLike, maxsize: int) -> None:
+class Duplicate(Wrapper[SupportsGetitemLen]):
+    def __init__(self, source: SupportsGetitemLen, maxsize: int) -> None:
         super().__init__(source)
         self.maxsize = maxsize
 
@@ -477,7 +478,7 @@ class DsetTestSample(Dataset):
 class ZipDataset(Dataset):
     def __init__(
         self,
-        *datasets: SizedDatasetLike,
+        *datasets: SupportsGetitemLen,
         transform: Optional[Callable] = None,
         mode: str = "equal",
     ) -> None:
@@ -817,10 +818,10 @@ class AACReplaceColumnWrapper(Wrapper[AACDatasetLike]):
         return self.at(idx, column)
 
 
-class PostSelectColumnsWrapper(Wrapper[SizedDatasetLike]):
+class PostSelectColumnsWrapper(Wrapper[SupportsGetitemLen]):
     def __init__(
         self,
-        source: SizedDatasetLike,
+        source: SupportsGetitemLen,
         column_names: Iterable[str],
         /,
         include: Optional[Iterable[str]] = None,
@@ -950,3 +951,33 @@ class DummyAACDataset(AACDatasetLike):
 
     def __len__(self) -> int:
         return self.size
+
+
+class TransformWrapper(Generic[T, U], Dataset[Union[T, U]]):
+    def __init__(
+        self,
+        dataset: SupportsGetitemLen[T],
+        transform: Optional[Callable[[T], U]],
+    ) -> None:
+        super().__init__()
+        self._dataset = dataset
+        self._transform = transform
+
+    def __getitem__(self, index) -> Union[T, U]:
+        item = self._dataset[index]
+        if self._transform is not None:
+            item = self._transform(item)
+        return item
+
+    def __len__(self) -> int:
+        if isinstance(self._dataset, Sized):
+            return len(self._dataset)
+        else:
+            raise TypeError("Wrapped dataset is not Sized.")
+
+    def unwrap(self) -> SupportsGetitemLen[T]:
+        return self._dataset
+
+    @property
+    def transform(self) -> Optional[Callable[[T], U]]:
+        return self._transform

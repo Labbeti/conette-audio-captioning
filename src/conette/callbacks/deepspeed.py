@@ -8,7 +8,7 @@ from deepspeed.profiling.flops_profiler import get_model_profile
 from pytorch_lightning import LightningModule
 from pytorch_lightning.callbacks.callback import Callback
 from torch import Tensor
-from torchoutil.nn.functional.others import move_to_rec
+from torchwrench.nn.functional.transform import move_to_rec
 
 from conette.utils.csum import csum_any
 

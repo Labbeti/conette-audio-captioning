@@ -35,9 +35,8 @@ from pythonwrench.collections import unzip
 from pythonwrench.disk_cache import disk_cache_call
 from torch import nn
 from torchaudio.backend.common import AudioMetaData
-from torchoutil.nn.functional import count_parameters
-from torchoutil.utils.data.dataset import TransformWrapper
-from torchoutil.utils.hdf import HDFDataset, pack_to_hdf
+from torchwrench.extras.hdf import HDFDataset, pack_to_hdf
+from torchwrench.nn.functional.others import count_parameters
 
 from conette.callbacks.stats_saver import save_to_dir
 from conette.datamodules.common import get_hdf_fpaths
@@ -45,6 +44,7 @@ from conette.datasets.typing import AACDatasetLike
 from conette.datasets.utils import (
     AACSelectColumnsWrapper,
     AACSubset,
+    TransformWrapper,
     load_audio_metadata,
 )
 from conette.nn.ckpt import CNEXT_REGISTRY, PANN_REGISTRY

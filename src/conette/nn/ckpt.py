@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from torchoutil.hub.registry import RegistryHub
+from torchwrench.hub.registry import RegistryHub
 
 # Zenodo link : https://zenodo.org/record/8020843
 # Hash type : md5

@@ -6,11 +6,10 @@ import os.path as osp
 from typing import Iterable, Optional, Union
 
 import tqdm
+from pythonwrench.os import get_num_cpus_available
 from torch import nn
 from torch.utils.data.dataloader import DataLoader
-from torchoutil.utils.data.dataloader import get_auto_num_cpus
-from torchoutil.utils.data.dataset import TransformWrapper
-from torchoutil.utils.hdf import HDFDataset
+from torchwrench.extras.hdf import HDFDataset
 from torchwrench.utils.data.collate import AdvancedCollateDict
 
 from conette.datamodules.aac_dm import AACDataModule
@@ -19,6 +18,7 @@ from conette.datasets.utils import (
     AACConcat,
     AACDuplicate,
     AACSelectColumnsWrapper,
+    TransformWrapper,
     WrapperSampler,
 )
 from conette.tokenization.aac_tokenizer import AACTokenizer
@@ -103,7 +103,7 @@ class HDFDataModule(AACDataModule):
         root = osp.expanduser(osp.expandvars(root))
 
         if n_workers is None:
-            n_workers = get_auto_num_cpus()
+            n_workers = get_num_cpus_available()
             if verbose >= 1:
                 pylog.info(f"Found {n_workers} CPU that will be used for DataLoaders.")
 
@@ -438,7 +438,9 @@ class HDFDataModule(AACDataModule):
 
         dsets = {
             fname: AACSelectColumnsWrapper(
-                dset, include=self.hp.test_cols, exclude=("captions",)
+                dset,
+                include=self.hp.test_cols,
+                exclude=("captions",),
             )
             for fname, dset in dsets.items()
         }

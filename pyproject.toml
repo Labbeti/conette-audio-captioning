@@ -33,7 +33,6 @@ dependencies = [
     "torch==1.13.1",
     "torchaudio==0.13.1",
     "torchlibrosa==0.1.0",
-    "torchoutil[extras]~=0.3.0",
     "torchwrench>=0.7.6,<0.8.0",
     "transformers==4.30.2",
 ]

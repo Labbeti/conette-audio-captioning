@@ -4,7 +4,7 @@
 from typing import Iterable, Optional, Union
 
 from torch import Tensor, nn
-from torchoutil.nn.functional.mask import masked_mean
+from torchwrench.nn.functional.mask import masked_mean
 
 
 class CrossEntropyLossMean(nn.CrossEntropyLoss):
@@ -30,7 +30,7 @@ class CrossEntropyLossMean(nn.CrossEntropyLoss):
     def forward(self, input: Tensor, target: Tensor) -> Tensor:
         losses = super().forward(input, target)
         non_pad_mask = target != self.ignore_index
-        losses = masked_mean(losses, non_pad_mask, self.dim)
+        losses = masked_mean(losses, non_pad_mask, dim=self.dim)
         return losses
 
     def extra_repr(self) -> str:

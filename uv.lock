@@ -592,7 +592,6 @@ dependencies = [
     { name = "torch" },
     { name = "torchaudio" },
     { name = "torchlibrosa" },
-    { name = "torchoutil", extra = ["extras"] },
     { name = "torchwrench" },
     { name = "transformers" },
 ]
@@ -1106,7 +1105,6 @@ requires-dist = [
     { name = "torchlibrosa", marker = "extra == 'train'", specifier = "==0.1.0" },
     { name = "torchmetrics", marker = "extra == 'train'", specifier = "==1.2.1" },
     { name = "torchopenl3", marker = "extra == 'train'", specifier = "==1.0.1" },
-    { name = "torchoutil", extras = ["extras"], specifier = "~=0.3.0" },
     { name = "torchtext", marker = "extra == 'train'", specifier = "==0.14.1" },
     { name = "torchvision", marker = "extra == 'train'", specifier = "==0.14.1" },
     { name = "torchwrench", specifier = ">=0.7.6,<0.8.0" },
@@ -4235,26 +4233,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/41/c0/e3ac80fd082801636b23af390dd804aef63439359264b21f8cea4078e3b4/torchopenl3-1.0.1.tar.gz", hash = "sha256:2037e7f3f2ec796d5f458c55b04bd68301d9ecb8768152778676617931d07dda", size = 18343, upload_time = "2022-08-26T13:50:42.5Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ec/b3/0401265683d0bec328cd2448ce7fdd9c68faa278ea05906988ffd9803816/torchopenl3-1.0.1-py2.py3-none-any.whl", hash = "sha256:65fcb335ce35499887d6d163c5d8b1448d25c6118535ef0c10d7b7d535c21e46", size = 18408, upload_time = "2022-08-26T13:50:40.897Z" },
-]
-
-[[package]]
-name = "torchoutil"
-version = "0.3.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "torch" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/c4/cb/cfa5faf5f7464909673c25289cb82a3ab43dcbc6ed6d8caec3ef743faa22/torchoutil-0.3.1.tar.gz", hash = "sha256:dc788d9044a64e3f16e1e513fcffb83849e81f853ed54c81f5a9411a2a200bda", size = 56132, upload_time = "2024-04-25T15:01:35.857Z" }
-
-[package.optional-dependencies]
-extras = [
-    { name = "h5py" },
-    { name = "numpy" },
-    { name = "omegaconf" },
-    { name = "pyyaml" },
-    { name = "tensorboard" },
-    { name = "tqdm" },
 ]
 
 [[package]]

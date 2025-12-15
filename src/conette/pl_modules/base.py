@@ -12,7 +12,7 @@ from pytorch_lightning import LightningDataModule, LightningModule, Trainer
 from pytorch_lightning.utilities.types import _METRIC_COLLECTION
 from torch import Tensor, nn
 from torch.nn.modules.module import _IncompatibleKeys
-from torchoutil.nn.functional import count_parameters
+from torchwrench.nn.functional.others import count_parameters
 
 from conette.pl_modules.common import (
     ON_EPOCH_KWARGS,

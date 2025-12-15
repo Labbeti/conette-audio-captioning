@@ -4,9 +4,8 @@
 from typing import Iterable
 
 import torch
-
 from torch import Tensor
-from torchoutil.nn.functional.pad import pad_dim
+from torchwrench.nn.functional.padding import pad_dim
 
 
 def pad_and_stack(x: Iterable[Tensor], dim: int = -1) -> Tensor:

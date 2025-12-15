@@ -13,14 +13,14 @@ from nnAudio.features import Gammatonegram
 from torch import Tensor, nn
 from torchaudio.transforms import Resample
 from torchlibrosa.stft import LogmelFilterBank, Spectrogram
-from torchoutil.nn.modules.tensor import Mean, Permute, Squeeze, TensorTo, Unsqueeze
+from torchwrench.nn.functional.make import as_device
+from torchwrench.nn.modules import Mean, Permute, Squeeze, TensorTo, Unsqueeze
 
 from conette.nn.ckpt import CNEXT_REGISTRY, PANN_REGISTRY
 from conette.nn.encoders.cnn10 import Cnn10
 from conette.nn.encoders.cnn14 import Cnn14
 from conette.nn.encoders.cnn14_decisionlevel_att import Cnn14_DecisionLevelAtt
 from conette.nn.encoders.convnext import convnext_tiny
-from conette.nn.functional.get import get_device
 from conette.nn.modules.misc import Lambda, Standardize
 from conette.transforms.audio.spec_aug import SpecAugment
 
@@ -76,7 +76,7 @@ def get_resample_mean_cnn10(
         pylog.error(error_message)
         raise ValueError(error_message)
 
-    device = get_device(device)
+    device = as_device(device)
 
     encoder = Cnn10(
         sr=tgt_sr,
@@ -133,7 +133,7 @@ def get_resample_mean_cnn14_att(
         pylog.error(error_message)
         raise ValueError(error_message)
 
-    device = get_device(device)
+    device = as_device(device)
 
     encoder = Cnn14_DecisionLevelAtt(
         sr=tgt_sr,
@@ -190,7 +190,7 @@ def get_resample_mean_cnn14(
         pylog.error(error_message)
         raise ValueError(error_message)
 
-    device = get_device(device)
+    device = as_device(device)
     encoder = Cnn14(
         sample_rate=tgt_sr,
         window_size=window_size,
@@ -257,7 +257,7 @@ def get_resample_mean_convnext(
             f"Invalid argument type {type(pretrain_path)=}. (expected str)"
         )
 
-    device = get_device(device)
+    device = as_device(device)
     encoder = convnext_tiny(
         pretrained=False,
         strict=False,
@@ -333,7 +333,7 @@ def get_resample_mean_spec(
         pylog.error(error_message)
         raise ValueError(error_message)
 
-    device = get_device(device)
+    device = as_device(device)
 
     to_spectro = Spectrogram(
         n_fft=window_size,
@@ -454,7 +454,7 @@ def get_resample_spec_mean(
         pylog.error(error_message)
         raise ValueError(error_message)
 
-    device = get_device(device)
+    device = as_device(device)
 
     to_spectro = Spectrogram(
         n_fft=window_size,

@@ -16,7 +16,7 @@ from pytorch_lightning.callbacks.callback import Callback
 from pytorch_lightning.callbacks.checkpoint import Checkpoint
 from pytorch_lightning.core.saving import save_hparams_to_yaml
 from torch import Tensor
-from torchoutil.nn.functional import count_parameters
+from torchwrench.nn.functional import count_parameters
 
 from conette.callbacks.time import TimeTrackerCallback
 from conette.info import get_install_info

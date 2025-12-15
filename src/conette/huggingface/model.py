@@ -7,8 +7,8 @@ from typing import Any, Iterable, Literal, Optional, TypedDict, Union, overload
 
 import torch
 from torch import Size, Tensor
-from torchoutil.nn.functional.get import get_device
-from torchoutil.nn.functional.multilabel import probs_to_names
+from torchwrench.nn.functional.make import as_device
+from torchwrench.nn.functional.multilabel import probs_to_multinames
 from transformers import PreTrainedModel
 
 from conette.huggingface.config import CoNeTTEConfig
@@ -99,7 +99,7 @@ class CoNeTTEModel(PreTrainedModel):
 
         self._register_load_state_dict_pre_hook(self._pre_hook_load_state_dict)
 
-        device = get_device(device)
+        device = as_device(device)
         self.to(device=device)  # type: ignore
 
         if inference:
@@ -241,7 +241,7 @@ class CoNeTTEModel(PreTrainedModel):
         if preprocess:
             batch = self.preprocessor(x, sr, x_shapes)
             clip_probs = batch.pop("clip_probs")
-            tags = probs_to_names(clip_probs, threshold, self.audioset_idx_to_name)
+            tags = probs_to_multinames(clip_probs, threshold, self.audioset_idx_to_name)
         else:
             assert isinstance(x, Tensor) and isinstance(x_shapes, Tensor)
             batch: dict[str, Any] = {

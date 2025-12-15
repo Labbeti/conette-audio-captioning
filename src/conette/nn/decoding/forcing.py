@@ -4,7 +4,10 @@
 from typing import Optional
 
 from torch import Tensor
-from torchoutil.nn.functional import generate_square_subsequent_mask, tensor_to_pad_mask
+from torchwrench.nn.functional.mask import (
+    generate_square_subsequent_mask,
+    tensor_to_pad_mask,
+)
 
 from conette.nn.decoding.common import AACDecoder
 

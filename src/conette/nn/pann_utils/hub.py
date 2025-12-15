@@ -5,7 +5,7 @@ from typing import Any, Optional, Union
 
 import torch
 from torch import nn
-from torchoutil.nn.functional import get_device
+from torchwrench.nn.functional.make import as_device
 
 from conette.nn.ckpt import PANN_REGISTRY
 from conette.nn.pann_utils import models
@@ -39,7 +39,7 @@ def build_pann_model(
     if model_kwargs is None:
         model_kwargs = {}
 
-    device = get_device(device)
+    device = as_device(device)
 
     classpath = f"{models.__name__}.{model_name}"
     classtype = eval(classpath)

@@ -6,7 +6,7 @@ from typing import Callable, Optional, Union
 import torch
 from torch import Tensor, nn
 from torch.nn import functional as F
-from torchoutil.nn.functional.get import get_device
+from torchwrench.nn.functional.make import as_device
 
 ACTIVATIONS = ("relu", "gelu")
 
@@ -33,7 +33,7 @@ def get_activation_fn(name: str) -> Callable[[Tensor], Tensor]:
 def get_device_name(
     device_name: Union[str, torch.device, None] = "cuda_if_available",
 ) -> Optional[str]:
-    device_name = get_device(device_name)
+    device_name = as_device(device_name)
     if isinstance(device_name, torch.device):
         device_name = f"{device_name.type}:{device_name.index}"
     return device_name

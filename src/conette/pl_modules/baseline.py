@@ -6,7 +6,7 @@ from typing import Any, Optional
 
 import torch
 from torch import Tensor, nn
-from torchoutil.nn.functional import (
+from torchwrench.nn.functional import (
     lengths_to_pad_mask,
     randperm_diff,
     tensor_to_pad_mask,

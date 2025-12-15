@@ -8,7 +8,6 @@ from pathlib import Path
 import pythonwrench
 import pytorch_lightning
 import torch
-import torchoutil
 import torchwrench
 import yaml
 
@@ -30,7 +29,6 @@ def get_install_info() -> dict[str, str]:
         "architecture": platform.architecture()[0],
         "torch": str(torch.__version__),
         "lightning": pytorch_lightning.__version__,  # type: ignore
-        "torchoutil": torchoutil.__version__,
         "pythonwrench": pythonwrench.__version__,
         "torchwrench": torchwrench.__version__,
         "package_path": get_package_repository_path(),

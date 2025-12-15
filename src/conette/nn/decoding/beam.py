@@ -3,21 +3,18 @@
 
 import logging
 import math
-
 from typing import Any, Optional, Union
 
 import torch
-
-from torch import nn, Tensor
-from torchoutil.nn.functional import (
-    indices_to_multihot,
+from torch import Tensor, nn
+from torchwrench.nn.functional import (
     generate_square_subsequent_mask,
-    tensor_to_lengths,
+    indices_to_multihot,
     repeat_interleave_nd,
+    tensor_to_lengths,
 )
 
 from conette.nn.decoding.common import AACDecoder
-
 
 pylog = logging.getLogger(__name__)
 

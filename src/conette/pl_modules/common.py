@@ -12,9 +12,10 @@ from nltk.corpus import stopwords
 from pytorch_lightning import LightningModule
 from torch import Tensor, nn
 from torch.optim import Optimizer
-from torchoutil.nn.modules.tensor import Transpose
+from torchwrench.nn.functional.make import as_device
+from torchwrench.nn.modules.tensor import Transpose
 
-from conette.nn.functional.get import get_activation_module, get_device
+from conette.nn.functional.get import get_activation_module
 from conette.optim.optimizers import get_optimizer
 from conette.optim.schedulers import get_scheduler_list
 from conette.tokenization.aac_tokenizer import AACTokenizer
@@ -226,7 +227,7 @@ def get_forbid_rep_mask(
     verbose: int = 0,
     lang: str = "english",
 ) -> Optional[Tensor]:
-    device = get_device(device)
+    device = as_device(device)
 
     if forbid_rep_mode == "none":
         forbid_mask = None
