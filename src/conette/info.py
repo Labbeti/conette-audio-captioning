@@ -10,6 +10,7 @@ import pytorch_lightning
 import torch
 import torchwrench
 import yaml
+from pythonwrench.json import dumps_json
 
 import conette
 from conette import get_sample_path
@@ -39,7 +40,7 @@ def get_install_info() -> dict[str, str]:
 def print_install_info() -> None:
     """Show main packages versions and paths."""
     install_info = get_install_info()
-    print(yaml.dump(install_info, sort_keys=False))
+    print(dumps_json(install_info, sort_keys=False))
 
 
 if __name__ == "__main__":

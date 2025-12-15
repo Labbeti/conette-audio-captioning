@@ -4,17 +4,15 @@
 from typing import Any, Iterable, Optional, Union
 
 import torch
-
+from aac_metrics.classes.cider_d import CIDErD
+from aac_metrics.classes.fense import FENSE
 from pytorch_lightning import LightningModule
 from pytorch_lightning.callbacks.callback import Callback
 from torch import nn
-
-from aac_metrics.classes.cider_d import CIDErD
-from aac_metrics.classes.fense import FENSE
+from torchwrench.nn.functional.make import as_device
 
 from conette.metrics.classes.diversity import Diversity
 from conette.metrics.classes.text_stats import TextStats
-from conette.nn.functional.get import get_device
 
 
 class AACValidator(Callback):
@@ -31,8 +29,8 @@ class AACValidator(Callback):
         else:
             metrics_keys = list(metrics_keys)
 
-        computation_device = get_device(computation_device)
-        other_device = get_device(other_device)
+        computation_device = as_device(computation_device)
+        other_device = as_device(other_device)
 
         if isinstance(monitors, str):
             monitors = [monitors]
@@ -65,7 +63,7 @@ class AACValidator(Callback):
         self,
         trainer,
         pl_module,
-        outputs: Optional[dict[str, Any]],
+        outputs: Any,
         batch,
         batch_idx,
         unused=0,
@@ -76,7 +74,7 @@ class AACValidator(Callback):
         self,
         trainer,
         pl_module,
-        outputs: Optional[dict[str, Any]],
+        outputs: Any,
         batch,
         batch_idx,
         dataloader_idx,
@@ -107,7 +105,7 @@ class AACValidator(Callback):
         if computation_device is None:
             computation_device = self._computation_device
         else:
-            self._computation_device = get_device(computation_device)
+            self._computation_device = as_device(computation_device)
 
         if (
             any("fense" in monitor for monitor in self._monitors)

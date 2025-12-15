@@ -3,6 +3,8 @@
 
 from typing import Any, Callable, Protocol, runtime_checkable
 
+from pythonwrench.typing import SupportsGetitemIterLen
+
 
 @runtime_checkable
 class AACDatasetLike(Protocol):
@@ -19,7 +21,7 @@ class AACDatasetLike(Protocol):
     __getitem__: Callable[..., Any]
 
     @property
-    def column_names(self) -> list[str]:
+    def column_names(self) -> SupportsGetitemIterLen[str]:
         raise NotImplementedError("Protocal abstract method.")
 
     def __len__(self) -> int:

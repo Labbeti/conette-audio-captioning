@@ -144,7 +144,7 @@ def generate(
             # logits_ij shape: (beam_size_ij, vocab_size)
 
             if use_forbid_rep:
-                prev_preds = preds[mask_ij, : i + 1]
+                prev_preds = preds[mask_ij, : i + 1].tolist()
                 # prev_preds shape: (beam_size_ij, i+1)
                 prev_preds_mult_hot = indices_to_multihot(
                     prev_preds, vocab_size, **bkwds

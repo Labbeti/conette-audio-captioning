@@ -14,9 +14,9 @@ from lightning_fabric.utilities.seed import seed_everything
 from omegaconf import DictConfig, OmegaConf
 from pythonwrench.argparse import str_to_optional_int, str_to_optional_str
 from pythonwrench.logging import setup_logging_verbose
+from torchwrench.nn.functional.make import as_device
 
 from conette.huggingface.model import CoNeTTEConfig, CoNeTTEModel
-from conette.nn.functional.get import get_device
 from conette.pl_modules.baseline import BaselinePLM
 from conette.pl_modules.conette import CoNeTTEPLM
 from conette.utils.csum import csum_module
@@ -169,7 +169,7 @@ def _load_model_from_path(
     state_dict = ckpt_data["state_dict"]
     model.load_state_dict(state_dict, strict=True)
 
-    device = get_device(device)
+    device = as_device(device)
     config = CoNeTTEConfig(**pl_cfg)
     hf_model = CoNeTTEModel(config, device=device, model_override=model)
 

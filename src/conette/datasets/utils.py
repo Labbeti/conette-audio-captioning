@@ -19,7 +19,7 @@ from typing import (
 import torch
 import torchaudio
 import tqdm
-from pythonwrench.collections import filter_iterable
+from pythonwrench.collections import filter_iterable, intersect_lists
 from pythonwrench.disk_cache import disk_cache_call
 from pythonwrench.typing import SupportsGetitemLen
 from pythonwrench.warnings import warn_once
@@ -132,7 +132,7 @@ class AACSubset(Wrapper[AACDatasetLike]):
     # Public properties
     @property
     def column_names(self) -> list[str]:
-        return self._source.column_names
+        return list(self._source.column_names)
 
     @property
     def indexes(self) -> list[int]:
@@ -344,7 +344,7 @@ class WrapperSampler(Wrapper[AACDatasetLike]):
 
     @property
     def column_names(self) -> list[str]:
-        return self._source.column_names
+        return list(self._source.column_names)
 
     def at(self, idx: Any, column: Any) -> Any:
         assert isinstance(idx, int), (
@@ -388,7 +388,7 @@ class AACDuplicate(Wrapper[AACDatasetLike]):
 
     @property
     def column_names(self) -> list[str]:
-        return self._source.column_names
+        return list(self._source.column_names)
 
     def at(self, idx: Union[int, Iterable[int], None], column: Any = None) -> Any:
         idx = self._map_index(idx)
@@ -652,17 +652,6 @@ def load_audio_metadata(
     return infos
 
 
-def intersect_lists(lst_of_lst: list[list[T]]) -> list[T]:
-    if len(lst_of_lst) <= 0:
-        return []
-    out = lst_of_lst[0]
-    for lst_i in lst_of_lst[1:]:
-        out = [name for name in out if name in lst_i]
-        if len(out) == 0:
-            break
-    return out
-
-
 class AACSelectColumnsWrapper(Wrapper[AACDatasetLike]):
     """Wrapper to filter columns in AACDatasetLike.
 
@@ -774,7 +763,7 @@ class AACReplaceColumnWrapper(Wrapper[AACDatasetLike]):
 
     @property
     def column_names(self) -> list[str]:
-        return self.source.column_names
+        return list(self.source.column_names)
 
     def at(
         self,
@@ -854,7 +843,7 @@ class AACTransformWrapper(Wrapper[AACDatasetLike]):
 
     @property
     def column_names(self) -> list[str]:
-        return self._source.column_names
+        return list(self._source.column_names)
 
     def at(self, idx: Any, column: Any) -> Any:
         if idx is None:

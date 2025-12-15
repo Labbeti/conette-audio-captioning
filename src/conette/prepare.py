@@ -35,11 +35,12 @@ from pythonwrench.collections import unzip
 from pythonwrench.disk_cache import disk_cache_call
 from torch import nn
 from torchaudio.backend.common import AudioMetaData
-from torchwrench.extras.hdf import HDFDataset, pack_to_hdf
+from torchwrench.extras.hdf import pack_to_hdf
 from torchwrench.nn.functional.others import count_parameters
 
 from conette.callbacks.stats_saver import save_to_dir
 from conette.datamodules.common import get_hdf_fpaths
+from conette.datasets.hdf import HDFAACDataset
 from conette.datasets.typing import AACDatasetLike
 from conette.datasets.utils import (
     AACSelectColumnsWrapper,
@@ -207,7 +208,7 @@ def download_dataset(cfg: DictConfig) -> dict[str, AACDatasetLike]:
         )
         dsets = {}
         for subset, hdf_fpath in hdf_fpaths.items():
-            ds = HDFDataset(hdf_fpath)
+            ds = HDFAACDataset(hdf_fpath)
             ds = AACSelectColumnsWrapper(ds, include=cfg.data.include_columns)
             dsets[subset] = ds
 
@@ -365,7 +366,7 @@ def pack_dsets_to_hdf(cfg: DictConfig, dsets: dict[str, Any]) -> None:
         src_sr = cfg.audio_t.src_sr
         for name, dset in dsets.items():
             if (
-                isinstance(dset, HDFDataset)
+                isinstance(dset, HDFAACDataset)
                 or not isinstance(dset, AACDatasetLike)
                 or "fpath" not in dset.column_names
                 or len(dset) == 0
@@ -448,8 +449,8 @@ def pack_dsets_to_hdf(cfg: DictConfig, dsets: dict[str, Any]) -> None:
                 dset,
                 hdf_fpath,
                 pre_save_transform,  # type: ignore
-                overwrite=cfg.overwrite_hdf,
-                metadata=str(metadata),
+                exists="overwrite" if cfg.overwrite_hdf else "skip",
+                user_attrs=str(metadata),
                 verbose=cfg.verbose,
                 batch_size=cfg.data.bsize,
                 num_workers=num_workers,
@@ -460,7 +461,7 @@ def pack_dsets_to_hdf(cfg: DictConfig, dsets: dict[str, Any]) -> None:
                     f"Dataset {dataname}_{subset} is already packed to hdf in {hdf_fpath=}."
                 )
 
-            hdf_dset = HDFDataset(hdf_fpath)
+            hdf_dset = HDFAACDataset(hdf_fpath)
 
         if cfg.debug:
             # Sanity check

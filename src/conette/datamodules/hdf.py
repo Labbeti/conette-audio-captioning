@@ -9,11 +9,11 @@ import tqdm
 from pythonwrench.os import get_num_cpus_available
 from torch import nn
 from torch.utils.data.dataloader import DataLoader
-from torchwrench.extras.hdf import HDFDataset
 from torchwrench.utils.data.collate import AdvancedCollateDict
 
 from conette.datamodules.aac_dm import AACDataModule
 from conette.datamodules.common import OnlineEncodeCaptionsTransform
+from conette.datasets.hdf import HDFAACDataset
 from conette.datasets.utils import (
     AACConcat,
     AACDuplicate,
@@ -192,7 +192,7 @@ class HDFDataModule(AACDataModule):
             ("audio",) if self.hp.audio_padding in ("crop", "longest") else ()
         )
         train_dsets_lst = [
-            HDFDataset(
+            HDFAACDataset(
                 osp.join(self.hp.root, "HDF", fname),
                 keep_padding=keep_padding,
                 return_added_columns=True,
@@ -200,7 +200,7 @@ class HDFDataModule(AACDataModule):
             for fname in self.hp.train_hdfs
         ]
         val_dsets_lst = [
-            HDFDataset(
+            HDFAACDataset(
                 osp.join(self.hp.root, "HDF", fname),
                 keep_padding=keep_padding,
                 return_added_columns=True,
@@ -376,7 +376,7 @@ class HDFDataModule(AACDataModule):
             ("audio",) if self.hp.audio_padding in ("crop", "longest") else ()
         )
         dsets = {
-            fname: HDFDataset(
+            fname: HDFAACDataset(
                 osp.join(self.hp.root, "HDF", fname),
                 keep_padding=keep_padding,
                 return_added_columns=True,
@@ -420,7 +420,7 @@ class HDFDataModule(AACDataModule):
             ("audio",) if self.hp.audio_padding in ("crop", "longest") else ()
         )
         dsets = {
-            fname: HDFDataset(
+            fname: HDFAACDataset(
                 osp.join(self.hp.root, "HDF", fname),
                 keep_padding=keep_padding,
                 return_added_columns=True,
