@@ -52,7 +52,9 @@ class AACLightningModule(LightningModule):
             tokenizers = nn.ModuleDict(tokenizers)  # type: ignore
 
         # Sanity check
-        assert isinstance(tokenizers, nn.ModuleDict)
+        assert isinstance(tokenizers, nn.ModuleDict), (
+            f"{type(tokenizers)=}; {tokenizers=}"
+        )
         assert all(
             isinstance(tokenizer, AACTokenizer) for tokenizer in tokenizers.values()
         )
