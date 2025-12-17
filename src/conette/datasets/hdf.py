@@ -5,5 +5,5 @@ from torchwrench.extras.hdf import HDFDataset
 
 
 class HDFAACDataset(HDFDataset):
-    def at(self, *args, **kwargs):
-        return self.__getitem__(*args, **kwargs)
+    def at(self, *args):
+        return self.__getitem__(args)
